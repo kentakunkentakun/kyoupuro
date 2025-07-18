@@ -46,7 +46,26 @@ template<class T> inline bool chmin(T& a, T b) {
 ll dx[4]={0,1,0,-1};
 ll dy[4]={1,0,-1,0};
 int main(){
-    
+    ll n,m;
+    cin>>n>>m;
+    vll a(n);
+    rep(i,n)cin>>a[i];
+    vll b(n+1);
+    rep(i,n){
+        b[i+1]=b[i]+a[i];
+    }
+    rep(i,n){
+        b[i+1]%=m;
+    }
+    map<ll,ll> t;
+    rep(i,n+1){
+        t[b[i]]++;
+    }
+    ll ans=0;
+    for(auto p:t){
+        ans+=(p.S)*(p.S-1)/2;
+    }
+    cout<<ans<<endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

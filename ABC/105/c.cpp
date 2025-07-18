@@ -46,7 +46,24 @@ template<class T> inline bool chmin(T& a, T b) {
 ll dx[4]={0,1,0,-1};
 ll dy[4]={1,0,-1,0};
 int main(){
+    ll n;
+    cin>>n;
     
+    string ans="";
+    if(n==0) ans="0";
+    while(n!=0){
+        if(n%2){
+            n-=1;
+            ans+='1';
+            n/=(-2);
+        }else{
+            ans+='0';
+            n/=(-2);
+        }
+    }
+    
+    reverse(all(ans));
+    cout<<ans<<endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

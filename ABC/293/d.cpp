@@ -1,7 +1,11 @@
-//#include <algorithm> 
+#include<bits/stdc++.h>
+#include <atcoder/all>
+#include<unordered_set>
+#include<unordered_map>
+#include <algorithm> 
 #include <iostream>
 #include <string>
-#include <algorithm>
+#include <cmath>
 using namespace std;
 #define ll long long
 #define rep(i,n) for (ll i = 0; i < (n); i++)
@@ -15,8 +19,8 @@ using namespace std;
 #define pb push_back
 #define pu push
 #define COUT(x) cout<<(x)<<"\n"
-#define PQ priority_queue<ll>
-#define PQR priority_queue<ll,vector<ll>,greater<ll>>
+#define PQ(x) priority_queue<x>
+#define PQR(x) priority_queue<x,vector<x>,greater<x>>
 #define YES(n) cout << ((n) ? "YES\n" : "NO\n"  )
 #define Yes(n) cout << ((n) ? "Yes\n" : "No\n"  )
 #define mp make_pair
@@ -41,13 +45,60 @@ template<class T> inline bool chmin(T& a, T b) {
 }
 ll dx[4]={0,1,0,-1};
 ll dy[4]={1,0,-1,0};
-int main(){
-    string s = "absd";
-    sort(s.begin(), s.end());
-    cout<<s<<endl;
-    cout << s[2] - 'a' <<endl;
-    vector<int>a(n,0);
+// Union Find
+ 
+template<typename T>
+struct UnionFind
+{
+	vector<T> par;
+	vector<T> rank;
+	vector<T> sizes;
+	UnionFind(T n):par(n),rank(n,0),sizes(n,1){
+	   for(T i=0;i<n;i++){
+	     par[i]=i;
+	   }
+	}
+	T root(T x){
+	  return par[x]==x?x:par[x]=root(par[x]);
+	}
+ 
+	bool unite(T x,T y){
+	  if(x==y) return false;
+	  x=root(x); y=root(y);
+	  if(x==y) return false;
+	  if(rank[x]<rank[y]) swap(x,y);
+	  if(rank[x]==rank[y]) rank[x]++;
+	  par[y]=x;
+	  sizes[x]=sizes[x]+sizes[y];
+	  return true;
+	}
+	bool same(T x,T y){
+	  return root(x)==root(y);
+	}
+	T size(T x){
+	  return sizes[root(x)];
+	}
+};
 
+int main(){
+    ll n, m;
+    cin>>n>>m;
+    ll ans=0;
+    UnionFind<ll> uf(n);
+    for (int i = 0; i < m; i++ ){
+      ll a, c;
+      char b,d;
+      cin>>a>>b>>c>>d;
+      a--;c--;
+      if (!uf.unite(a,c)) {
+        ans++;
+      }
+    }
+    set<ll> s;
+    for (int i = 0; i < n;i++) {
+      s.insert(uf.root(i));
+    }
+    cout<<ans<<" "<<s.size() - ans<<endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

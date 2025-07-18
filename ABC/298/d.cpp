@@ -1,7 +1,11 @@
-//#include <algorithm> 
+#include<bits/stdc++.h>
+#include <atcoder/all>
+#include<unordered_set>
+#include<unordered_map>
+#include <algorithm> 
 #include <iostream>
 #include <string>
-#include <algorithm>
+#include <cmath>
 using namespace std;
 #define ll long long
 #define rep(i,n) for (ll i = 0; i < (n); i++)
@@ -15,8 +19,8 @@ using namespace std;
 #define pb push_back
 #define pu push
 #define COUT(x) cout<<(x)<<"\n"
-#define PQ priority_queue<ll>
-#define PQR priority_queue<ll,vector<ll>,greater<ll>>
+#define PQ(x) priority_queue<x>
+#define PQR(x) priority_queue<x,vector<x>,greater<x>>
 #define YES(n) cout << ((n) ? "YES\n" : "NO\n"  )
 #define Yes(n) cout << ((n) ? "Yes\n" : "No\n"  )
 #define mp make_pair
@@ -24,7 +28,7 @@ using namespace std;
 typedef pair<int,int> pii;
 typedef pair<ll,ll> pll;
 typedef tuple<ll,ll,ll> tll;
-const ll MOD = 1000000007LL;
+const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
@@ -42,12 +46,41 @@ template<class T> inline bool chmin(T& a, T b) {
 ll dx[4]={0,1,0,-1};
 ll dy[4]={1,0,-1,0};
 int main(){
-    string s = "absd";
-    sort(s.begin(), s.end());
-    cout<<s<<endl;
-    cout << s[2] - 'a' <<endl;
-    vector<int>a(n,0);
-
+    int q;
+    cin>>q;
+    ll cu = 1;
+    queue<ll> que;
+    que.pu(1);
+    vll t(6*100000+5,1);
+    for(ll i = 2; i < (ll)t.size(); i++) {
+      t[i] = t[i-1]*10%MOD;
+    }
+    for (int i = 0; i < q; i++) {
+      int a;
+      cin>>a;
+      
+      if (a == 1) {
+        int x;
+        cin>>x;
+        que.pu(x);
+        cu*=10;
+        cu%=MOD;
+        cu+=x;
+        cu%=MOD;
+      } else if (a == 2) {
+        int si = que.size();
+        int fs = que.front();
+        que.pop();
+        int m = t[si] * fs %MOD;
+        cu -= m;
+        cu%=MOD;
+        if (cu < 0){
+          cu += MOD;
+        }
+      } else if (a == 3) {
+        cout<<cu<<endl;
+      }
+    }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -46,7 +46,9 @@ template<class T> inline bool chmin(T& a, T b) {
 ll dx[4]={0,1,0,-1};
 ll dy[4]={1,0,-1,0};
 int main(){
-    
+    vector<int> a;
+    a = {1,1,1,4};
+    cout<<a.size()<<endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

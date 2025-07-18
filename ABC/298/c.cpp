@@ -1,7 +1,11 @@
-//#include <algorithm> 
+#include<bits/stdc++.h>
+#include <atcoder/all>
+#include<unordered_set>
+#include<unordered_map>
+#include <algorithm> 
 #include <iostream>
 #include <string>
-#include <algorithm>
+#include <cmath>
 using namespace std;
 #define ll long long
 #define rep(i,n) for (ll i = 0; i < (n); i++)
@@ -15,8 +19,8 @@ using namespace std;
 #define pb push_back
 #define pu push
 #define COUT(x) cout<<(x)<<"\n"
-#define PQ priority_queue<ll>
-#define PQR priority_queue<ll,vector<ll>,greater<ll>>
+#define PQ(x) priority_queue<x>
+#define PQR(x) priority_queue<x,vector<x>,greater<x>>
 #define YES(n) cout << ((n) ? "YES\n" : "NO\n"  )
 #define Yes(n) cout << ((n) ? "Yes\n" : "No\n"  )
 #define mp make_pair
@@ -41,13 +45,52 @@ template<class T> inline bool chmin(T& a, T b) {
 }
 ll dx[4]={0,1,0,-1};
 ll dy[4]={1,0,-1,0};
-int main(){
-    string s = "absd";
-    sort(s.begin(), s.end());
-    cout<<s<<endl;
-    cout << s[2] - 'a' <<endl;
-    vector<int>a(n,0);
+long long modpow(long long a, long long n, long long mod) {
+    long long res = 1;
+    while (n > 0) {
+        if (n & 1) res = res * a % mod;
+        a = a * a % mod;
+        n >>= 1;
+    }
+    return res;
+}
 
+// a^{-1} mod を計算する
+
+long long modinv(long long a, long long mod) {
+    return modpow(a, mod - 2, mod);
+}
+int main(){
+  int n, q;
+  cin>>n>>q;
+  vector<map<ll, ll>> m(n+1);
+  vector<set<ll>> s(2*100000+5);
+  for (int i = 0; i < q; i++) {
+    int a;
+    cin>>a;
+    if (a == 1) {
+      int b, c;
+      cin>>b>>c;
+      m[c][b]++;
+      s[b].insert(c);
+    } else if (a == 2) {
+      int d;
+      cin>>d;
+      for (auto p : m[d]){
+        for (int i = 0; i < p.S; i++) {
+          cout<<p.F<<" ";
+        }
+      }
+      cout<<endl;
+    } else if (a == 3) {
+      int d;
+      cin>>d;
+      for (auto p : s[d]){
+        cout<<p<<" ";
+      }
+      cout<<endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

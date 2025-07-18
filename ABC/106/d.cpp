@@ -1,7 +1,11 @@
-//#include <algorithm> 
+#include<bits/stdc++.h>
+#include <atcoder/all>
+#include<unordered_set>
+#include<unordered_map>
+#include <algorithm> 
 #include <iostream>
 #include <string>
-#include <algorithm>
+#include <cmath>
 using namespace std;
 #define ll long long
 #define rep(i,n) for (ll i = 0; i < (n); i++)
@@ -15,8 +19,8 @@ using namespace std;
 #define pb push_back
 #define pu push
 #define COUT(x) cout<<(x)<<"\n"
-#define PQ priority_queue<ll>
-#define PQR priority_queue<ll,vector<ll>,greater<ll>>
+#define PQ(x) priority_queue<x>
+#define PQR(x) priority_queue<x,vector<x>,greater<x>>
 #define YES(n) cout << ((n) ? "YES\n" : "NO\n"  )
 #define Yes(n) cout << ((n) ? "Yes\n" : "No\n"  )
 #define mp make_pair
@@ -42,11 +46,30 @@ template<class T> inline bool chmin(T& a, T b) {
 ll dx[4]={0,1,0,-1};
 ll dy[4]={1,0,-1,0};
 int main(){
-    string s = "absd";
-    sort(s.begin(), s.end());
-    cout<<s<<endl;
-    cout << s[2] - 'a' <<endl;
-    vector<int>a(n,0);
+    ll n,m,q;
+    cin>>n>>m>>q;
+    vvll t(n+1,vll(n+1));
+    rep(i,m){
+        ll l,r;
+        cin>>l>>r;
+        l--;r--;
+        t[l][r]++;
+    }
+    rep(i,n){
+        rep(j,n){
+            t[i][j+1]+=t[i][j];
+        }
+    }
+    rep(i,q){
+        ll a,b;
+        cin>>a>>b;
+        a--;b--;
+        ll ans=0;
+        for(int i=a;i<=b;i++){
+            ans+=t[i][b];
+        }
+        cout<<ans<<endl;
+    }
 
 }
 /*cin.tie(0);

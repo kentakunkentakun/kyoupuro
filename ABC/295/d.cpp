@@ -1,7 +1,11 @@
-//#include <algorithm> 
+#include<bits/stdc++.h>
+#include <atcoder/all>
+#include<unordered_set>
+#include<unordered_map>
+#include <algorithm> 
 #include <iostream>
 #include <string>
-#include <algorithm>
+#include <cmath>
 using namespace std;
 #define ll long long
 #define rep(i,n) for (ll i = 0; i < (n); i++)
@@ -15,8 +19,8 @@ using namespace std;
 #define pb push_back
 #define pu push
 #define COUT(x) cout<<(x)<<"\n"
-#define PQ priority_queue<ll>
-#define PQR priority_queue<ll,vector<ll>,greater<ll>>
+#define PQ(x) priority_queue<x>
+#define PQR(x) priority_queue<x,vector<x>,greater<x>>
 #define YES(n) cout << ((n) ? "YES\n" : "NO\n"  )
 #define Yes(n) cout << ((n) ? "Yes\n" : "No\n"  )
 #define mp make_pair
@@ -41,15 +45,57 @@ template<class T> inline bool chmin(T& a, T b) {
 }
 ll dx[4]={0,1,0,-1};
 ll dy[4]={1,0,-1,0};
-int main(){
-    string s = "absd";
-    sort(s.begin(), s.end());
-    cout<<s<<endl;
-    cout << s[2] - 'a' <<endl;
-    vector<int>a(n,0);
 
+
+string file_name(string s) {
+    string ans = "";
+    rep(i, (ll)s.size()) {
+        if (s[i] == ':') {
+            break;
+        } else {
+            ans += s[i];
+        }
+    }
+    return ans;
 }
-/*cin.tie(0);
+
+string minetype(string s) {
+    string ans = "";
+    bool is_mine = false;
+    cout<<s<<endl;
+    rep(i, (ll)s.size()) {
+        if (is_mine) {
+            if (s[i] == ' ') {
+                continue;
+            } else {
+                ans += s[i];
+            }
+        } else {
+            if (s[i] == ':') {
+                is_mine = true;
+            }
+        }
+    }
+    return ans;
+}
+
+int main(){
+    string a;
+    map<string, string> ans;
+    int cnt = 0;
+    while(getline(cin, a)) {
+        ans[file_name(a)] = minetype(a);
+        cnt++;
+        if (cnt == 7) {
+            break;
+        }
+    }
+
+    for (auto x : ans) {
+        cout << x.first << "->" << x.second << endl;
+    }
+}
+/*cin.tie(0);B
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
