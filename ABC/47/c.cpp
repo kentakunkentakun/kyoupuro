@@ -48,11 +48,13 @@ ll dy[4]={1,0,-1,0};
 int main(){
     string s;
     cin>>s;
-    ll cu=0;
-    rep(i,sz(s)-1){
-        if(s[i] != s[i+1])cu++;
+    int ans = 0;
+    rep(i,(int)s.size()-1){
+        if (s[i] != s[i+1]) {
+            ans++;
+        }
     }
-    cout<<cu<<endl;
+    cout<<ans<<endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

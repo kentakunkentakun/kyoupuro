@@ -75,5 +75,6 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "/home/kenta2/atcoder/ac-library/test/benchmark"
 }

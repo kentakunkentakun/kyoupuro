@@ -48,15 +48,19 @@ ll dy[4]={1,0,-1,0};
 int main(){
     ll n;
     cin>>n;
-    vll a(n);
-    rep(i,n)cin>>a[i];
-    map<ll,ll> t;
-    rep(i,n)t[a[i]]++;
-    ll amari = 0;
-    for(auto p: t){
-        amari+=p.S-1;
+    vector<ll> a(n);
+    map<ll,ll> m;
+    rep(i,n){
+        cin>>a[i];
+        m[a[i]]++;
     }
-    cout<<n-(amari+1)/2*2<<endl;
+    ll ans = 0;
+    ll gu = 0;
+    for(auto p:m){
+        ans++;
+        if (p.second%2 == 0) gu++;
+    }
+    cout<<ans-(gu%2)<<endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

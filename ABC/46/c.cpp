@@ -1,33 +1,33 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <atcoder/all>
-#include<unordered_set>
-#include<unordered_map>
-#include <algorithm> 
+#include <unordered_set>
+#include <unordered_map>
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <cmath>
 using namespace std;
 #define ll long long
-#define rep(i,n) for (ll i = 0; i < (n); i++)
-#define FOR(i,a,b) for(ll i=(a);i<(b);i++)
-#define FORR(i,a,b)for(ll i=(a);i<=(b);i++)
-#define repR(i,n) for(ll i=n;i>=0;i--)
-#define all(v)(v).begin(),(v).end()
-#define rall(v)(v).rbegin(),(v).rend()
+#define rep(i, n) for (ll i = 0; i < (n); i++)
+#define FOR(i, a, b) for (ll i = (a); i < (b); i++)
+#define FORR(i, a, b) for (ll i = (a); i <= (b); i++)
+#define repR(i, n) for (ll i = n; i >= 0; i--)
+#define all(v) (v).begin(), (v).end()
+#define rall(v) (v).rbegin(), (v).rend()
 #define F first
 #define S second
 #define pb push_back
 #define pu push
-#define COUT(x) cout<<(x)<<"\n"
+#define COUT(x) cout << (x) << "\n"
 #define PQ(x) priority_queue<x>
-#define PQR(x) priority_queue<x,vector<x>,greater<x>>
-#define YES(n) cout << ((n) ? "YES\n" : "NO\n"  )
-#define Yes(n) cout << ((n) ? "Yes\n" : "No\n"  )
+#define PQR(x) priority_queue<x, vector<x>, greater<x>>
+#define YES(n) cout << ((n) ? "YES\n" : "NO\n")
+#define Yes(n) cout << ((n) ? "Yes\n" : "No\n")
 #define mp make_pair
 #define sz(x) (ll)(x).size()
-typedef pair<int,int> pii;
-typedef pair<ll,ll> pll;
-typedef tuple<ll,ll,ll> tll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef tuple<ll, ll, ll> tll;
 const ll MOD = 1000000007LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
@@ -37,32 +37,54 @@ using vvll = vector<vll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
-template<class T> inline bool chmax(T& a, T b) { 
- if (a < b) { a = b; return true; } return false; 
-}
-template<class T> inline bool chmin(T& a, T b) {
- if (a > b) { a = b; return true; } return false; 
-}
-ll dx[4]={0,1,0,-1};
-ll dy[4]={1,0,-1,0};
-pair<ll,ll> cob(ll a,ll b,ll c,ll d){
-    ll keisu_T = (a+c-1)/c;
-    ll keisu_A = (b+d-1)/d;
-    ll keisu_all = max(keisu_T,keisu_A);
-    return make_pair(keisu_all*c, keisu_all*d);
-}
-int main(){
-    ll n;
-    cin>>n;
-    pair<ll,ll> ans;
-    ans.F = 1;ans.S = 1;
-    rep(i,n){
-        ll t,a;
-        cin>>t>>a;
-        ans = cob(ans.F,ans.S,t,a);
+template <class T>
+inline bool chmax(T &a, T b)
+{
+    if (a < b)
+    {
+        a = b;
+        return true;
     }
-    cout<<ans.F+ans.S<<endl;
+    return false;
+}
+template <class T>
+inline bool chmin(T &a, T b)
+{
+    if (a > b)
+    {
+        a = b;
+        return true;
+    }
+    return false;
+}
+ll dx[4] = {0, 1, 0, -1};
+ll dy[4] = {1, 0, -1, 0};
 
+int main()
+{
+    int n;
+    cin >> n;
+    vector<int> t(n), a(n);
+    ll now_t, now_a = 0;
+    rep(i, n)
+    {
+        cin >> t[i] >> a[i];
+    }
+    rep(i, n)
+    {
+        if (i == 0)
+        {
+            now_t = t[i];
+            now_a = a[i];
+        }
+        else
+        {
+            ll ma = max((now_t + t[i] - 1) / t[i], (now_a + a[i] - 1) / a[i]);
+            now_t = t[i] * ma;
+            now_a = a[i] * ma;
+        }
+    }
+    cout << now_t + now_a << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
