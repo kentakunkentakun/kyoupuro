@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#include <atcoder/all>
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
@@ -78,7 +77,18 @@ int main()
     cin >> n;
     vector<ll> c(2 * n);
     rep(i, 2 * n) cin >> c[i];
-    vector<
+    priority_queue<ll> que;
+    ll ans = c[0];
+    for (int i = 1; i < 2 * n - 1; i++)
+    {
+      que.push(c[i]);
+      if (i % 2 == 0)
+      {
+        ans += que.top();
+        que.pop();
+      }
+    }
+    cout << ans << endl;
   }
 }
 /*cin.tie(0);

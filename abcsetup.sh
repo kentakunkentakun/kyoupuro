@@ -5,7 +5,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-if ! [[ "$1" =~ ^[1-9][0-9]{,2}$ ]]; then
+if ! [[ "$1" =~ ^[1-9][0-9]{0,2}$ ]]; then
   echo "Usage: $0 2xx (x=[0-9])" 1>&2
   exit 1
 fi

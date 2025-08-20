@@ -19,9 +19,36 @@
                 "'${file}'",
             ],
             "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "build active file (macOS - GCC15)",
+            "type": "shell",
+            "command": "/opt/homebrew/bin/g++-15",
+            "args": [
+                "-std=gnu++17",
+                "-Wall",
+                "-Wextra",
+                "-O2",
+                "-DONLINE_JUDGE",
+                "-isysroot",
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+                "-I/opt/homebrew/include",
+                "-L/opt/homebrew/lib",
+                "-I${workspaceFolder}/ac-library",
+                "-o",
+                "${workspaceFolder}/problem",
+                "${file}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": ["$gcc"]
         }
     ]
 }
