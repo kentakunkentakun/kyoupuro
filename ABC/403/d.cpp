@@ -1,11 +1,6 @@
 #include <bits/stdc++.h>
 #include <atcoder/all>
-#include <unordered_set>
-#include <unordered_map>
-#include <algorithm>
-#include <iostream>
-#include <string>
-#include <cmath>
+
 using namespace std;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (n); i++)
@@ -81,25 +76,44 @@ int main()
     m[a[i]]++;
   }
   ll ans = 0;
-  
-  vector<bool> ch(100005, false);
+  if (d == 0)
+  {
+    for (auto p : m)
+    {
+      if (p.S > 0)
+        ans += p.S - 1;
+    }
+    cout << ans << endl;
+    return 0;
+  }
+
+  vector<bool> ch(1000005, false);
   for (auto p : m)
   {
     if (!ch[p.F])
     {
       ll now = p.F;
       vll t = {};
-      while (now < 100005)
+      while (now < 1000005)
       {
         ch[now] = true;
+        if (m[now] != 0)
+          t.pb(m[now]);
+        if (m[now] == 0 && t.size() > 0 && t.back() != 0)
+          t.pb(m[now]);
 
-        t.pb(m[now]);
         now += d;
       }
       vvll dp(t.size() + 1, vll(2, INF));
       dp[0][0] = 0;
+      // rep(i, 10)
+      // {
+      //   cout << t[i] << " ";
+      // }
+      // cout << endl;
       rep(i, t.size())
       {
+
         if (dp[i][0] != INF)
         {
           chmin(dp[i + 1][1], dp[i][0]);
@@ -109,8 +123,17 @@ int main()
         {
           chmin(dp[i + 1][0], dp[i][1] + t[i]);
         }
+        if (dp[i][1] != INF && t[i] == 0)
+        {
+          chmin(dp[i + 1][1], dp[i][1] + t[i]);
+        }
       }
+      // rep(i, 10)
+      // {
+      //   // cout << dp[i][0] << " ";
+      // }
       ans += min(dp[t.size()][0], dp[t.size()][1]);
+      // cout << endl;
     }
   }
   cout << ans << endl;

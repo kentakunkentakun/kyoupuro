@@ -1,10 +1,5 @@
 #include <bits/stdc++.h>
-#include <unordered_set>
-#include <unordered_map>
-#include <algorithm>
-#include <iostream>
-#include <string>
-#include <cmath>
+
 using namespace std;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
