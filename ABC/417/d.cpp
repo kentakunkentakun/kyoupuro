@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#include <atcoder/all>
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
@@ -8,10 +7,10 @@
 #include <cmath>
 using namespace std;
 #define ll long long
-#define rep(i, n) for (ll i = 0; i < (n); i++)
-#define FOR(i, a, b) for (ll i = (a); i < (b); i++)
-#define FORR(i, a, b) for (ll i = (a); i <= (b); i++)
-#define repR(i, n) for (ll i = n - 1; i >= 0; i--)
+#define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
+#define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
+#define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
+#define repR(i, n) for (ll i = n - 1; i >= 0LL; i--)
 #define all(v) (v).begin(), (v).end()
 #define rall(v) (v).rbegin(), (v).rend()
 #define F first
@@ -42,7 +41,6 @@ constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
   rep(i, vec.size())
   {
-
     cout << vec[i];
     cout << (i == (int)vec.size() - 1 ? '\n' : split);
   }
@@ -71,49 +69,63 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
-  ll n, d;
-  cin >> n >> d;
-  vector<ll> a(n);
-  rep(i, n) cin >> a[i];
-  map<ll, ll> m;
+  ll n;
+  cin >> n;
+  vector<ll> p(n), a(n), b(n);
+  vll bb(n + 1);
   rep(i, n)
   {
-    m[a[i]]++;
+    cin >> p[i] >> a[i] >> b[i];
   }
-  ll ans = 0;
-  
-  vector<bool> ch(100005, false);
-  for (auto p : m)
+  rep(i, n)
   {
-    if (!ch[p.F])
+    bb[i + 1] += bb[i] + b[i];
+  }
+  vvll t(n + 1, vll(1005));
+  rep(i, 1005)
+  {
+    t[n][i] = i;
+  }
+  for (int i = n - 1; i >= 0; i--)
+  {
+    for (int j = 1004; j >= 0; j--)
     {
-      ll now = p.F;
-      vll t = {};
-      while (now < 100005)
+      if (j <= p[i])
       {
-        ch[now] = true;
-
-        t.pb(m[now]);
-        now += d;
+        t[i][j] = t[i + 1][j + a[i]];
       }
-      vvll dp(t.size() + 1, vll(2, INF));
-      dp[0][0] = 0;
-      rep(i, t.size())
+      else
       {
-        if (dp[i][0] != INF)
-        {
-          chmin(dp[i + 1][1], dp[i][0]);
-          chmin(dp[i + 1][0], dp[i][0] + t[i]);
-        }
-        if (dp[i][1] != INF)
-        {
-          chmin(dp[i + 1][0], dp[i][1] + t[i]);
-        }
+        t[i][j] = t[i + 1][max(0LL, j - b[i])];
       }
-      ans += min(dp[t.size()][0], dp[t.size()][1]);
     }
   }
-  cout << ans << endl;
+  ll q;
+  cin >> q;
+  vll xx(q);
+  rep(i, q) cin >> xx[i];
+  rep(i, q)
+  {
+    ll x = xx[i];
+    if (x > 1000)
+    {
+      ll sa = x - 1000;
+      ll iter = lower_bound(all(bb), sa) - bb.begin();
+      if (iter == bb.size())
+      {
+        cout << x - bb[n] << endl;
+      }
+      else
+      {
+        x -= bb[iter];
+        cout << t[iter][x] << endl;
+      }
+    }
+    else
+    {
+      cout << t[0][x] << endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

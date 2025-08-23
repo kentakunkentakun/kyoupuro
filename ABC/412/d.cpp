@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#include <atcoder/all>
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
@@ -8,10 +7,10 @@
 #include <cmath>
 using namespace std;
 #define ll long long
-#define rep(i, n) for (ll i = 0; i < (n); i++)
-#define FOR(i, a, b) for (ll i = (a); i < (b); i++)
-#define FORR(i, a, b) for (ll i = (a); i <= (b); i++)
-#define repR(i, n) for (ll i = n - 1; i >= 0; i--)
+#define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
+#define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
+#define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
+#define repR(i, n) for (ll i = n - 1; i >= 0LL; i--)
 #define all(v) (v).begin(), (v).end()
 #define rall(v) (v).rbegin(), (v).rend()
 #define F first
@@ -42,7 +41,6 @@ constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
   rep(i, vec.size())
   {
-
     cout << vec[i];
     cout << (i == (int)vec.size() - 1 ? '\n' : split);
   }
@@ -69,50 +67,88 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+ll ss(vll &a, vvll &t)
+{
+  ll ans = INF;
+  do
+  {
+    ll cost = 0;
+    rep(i, a.size())
+    {
+      ll nv, bv;
+
+      if (i == a.size() - 1)
+      {
+        nv = a[0];
+      }
+      else
+      {
+        nv = a[i + 1];
+      }
+      if (i == 0)
+      {
+        bv = a[a.size() - 1];
+      }
+      else
+      {
+        bv = a[i - 1];
+      }
+      for (auto p : t[a[i]])
+      {
+        if (p != nv && p != bv)
+          cost++;
+      }
+      if (!count(all(t[a[i]]), nv))
+        cost++;
+      if (!count(all(t[a[i]]), bv))
+        cost++;
+    }
+    chmin(ans, cost);
+  } while (next_permutation(all(a)));
+  return ans;
+}
 int main()
 {
-  ll n, d;
-  cin >> n >> d;
-  vector<ll> a(n);
-  rep(i, n) cin >> a[i];
-  map<ll, ll> m;
-  rep(i, n)
+  ll n, m;
+  cin >> n >> m;
+  vvll t(n, vll(0));
+  rep(i, m)
   {
-    m[a[i]]++;
+    ll a, b;
+    cin >> a >> b;
+    a--;
+    b--;
+    t[a].pb(b);
+    t[b].pb(a);
   }
-  ll ans = 0;
-  
-  vector<bool> ch(100005, false);
-  for (auto p : m)
+  ll ans = INF;
+  for (int bit = 0; bit < (1 << n); bit++)
   {
-    if (!ch[p.F])
+    ll on = __builtin_popcount(bit);
+    vll a(0);
+    vll b(0);
+    if (min(on, n - on) >= 3)
     {
-      ll now = p.F;
-      vll t = {};
-      while (now < 100005)
+      rep(i, n)
       {
-        ch[now] = true;
-
-        t.pb(m[now]);
-        now += d;
-      }
-      vvll dp(t.size() + 1, vll(2, INF));
-      dp[0][0] = 0;
-      rep(i, t.size())
-      {
-        if (dp[i][0] != INF)
+        if (bit & (1 << i))
         {
-          chmin(dp[i + 1][1], dp[i][0]);
-          chmin(dp[i + 1][0], dp[i][0] + t[i]);
+          a.pb(i);
         }
-        if (dp[i][1] != INF)
+        else
         {
-          chmin(dp[i + 1][0], dp[i][1] + t[i]);
+          b.pb(i);
         }
       }
-      ans += min(dp[t.size()][0], dp[t.size()][1]);
+      chmin(ans, (ss(a, t) + ss(b, t)) / 2);
     }
   }
+  vll a(n);
+  rep(i, n)
+  {
+    a[i] = i;
+  }
+  chmin(ans, ss(a, t) / 2);
   cout << ans << endl;
 }
 /*cin.tie(0);
