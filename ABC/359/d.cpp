@@ -27,7 +27,7 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
+const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
@@ -67,8 +67,81 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isBinaryPalindrome(long long n, ll k)
+{
+  if (k <= 0 || n < 0)
+    return false;
+  unsigned long long x = (unsigned long long)n;
+
+  // k 桁に収まらないなら不適合（回文ではない扱い）
+  if (k < 64 && (x >> k) != 0ULL)
+    return false;
+
+  int lo = 0, hi = k - 1;
+  while (lo < hi)
+  {
+    if (((x >> lo) & 1ULL) != ((x >> hi) & 1ULL))
+      return false;
+    ++lo;
+    --hi;
+  }
+  return true;
+}
 int main()
 {
+  ll n, k;
+  cin >> n >> k;
+  string s;
+  cin >> s;
+  vvll dp(n + 1, vll(1 << k, 0));
+  vll ch(1 << k, 0);
+  rep(i, 1 << k)
+  {
+    ch[i] = isBinaryPalindrome(i, k);
+  }
+  dp[0][0] = 1;
+  rep(i, n)
+  {
+    rep(j, 1 << k)
+    {
+      if (s[i] == 'A' || s[i] == '?')
+      {
+        ll nx = j * 2;
+        if (nx >= (1 << k))
+        {
+          nx -= (1 << k);
+        }
+        if (i < k - 1 || !ch[nx])
+        {
+          dp[i + 1][nx] += dp[i][j];
+          dp[i + 1][nx] %= MOD;
+        }
+      }
+      if (s[i] == 'B' || s[i] == '?')
+      {
+        ll nx = j * 2 + 1;
+        if (nx >= (1 << k))
+        {
+          nx -= (1 << k);
+        }
+        if (i < k - 1 || !ch[nx])
+        {
+          dp[i + 1][nx] += dp[i][j];
+          dp[i + 1][nx] %= MOD;
+        }
+      }
+    }
+  }
+  ll ans = 0;
+  rep(i, 1 << k)
+  {
+    if (!ch[i])
+    {
+      ans += dp[n][i];
+      ans %= MOD;
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

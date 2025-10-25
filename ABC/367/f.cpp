@@ -1,33 +1,33 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <atcoder/all>
-#include<unordered_set>
-#include<unordered_map>
-#include <algorithm> 
+#include <unordered_set>
+#include <unordered_map>
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <cmath>
 using namespace std;
 #define ll long long
-#define rep(i,n) for (ll i = 0; i < (n); i++)
-#define FOR(i,a,b) for(ll i=(a);i<(b);i++)
-#define FORR(i,a,b)for(ll i=(a);i<=(b);i++)
-#define repR(i,n) for(ll i=n;i>=0;i--)
-#define all(v)(v).begin(),(v).end()
-#define rall(v)(v).rbegin(),(v).rend()
+#define rep(i, n) for (ll i = 0; i < (n); i++)
+#define FOR(i, a, b) for (ll i = (a); i < (b); i++)
+#define FORR(i, a, b) for (ll i = (a); i <= (b); i++)
+#define repR(i, n) for (ll i = n; i >= 0; i--)
+#define all(v) (v).begin(), (v).end()
+#define rall(v) (v).rbegin(), (v).rend()
 #define F first
 #define S second
 #define pb push_back
 #define pu push
-#define COUT(x) cout<<(x)<<"\n"
+#define COUT(x) cout << (x) << "\n"
 #define PQ(x) priority_queue<x>
-#define PQR(x) priority_queue<x,vector<x>,greater<x>>
-#define YES(n) cout << ((n) ? "YES\n" : "NO\n"  )
-#define Yes(n) cout << ((n) ? "Yes\n" : "No\n"  )
+#define PQR(x) priority_queue<x, vector<x>, greater<x>>
+#define YES(n) cout << ((n) ? "YES\n" : "NO\n")
+#define Yes(n) cout << ((n) ? "Yes\n" : "No\n")
 #define mp make_pair
 #define sz(x) (ll)(x).size()
-typedef pair<int,int> pii;
-typedef pair<ll,ll> pll;
-typedef tuple<ll,ll,ll> tll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef tuple<ll, ll, ll> tll;
 const ll MOD = 1000000007LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
@@ -37,16 +37,67 @@ using vvll = vector<vll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
-template<class T> inline bool chmax(T& a, T b) { 
- if (a < b) { a = b; return true; } return false; 
+template <class T>
+inline bool chmax(T &a, T b)
+{
+  if (a < b)
+  {
+    a = b;
+    return true;
+  }
+  return false;
 }
-template<class T> inline bool chmin(T& a, T b) {
- if (a > b) { a = b; return true; } return false; 
+template <class T>
+inline bool chmin(T &a, T b)
+{
+  if (a > b)
+  {
+    a = b;
+    return true;
+  }
+  return false;
 }
-ll dx[4]={0,1,0,-1};
-ll dy[4]={1,0,-1,0};
-int main(){
-    
+ll dx[4] = {0, 1, 0, -1};
+ll dy[4] = {1, 0, -1, 0};
+int main()
+{
+  ll mod = (1LL << 61) - 1;
+  ll n, q;
+  cin >> n >> q;
+  vll a(n), b(n);
+  rep(i, n) cin >> a[i];
+  rep(i, n) cin >> b[i];
+  const ll N = 200005;
+  const ll MINV = 10000000; // 最低値
+  const ll MAXV = 1000000000LL;
+  mt19937_64 rng(random_device{}());
+  uniform_int_distribution<long long> dist(MINV, MAXV);
+
+  vector<long long> hash;
+  hash.reserve(N);
+  for (int i = 0; i < N; ++i)
+    hash.push_back(dist(rng) % mod);
+  vll sa(n + 1), sb(n + 1);
+  rep(i, n)
+  {
+    sa[i + 1] += (sa[i] + hash[a[i]]) % mod;
+    sb[i + 1] += (sb[i] + hash[b[i]]) % mod;
+  }
+  rep(i, q)
+  {
+    ll la, ra, lb, rb;
+    cin >> la >> ra >> lb >> rb;
+    la--;
+    lb--;
+    if ((sa[ra] - sa[la] + mod) % mod == (sb[rb] - sb[lb] + mod) % mod)
+    {
+      cout << "Yes" << endl;
+    }
+    else
+    {
+      cout << "No" << endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -69,6 +69,47 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll c(n);
+  rep(i, n) cin >> c[i];
+  multiset<ll> s;
+  vvll t(n, vll(0));
+  rep(i, n - 1)
+  {
+    ll a, b;
+    cin >> a >> b;
+    a--;
+    b--;
+    t[a].pb(b);
+    t[b].pb(a);
+  }
+  vll ch(n, 0);
+  auto dfs = [&](auto dfs, int now, int par) -> void
+  {
+    if (!s.count(c[now]))
+    {
+      ch[now] = 1;
+    }
+
+    s.insert(c[now]);
+    for (auto nx : t[now])
+    {
+      if (nx != par)
+      {
+        dfs(dfs, nx, now);
+      }
+    }
+    s.erase(s.find(c[now]));
+  };
+  dfs(dfs, 0, -1);
+  rep(i, n)
+  {
+    if (ch[i])
+    {
+      cout << i + 1 << endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

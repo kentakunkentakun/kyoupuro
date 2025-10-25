@@ -71,6 +71,50 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll q;
+  cin >> q;
+  multiset<string> x;
+  multiset<string> y;
+  ll ans = 0;
+  rep(i, q)
+  {
+    ll t;
+    string s;
+    cin >> t >> s;
+    if (t == 1)
+    {
+      string next_pre = s;
+      next_pre.back()++;
+      auto first = y.lower_bound(s);
+      auto last = y.lower_bound(next_pre);
+
+      while (first != last)
+      {
+        ans--;
+        first = y.erase(first);
+      }
+      x.insert(s);
+    }
+    else
+    {
+      string tmp_s = "";
+      bool contain = false;
+      while (tmp_s != s)
+      {
+        tmp_s += s[tmp_s.size()];
+        if (x.count(tmp_s) != 0)
+        {
+          contain = true;
+        }
+      }
+      if (!contain)
+      {
+        ans++;
+        y.insert(s);
+      }
+    }
+    cout << ans << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

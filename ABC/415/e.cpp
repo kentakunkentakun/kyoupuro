@@ -82,33 +82,25 @@ int main()
   }
   vector<ll> p(h + w - 1);
   rep(i, h + w - 1) cin >> p[i];
-  vector<vector<ll>> dp(h, vector<ll>(w, -INF));
-  dp[0][0] = a[0][0] - p[0];
-  rep(i, h)
+  vvll t(h, vll(w, -INF));
+  t[h - 1][w - 1] = min(0LL, a[h - 1][w - 1] - p[h + w - 2]);
+  repR(i, h)
   {
-    rep(j, w)
+    repR(j, w)
     {
+      ll now = i + j;
       if (i + 1 < h)
       {
-        chmax(dp[i + 1][j], dp[i][j] + a[i + 1][j] - p[i + 1 + j]);
+        chmax(t[i][j], min(0LL, a[i][j] - p[now] + t[i + 1][j]));
       }
       if (j + 1 < w)
       {
-        chmax(dp[i][j + 1], dp[i][j] + a[i][j + 1] - p[i + j + 1]);
+        chmax(t[i][j], min(0LL, a[i][j] - p[now] + t[i][j + 1]));
       }
     }
   }
 
-  vector<vector<ll>> ans(h, vector<ll>(w, 0));
-  if (dp[0][0] < 0)
-    ans[0][0] = -1 * dp[0][0];
-  rep(i, h)
-  {
-    rep(j, w)
-    {
-      if (dp[i][j])
-    }
-  }
+  cout << -1 * t[0][0] << endl;
 }
 /*cin.tie(0);),
 ios::sync_with_studio(false);

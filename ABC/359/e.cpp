@@ -69,6 +69,35 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll h(n);
+  rep(i, n) cin >> h[i];
+  vll ans(n + 1);
+  PQ(pll)
+  que;
+  que.push(pll(0, INF));
+  ans[0] = 1;
+  rep(i, n)
+  {
+    auto [w, H] = que.top();
+
+    while (H <= h[i])
+    {
+      que.pop();
+      w = que.top().F;
+      H = que.top().S;
+    }
+    // cout << w << " " << H << endl;
+    que.push(pll(i + 1, h[i]));
+    ans[i + 1] = ((i + 1) - w) * h[i] + ans[w];
+    // cout << (i + 1) << " " << w << " " << h[i] << " " << ans[w] << endl;
+  }
+  for (int i = 1; i <= n; i++)
+  {
+    cout << ans[i] << " ";
+  }
+  cout << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

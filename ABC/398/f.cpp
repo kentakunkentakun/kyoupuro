@@ -67,8 +67,75 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+template <class T>
+vector<int> z_algorithm_Impl(const std::vector<T> &s)
+{
+  vector<int> Z(s.size());
+  Z[0] = s.size();
+  int i = 1, j = 0;
+  while (i < s.size())
+  {
+    while (i + j < s.size() && s[j] == s[i + j])
+      j++;
+    Z[i] = j;
+
+    if (j == 0)
+    {
+      i++;
+      continue;
+    }
+    int k = 1;
+    while (k < j && k + Z[k] < j)
+    {
+      Z[i + k] = Z[k];
+      k++;
+    }
+    i += k;
+    j -= k;
+  }
+  return Z;
+}
+
+vector<int> z_algorithm(const string &s)
+{
+  int n = int(s.size());
+  vector<int> s2(n);
+  for (int i = 0; i < n; i++)
+  {
+    s2[i] = s[i];
+  }
+  return z_algorithm_Impl(s2);
+}
 int main()
 {
+  string s;
+  cin >> s;
+  ll n = s.size();
+  string t = s;
+  reverse(all(t));
+  t += s;
+  vector<int> z = z_algorithm(t);
+  for (int i = n; i < 2 * n; i++)
+  {
+    if (z[i] == 2 * n - i)
+    {
+      string ans = "";
+      string tmp = "";
+      for (int j = n; j < i; j++)
+      {
+        tmp += t[j];
+      }
+      ans += tmp;
+      for (int j = i; j < 2 * n; j++)
+      {
+        ans += t[j];
+      }
+      reverse(all(tmp));
+      ans += tmp;
+      cout << ans << endl;
+      return 0;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

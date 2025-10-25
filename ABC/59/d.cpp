@@ -63,7 +63,43 @@ int main()
 {
   ll x, y;
   cin >> x >> y;
-  
+  if (abs(x - y) < 2)
+  {
+    cout << "Brown" << endl;
+  }
+  else
+  {
+    cout << "Alice" << endl;
+  }
+  // vvll dp(31, vll(31, -INF));
+  // dp[0][0] = 0;
+  // dp[1][0] = 0;
+  // dp[0][1] = 0;
+  // dp[1][1] = 0;
+  // auto dfs = [&](auto dfs, ll x, ll y) -> bool
+  // {
+  //   if (dp[x][y] != -INF)
+  //     return dp[x][y];
+
+  //   bool lose = true;
+  //   for (int i = 1; i <= x / 2; i++)
+  //   {
+  //     lose &= dfs(dfs, x - i * 2, y + i);
+  //   }
+  //   for (int i = 1; i <= y / 2; i++)
+  //   {
+  //     lose &= dfs(dfs, x + i, y - i * 2);
+  //   }
+  //   return dp[x][y] = !lose;
+  // };
+  // rep(i, 20)
+  // {
+  //   rep(j, 20)
+  //   {
+
+  //     cout << "x = " << i << " y = " << j << " " << dfs(dfs, i, j) << endl;
+  //   }
+  // }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

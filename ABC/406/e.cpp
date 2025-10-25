@@ -67,7 +67,20 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
-// 二項係数 nCr
+// a^n mod を計算する
+
+long long modpow(long long a, long long n, long long mod)
+{
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
 const int MAX = 700000;
 long long fac[MAX], finv[MAX], inv[MAX];
 
@@ -114,28 +127,63 @@ int main()
       tmp_n /= 2;
     }
     reverse(all(s));
-    ll ans = 0;
-
-    for (int i = s.size() - 2; i >= 0; i--)
+    n = s.size();
+    vector<vvll> dp(n + 1, vvll(k + 1, vll(2, -1)));
+    vector<vvll> dp_cnt(n + 1, vvll(k + 1, vll(2, 0)));
+    dp[0][0][0] = 0;
+    dp_cnt[0][0][0] = 1;
+    rep(i, n)
     {
-      ans += COM(s.size() - 2, k - 1) * (1 << i) % MOD;
-      ans %= MOD;
-    }
-    rep(i, s.size())
-    {
-      if (s[i] == '1')
+      ll v = modpow(2, n - i - 1, MOD);
+      rep(j, k + 1)
       {
-        ll cnt = 0;
-        ll now = i + 1;
-        while (now < s.size())
+        if (dp[i][j][0] != -1)
         {
-          if (s[now] == '1')
+          if (s[i] == '1')
           {
-            ans += COM(s.size() - now - 1, k - 1);
+            if (j + 1 <= k)
+            {
+              chmax(dp[i + 1][j + 1][0], 0LL);
+              dp[i + 1][j + 1][0] += dp[i][j][0] + dp_cnt[i][j][0] * v;
+              dp[i + 1][j + 1][0] %= MOD;
+              dp_cnt[i + 1][j + 1][0] += dp_cnt[i][j][0];
+              dp_cnt[i + 1][j + 1][0] %= MOD;
+            }
+            chmax(dp[i + 1][j][1], 0LL);
+            dp[i + 1][j][1] += dp[i][j][0];
+            dp[i + 1][j][1] %= MOD;
+            dp_cnt[i + 1][j][1] += dp_cnt[i][j][0];
+            dp_cnt[i + 1][j][1] %= MOD;
+          }
+          else
+          {
+            chmax(dp[i + 1][j][0], 0LL);
+            dp[i + 1][j][0] += dp[i][j][0];
+            dp[i + 1][j][0] %= MOD;
+            dp_cnt[i + 1][j][0] += dp_cnt[i][j][0];
+            dp_cnt[i + 1][j][0] %= MOD;
+          }
+        }
+        if (dp[i][j][1] != -1)
+        {
+          chmax(dp[i + 1][j][1], 0LL);
+          dp[i + 1][j][1] += dp[i][j][1];
+          dp[i + 1][j][1] %= MOD;
+          dp_cnt[i + 1][j][1] += dp_cnt[i][j][1];
+          dp_cnt[i + 1][j][1] %= MOD;
+
+          if (j + 1 <= k)
+          {
+            chmax(dp[i + 1][j + 1][1], 0LL);
+            dp[i + 1][j + 1][1] += dp[i][j][1] + dp_cnt[i][j][1] * v;
+            dp[i + 1][j + 1][1] %= MOD;
+            dp_cnt[i + 1][j + 1][1] += dp_cnt[i][j][1];
+            dp_cnt[i + 1][j + 1][1] %= MOD;
           }
         }
       }
     }
+    cout << (max(0LL, dp[n][k][1]) + max(0LL, dp[n][k][0])) % MOD << endl;
   }
 }
 /*cin.tie(0);

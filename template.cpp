@@ -22,12 +22,13 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
+const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -62,6 +63,14 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
 }
@@ -70,5 +79,13 @@ ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
+__int128
 
-__builtin_popcount(i)*/
+//ソート済み
+v.erase(unique(v.begin(), v.end()), v.end());
+__builtin_popcount(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

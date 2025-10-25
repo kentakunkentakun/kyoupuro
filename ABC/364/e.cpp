@@ -1,10 +1,5 @@
 #include <bits/stdc++.h>
-#include <unordered_set>
-#include <unordered_map>
-#include <algorithm>
-#include <iostream>
-#include <string>
-#include <cmath>
+
 using namespace std;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (n); i++)
@@ -69,6 +64,41 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  vector<vector<vll>> dp(85, vector<vll>(85, vll(10005, INF)));
+  ll n, x, y;
+  cin >> n >> x >> y;
+  vll a(n), b(n);
+  rep(i, n)
+  {
+    cin >> a[i] >> b[i];
+  }
+  dp[0][0][0] = 0;
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      rep(z, 10005)
+      {
+        if (dp[i][j][z] != INF && z + a[i] < 10005)
+        {
+          chmin(dp[i + 1][j + 1][z + a[i]], dp[i][j][z] + b[i]);
+        }
+        chmin(dp[i + 1][j][z], dp[i][j][z]);
+      }
+    }
+  }
+  ll ans = 0;
+  rep(i, n)
+  {
+    rep(z, x + 1)
+    {
+      if (dp[n][i][z] <= y)
+      {
+        chmax(ans, i + 1);
+      }
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

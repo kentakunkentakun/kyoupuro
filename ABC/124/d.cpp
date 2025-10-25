@@ -61,23 +61,55 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
-
-  ll n, x;
-  cin >> n >> x;
-  ll max_x = (x + n - 1) / n;
-  vector<vector<ll>> dp(n + 1, vector<ll>(max_x + 1, -1));
-  dp[0][x] = INF;
-  vector<ll> a(n), p(n), b(n), q(n);
-  rep(i, n) cin >> a[i] >> p[i] >> b[i] >> q[i];
-  rep(i, n)
+  ll n, k;
+  cin >> n >> k;
+  string s;
+  cin >> s;
+  vll t(0);
+  char now = s[0];
+  ll cnt = 1;
+  for (int i = 1; i < s.size(); i++)
   {
-    rep(j, max_x)
+    if (s[i] != s[i - 1])
     {
-      if (dp[i][j] == -1)
-        continue;
-      
+      t.pb(cnt);
+      now = s[i];
+      cnt = 1;
+    }
+    else
+    {
+      cnt++;
     }
   }
+  t.pb(cnt);
+  vll rui(t.size() + 1, 0);
+  rep(i, t.size())
+  {
+    rui[i + 1] += t[i] + rui[i];
+  }
+
+  ll ans = 0;
+  rep(i, t.size())
+  {
+    ll now_i = rui[i + 1] - 1;
+    if (s[now_i] == '0')
+    {
+      ll l = i;
+      if (i > 0)
+      {
+        l--;
+      }
+      ll r = min((ll)rui.size() - 1, 2 * k + i);
+      chmax(ans, rui[r] - rui[l]);
+    }
+    else
+    {
+      ll l = i;
+      ll r = min((ll)rui.size() - 1, 2 * k + 1 + i);
+      chmax(ans, rui[r] - rui[l]);
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
