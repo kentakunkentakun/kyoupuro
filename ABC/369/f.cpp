@@ -22,13 +22,20 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
+<<<<<<< Updated upstream
 const ll MOD = 998244353LL;
+=======
+const ll MOD = 1000000007LL;
+>>>>>>> Stashed changes
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+<<<<<<< Updated upstream
 using vvvll = vector<vvll>;
+=======
+>>>>>>> Stashed changes
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -63,6 +70,7 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+<<<<<<< Updated upstream
 struct Node
 {
   ll v;
@@ -190,14 +198,22 @@ int main()
   reverse(all(ans));
   rep(i, ans.size()) cout << ans[i];
   cout << endl;
+=======
+int main()
+{
+>>>>>>> Stashed changes
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
+<<<<<<< Updated upstream
 __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
+=======
+
+>>>>>>> Stashed changes
 __builtin_popcount(i)*/

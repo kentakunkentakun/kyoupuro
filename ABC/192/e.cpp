@@ -22,7 +22,11 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
+<<<<<<< Updated upstream
 const ll MOD = 998244353LL;
+=======
+const ll MOD = 1000000007LL;
+>>>>>>> Stashed changes
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
@@ -62,16 +66,66 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct edge
+{
+  ll to, k, c;
+};
 int main()
 {
+  ll n, m, x, y;
+  cin >> n >> m >> x >> y;
+  x--;
+  y--;
+  vector<vector<edge>> t(n, vector<edge>(0));
+  rep(i, m)
+  {
+    ll a, b, tt, k;
+    cin >> a >> b >> tt >> k;
+    a--;
+    b--;
+    t[a].pb({b, k, tt});
+    t[b].pb({a, k, tt});
+  }
+  vll dist(n, INF);
+  dist[x] = 0;
+  PQR(pll)
+  que;
+  que.push(pll(0, x));
+  while (que.size())
+  {
+    auto [c, now] = que.top();
+    que.pop();
+    if (dist[now] < c)
+      continue;
+    for (auto [to, k, cost] : t[now])
+    {
+      ll next_time = (c + k - 1) / k * k + cost;
+      if (chmin(dist[to], next_time))
+      {
+        que.push({dist[to], to});
+      }
+    }
+  }
+  if (dist[y] == INF)
+  {
+    cout << -1 << endl;
+  }
+  else
+  {
+    cout << dist[y] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
+<<<<<<< Updated upstream
 __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
+=======
+
+>>>>>>> Stashed changes
 __builtin_popcount(i)*/

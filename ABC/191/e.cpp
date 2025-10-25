@@ -62,104 +62,6 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
-template <typename T = int>
-struct SCC
-{
-  using Edge = T;
-  using SGraph = vector<vector<Edge>>;
-
-  // input
-  SGraph G, rG;
-
-  // result
-  vector<vector<T>> scc; // 各成分に含まれる頂点
-  vector<int> cmp;       // 各頂点が属する成分番号（-1初期化）
-  SGraph dag;            // SCCを縮約したDAG
-
-  // constructor
-  SCC(T n) : G(n), rG(n) {}
-
-  // add edge
-  void addedge(T u, T v)
-  {
-    G[u].push_back(v);
-    rG[v].push_back(u);
-  }
-
-  // decomposition
-  vector<char> seen;
-  vector<T> vs, rvs;
-
-  void dfs(T v)
-  {
-    seen[v] = true;
-    for (auto e : G[v])
-      if (!seen[e])
-        dfs(e);
-    vs.push_back(v);
-  }
-
-  void rdfs(T v, int k)
-  {
-    seen[v] = true;
-    cmp[v] = k;
-    for (auto e : rG[v])
-      if (!seen[e])
-        rdfs(e, k);
-    rvs.push_back(v);
-  }
-
-  // reconstruct DAG
-  set<pair<int, int>> newEdges;
-  void reconstruct()
-  {
-    int N = (int)G.size();
-    int dV = (int)scc.size();
-    dag.assign(dV, vector<Edge>());
-    newEdges.clear();
-    for (int i = 0; i < N; ++i)
-    {
-      int u = cmp[i];
-      for (auto e : G[i])
-      {
-        int v = cmp[e];
-        if (u == v)
-          continue;
-        if (!newEdges.count({u, v}))
-        {
-          dag[u].push_back(v);
-          newEdges.insert({u, v});
-        }
-      }
-    }
-  }
-
-  // main
-  void solve()
-  {
-    int N = (int)G.size();
-    seen.assign(N, 0);
-    vs.clear();
-    for (int v = 0; v < N; ++v)
-      if (!seen[v])
-        dfs(v);
-
-    int k = 0;
-    scc.clear();
-    cmp.assign(N, -1);
-    seen.assign(N, 0);
-    for (int i = N - 1; i >= 0; --i)
-    {
-      if (!seen[vs[i]])
-      {
-        rvs.clear();
-        rdfs(vs[i], k++);
-        scc.push_back(rvs);
-      }
-    }
-    reconstruct();
-  }
-};
 struct edge
 {
   ll to, cost;
@@ -168,17 +70,65 @@ int main()
 {
   ll n, m;
   cin >> n >> m;
-  SCC<ll> scc(n);
-  vector<vector<edge>> t(n, vector<edge>(0));
+  vector<vector<edge>> t(n);
+  vll own(n, INF);
   rep(i, m)
   {
     ll a, b, c;
     cin >> a >> b >> c;
     a--;
     b--;
-    scc.addedge(a, b);
+    if (a == b)
+    {
+      chmin(own[a], c);
+    }
     t[a].pb({b, c});
-    t[b].pb({a, c});
+  }
+  vvll dist(n, vll(n, INF));
+  rep(i, n)
+  {
+    PQR(pll)
+    que;
+    que.push({0, i});
+    dist[i][i] = 0;
+    while (que.size())
+    {
+      auto [c, now] = que.top();
+      que.pop();
+      if (dist[i][now] < c)
+        continue;
+      for (auto [to, cost] : t[now])
+      {
+        if (chmin(dist[i][to], dist[i][now] + cost))
+        {
+          que.push({dist[i][to], to});
+        }
+      }
+    }
+  }
+  rep(i, n)
+  {
+    ll res = INF;
+
+    if (own[i] != -1)
+    {
+      res = own[i];
+    }
+    rep(j, n)
+    {
+      if (j != i && dist[i][j] != INF && dist[j][i] != INF)
+      {
+        chmin(res, dist[i][j] + dist[j][i]);
+      }
+    }
+    if (res == INF)
+    {
+      cout << -1 << endl;
+    }
+    else
+    {
+      cout << res << endl;
+    }
   }
 }
 /*cin.tie(0);

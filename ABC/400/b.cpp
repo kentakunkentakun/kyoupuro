@@ -22,7 +22,11 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
+<<<<<<< Updated upstream
 const ll MOD = 998244353LL;
+=======
+const ll MOD = 1000000007LL;
+>>>>>>> Stashed changes
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
@@ -70,5 +74,9 @@ ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
+<<<<<<< Updated upstream
 __int128
+=======
+
+>>>>>>> Stashed changes
 __builtin_popcount(i)*/

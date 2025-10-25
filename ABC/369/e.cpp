@@ -22,13 +22,20 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
+<<<<<<< Updated upstream
 const ll MOD = 998244353LL;
+=======
+const ll MOD = 1000000007LL;
+>>>>>>> Stashed changes
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+<<<<<<< Updated upstream
 using vvvll = vector<vvll>;
+=======
+>>>>>>> Stashed changes
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -65,14 +72,86 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+<<<<<<< Updated upstream
+=======
+  ll n, m;
+  cin >> n >> m;
+  vll u(m), v(m), t(m);
+  vvll dist(n, vll(n, INF));
+  rep(i, n) dist[i][i] = 0;
+  rep(i, m)
+  {
+    cin >> u[i] >> v[i] >> t[i];
+    u[i]--;
+    v[i]--;
+    chmin(dist[u[i]][v[i]], t[i]);
+    chmin(dist[v[i]][u[i]], t[i]);
+  }
+  rep(k, n)
+  {
+    rep(i, n)
+    {
+      rep(j, n)
+      {
+        chmin(dist[i][j], dist[i][k] + dist[k][j]);
+      }
+    }
+  }
+  ll q;
+  cin >> q;
+  rep(Q, q)
+  {
+    ll k;
+    cin >> k;
+    vll b(k);
+    rep(i, k)
+    {
+      cin >> b[i];
+      b[i]--;
+    }
+    ll ans = INF;
+    do
+    {
+      for (int bit = 0; bit < (1 << k); bit++)
+      {
+        ll cost = 0;
+        ll now = 0;
+        rep(i, k)
+        {
+          ll start;
+          ll end;
+          if (bit & (1 << i))
+          {
+            start = u[b[i]];
+            end = v[b[i]];
+          }
+          else
+          {
+            start = v[b[i]];
+            end = u[b[i]];
+          }
+          cost += dist[now][start] + t[b[i]];
+          now = end;
+        }
+        cost += dist[now][n - 1];
+        chmin(ans, cost);
+      }
+    } while (next_permutation(all(b)));
+    cout << ans << endl;
+  }
+>>>>>>> Stashed changes
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
+<<<<<<< Updated upstream
 __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
+=======
+
+>>>>>>> Stashed changes
 __builtin_popcount(i)*/

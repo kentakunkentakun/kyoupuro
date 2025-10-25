@@ -62,77 +62,13 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
-<<<<<<< Updated upstream
 int main()
 {
-=======
-
-int main()
-{
-  ll q;
-  cin >> q;
-
-  vll arr(1000005, 0);
-  vll sosu(0);
-
-  for (ll i = 2; i < 1000005; i++)
-  {
-    arr[i] = 1;
-  }
-
-  for (int i = 2; i < sqrt(1000005); i++)
-  {
-    if (arr[i])
-    {
-      for (int j = 0; i * (j + 2) < 1000005; j++)
-      {
-        arr[i * (j + 2)] = 0;
-      }
-    }
-  }
-  rep(i, 1000005)
-  {
-    if (arr[i])
-    {
-      sosu.pb(i);
-    }
-  }
-  vll t(0);
-  rep(i, sosu.size() - 1)
-  {
-    ll a_now = sosu[i];
-    while ((a_now * sosu[i + 1]) < 1000005)
-    {
-      for (ll j = i + 1; j < sosu.size(); j++)
-      {
-        ll now = a_now * sosu[j];
-        while (now < 1000005)
-        {
-          t.pb(now * now);
-          now *= sosu[j];
-        }
-      }
-      a_now *= sosu[i];
-    }
-  }
-  sort(all(t));
-  rep(Q, q)
-  {
-    ll u;
-    cin >> u;
-    ll iter = upper_bound(all(t), u) - t.begin() - 1;
-    cout << t[iter] << endl;
-  }
->>>>>>> Stashed changes
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
-<<<<<<< Updated upstream
-__int128
-=======
 
->>>>>>> Stashed changes
 __builtin_popcount(i)*/
