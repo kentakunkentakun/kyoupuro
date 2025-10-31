@@ -28,6 +28,7 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -64,6 +65,33 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vll a(n);
+  vll b(m);
+  rep(i, n) cin >> a[i];
+  rep(i, m) cin >> b[i];
+  vvvll dp(n, vvll(m, vll(2, INF)));
+  dp[0][0][0] = 1;
+  if (a[0] == b[0])
+    dp[0][0][1] = 0;
+  rep(i, n)
+  {
+    rep(j, m)
+    {
+      if (i && j)
+      {
+        if (a[i] == b[j])
+        {
+          chmin(dp[i][j][1], min(dp[i - 1][j - 1][0], dp[i - 1][j - 1][1]));
+        }
+        chmin(dp[i][j][0], min(dp[i - 1][j][0] + 1, dp[i - 1][j][1] + 1));
+        chmin(dp[i][j][0], min(dp[i][j - 1][0] + 1, dp[i][j - 1][1] + 1));
+        chmin(dp[i][j][0], min(dp[i - 1][j - 1][0] + 1, dp[i - 1][j - 1][1] + 1));
+        chmin(dp[i][j][1], dp[i][j - 1][1] + 1);
+      }
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
