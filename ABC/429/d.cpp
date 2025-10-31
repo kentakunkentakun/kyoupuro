@@ -22,12 +22,13 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
+const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -62,60 +63,77 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
-  ll n, m;
-  cin >> n >> m;
-  string s;
-  string t;
-  cin >> s;
-  cin >> t;
-  vvll dp(n + 1, vll(t.size() + 1, 0));
-  dp[0][0] = 1;
+  ll n, m, c;
+  cin >> n >> m >> c;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  map<ll, ll> z;
   rep(i, n)
   {
-    rep(j, t.size())
-    {
-      if (dp[i][j] && t[j] == s[i] && t.size() - j + i <= n)
-      {
-        dp[i + 1][j + 1] = 1;
-      }
-    }
-    bool can = false;
-    rep(j, t.size() + 1)
-    {
-      can |= dp[i][j];
-    }
-    // tの先頭を付ける
-    if (can && i + t.size() <= n && s[i] == t[0])
-    {
-      dp[i + 1][1] = 1;
-    }
-    // tの末尾が使用できるなら次tの何文字目でも行ける
-    if (dp[i][t.size()])
-    {
-      rep(z, t.size())
-      {
-        if (t.size() - z + i <= n && t[z] == s[i])
-        {
-          dp[i + 1][z + 1] = 1;
-        }
-      }
-    }
+    z[a[i]]++;
   }
-  if (dp[n][t.size()])
+  ll z_cnt = z.size();
+  vll d(2 * z_cnt + 1);
+  rep(i, 2)
   {
-    cout << "Yes" << endl;
+    ll iter = i * z_cnt;
+    for (auto p : z)
+    {
+      d[iter + 1] += d[iter] + p.S;
+      iter++;
+    }
   }
-  else
+  vector<pll> p(0);
+  p.pb({0, 0});
+  for (auto e : z)
   {
-    cout << "No" << endl;
+    p.pb(e);
   }
+  for (auto e : z)
+  {
+    p.pb({e.F + m, e.S});
+  }
+  ll ans = 0;
+  ll iter = z_cnt + 1;
+  rep(i, z_cnt)
+  {
+    ll a = d[iter - 1];
+    auto it = lower_bound(all(d), a - (c - 1)) - d.begin();
+    // cout << "it " << it << endl;
+    // cout << "p[it].F " << p[it].F << endl;
+    // cout << "p[iter].F " << p[iter].F << endl;
+    ll k;
+    k = p[iter].F - p[it].F;
+    // cout << a << " " << it << " " << p[iter].S << " " << k << " " << p[it].F << " " << p[iter].F << " " << it << " " << iter << endl;
+
+    ans += k * p[iter].S;
+
+    iter++;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
+__int128
 
-__builtin_popcount(i)*/
+//ソート済み
+v.erase(unique(v.begin(), v.end()), v.end());
+__builtin_popcount(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

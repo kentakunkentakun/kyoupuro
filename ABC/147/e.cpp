@@ -22,12 +22,13 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
+const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -62,60 +63,79 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
-  ll n, m;
-  cin >> n >> m;
-  string s;
-  string t;
-  cin >> s;
-  cin >> t;
-  vvll dp(n + 1, vll(t.size() + 1, 0));
-  dp[0][0] = 1;
-  rep(i, n)
+  ll h, w;
+  cin >> h >> w;
+  vvll a(h, vll(w));
+  rep(i, h) rep(j, w) cin >> a[i][j];
+  vvll b(h, vll(w));
+  rep(i, h) rep(j, w) cin >> b[i][j];
+  vector<vector<vb>> dp(h, vector<vb>(w, vb(26000)));
+  dp[0][0][13000 + (a[0][0] - b[0][0])] = 1;
+  dp[0][0][13000 + (b[0][0] - a[0][0])] = 1;
+  rep(i, h)
   {
-    rep(j, t.size())
+    rep(j, w)
     {
-      if (dp[i][j] && t[j] == s[i] && t.size() - j + i <= n)
+      if (i == 0 && j == 0)
+        continue;
+      ll bx = i - 1;
+      ll by = j - 1;
+      if (bx >= 0)
       {
-        dp[i + 1][j + 1] = 1;
-      }
-    }
-    bool can = false;
-    rep(j, t.size() + 1)
-    {
-      can |= dp[i][j];
-    }
-    // tの先頭を付ける
-    if (can && i + t.size() <= n && s[i] == t[0])
-    {
-      dp[i + 1][1] = 1;
-    }
-    // tの末尾が使用できるなら次tの何文字目でも行ける
-    if (dp[i][t.size()])
-    {
-      rep(z, t.size())
-      {
-        if (t.size() - z + i <= n && t[z] == s[i])
+        rep(z, 26000)
         {
-          dp[i + 1][z + 1] = 1;
+          if (dp[bx][j][z])
+          {
+            dp[i][j][z + (a[i][j] - b[i][j])] = 1;
+            dp[i][j][z + (b[i][j] - a[i][j])] = 1;
+          }
+        }
+      }
+      if (by >= 0)
+      {
+        rep(z, 26000)
+        {
+          if (dp[i][by][z])
+          {
+            dp[i][j][z + (a[i][j] - b[i][j])] = 1;
+            dp[i][j][z + (b[i][j] - a[i][j])] = 1;
+          }
         }
       }
     }
   }
-  if (dp[n][t.size()])
+  ll ans = INF;
+  rep(z, 26000)
   {
-    cout << "Yes" << endl;
+    if (dp[h - 1][w - 1][z])
+    {
+      chmin(ans, abs(z - 13000));
+    }
   }
-  else
-  {
-    cout << "No" << endl;
-  }
+  cout << abs(ans) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
+__int128
 
-__builtin_popcount(i)*/
+//ソート済み
+v.erase(unique(v.begin(), v.end()), v.end());
+__builtin_popcount(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/
