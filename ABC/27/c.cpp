@@ -69,6 +69,37 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  map<ll, ll> dp;
+  auto dfs = [&](auto dfs, ll now) -> ll
+  {
+    if (now > n)
+    {
+      return dp[now] = 1;
+    }
+    if (dp.count(now))
+    {
+      return dp[now];
+    }
+    ll grandy = INF;
+    chmin(grandy, dfs(dfs, now * 2));
+    chmin(grandy, dfs(dfs, now * 2 + 1));
+
+    return dp[now] = 1 - grandy;
+  };
+  if (dfs(dfs, 1))
+  {
+    cout << "Takahashi" << endl;
+  }
+  else
+  {
+    cout << "Aoki" << endl;
+  }
+  for(auto p:dp){
+    cout<<p.F<<" "<<p.S<<endl;
+  }
+  
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

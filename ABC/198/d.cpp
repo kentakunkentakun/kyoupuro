@@ -69,6 +69,77 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  string s1, s2, s3;
+  cin >> s1 >> s2 >> s3;
+  ll iter = 0;
+  map<char, ll> m;
+  repR(i, s1.size())
+  {
+    if (!m.count(s1[i]))
+    {
+      m[s1[i]] = iter;
+      iter++;
+    }
+  }
+  repR(i, s2.size())
+  {
+    if (!m.count(s2[i]))
+    {
+      m[s2[i]] = iter;
+      iter++;
+    }
+  }
+  repR(i, s3.size())
+  {
+    if (!m.count(s3[i]))
+    {
+      m[s3[i]] = iter;
+      iter++;
+    }
+  }
+  if (iter > 10)
+  {
+    cout << "UNSOLVABLE" << endl;
+    return 0;
+  }
+  vll tmp(10);
+  rep(i, 10)
+  {
+    tmp[i] = i;
+  }
+  do
+  {
+    ll a1 = 0;
+    ll a2 = 0;
+    ll a3 = 0;
+    ll ten = 1;
+    repR(i, s1.size())
+    {
+      a1 += tmp[m[s1[i]]] * ten;
+      ten *= 10;
+    }
+    ten = 1;
+    repR(i, s2.size())
+    {
+      a2 += tmp[m[s2[i]]] * ten;
+      ten *= 10;
+    }
+    ten = 1;
+    repR(i, s3.size())
+    {
+      a3 += tmp[m[s3[i]]] * ten;
+      ten *= 10;
+    }
+
+    if (a1 + a2 == a3 && to_string(a1).size() == s1.size() && to_string(a2).size() == s2.size() && to_string(a3).size() == s3.size() && a1 != 0 && a2 != 0 && a3 != 0)
+    {
+      cout << a1 << endl;
+      cout << a2 << endl;
+      cout << a3 << endl;
+      return 0;
+    }
+  } while (next_permutation(all(tmp)));
+  cout << "UNSOLVABLE" << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

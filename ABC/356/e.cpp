@@ -61,113 +61,60 @@ inline bool chmin(T &a, T b)
   }
   return false;
 }
-// Union Find
-
-template <typename T>
-struct UnionFind
-{
-  vector<T> par;
-  vector<T> rank;
-  vector<T> sizes;
-  UnionFind(T n) : par(n), rank(n, 0), sizes(n, 1)
-  {
-    for (T i = 0; i < n; i++)
-    {
-      par[i] = i;
-    }
-  }
-  T root(T x)
-  {
-    return par[x] == x ? x : par[x] = root(par[x]);
-  }
-
-  bool unite(T x, T y)
-  {
-    if (x == y)
-      return false;
-    x = root(x);
-    y = root(y);
-    if (x == y)
-      return false;
-    if (rank[x] < rank[y])
-      swap(x, y);
-    if (rank[x] == rank[y])
-      rank[x]++;
-    par[y] = x;
-    sizes[x] = sizes[x] + sizes[y];
-    return true;
-  }
-  bool same(T x, T y)
-  {
-    return root(x) == root(y);
-  }
-  T size(T x)
-  {
-    return sizes[root(x)];
-  }
-};
-
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
   ll n;
   cin >> n;
-  vll p(n), q(n);
-  rep(i, n) cin >> p[i];
-  rep(i, n) cin >> q[i];
-  UnionFind<ll> uf(n);
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  sort(all(a));
+  vll s(0);
+  s.pb(0);
+  ll now = a[0];
   rep(i, n)
   {
-    p[i]--;
-    q[i]--;
-    uf.unite(p[i], q[i]);
+    if (now != a[i])
+    {
+      now = a[i];
+      s.pb(i);
+    }
+  }
+  map<ll, ll> m;
+  rep(i, n)
+  {
+    m[a[i]]++;
   }
 
-  auto culc = [&](ll s) -> ll
+  ll ans = 0;
+  rep(i, s.size())
   {
-    vvvll dp(s + 1, vvll(2, vll(2, 0)));
-    dp[0][0][0] = 1;
 
-    rep(i, s)
+    for (int x = 1; x * a[s[i]] <= 1e6; x++)
     {
-      if (i == 0)
-      {
-        // 1番目使用
-        dp[i + 1][1][1] += dp[0][0][0];
-        // 未使用
-        dp[i + 1][0][0] += dp[0][0][0];
-      }
+      ll cnt = 0;
+      if (x != 1)
+        cnt = lower_bound(all(a), (x + 1) * a[s[i]]) - lower_bound(all(a), x * a[s[i]]);
       else
-      {
-        rep(z, 2)
-        {
-          dp[i + 1][1][z] += dp[i][0][z];
-          dp[i + 1][1][z] %= MOD;
-          dp[i + 1][1][z] += dp[i][1][z];
-          dp[i + 1][1][z] %= MOD;
-          dp[i + 1][0][z] += dp[i][1][z];
-          dp[i + 1][0][z] %= MOD;
-        }
-      }
+        cnt = lower_bound(all(a), (x + 1) * a[s[i]]) - lower_bound(all(a), x * a[s[i]] + 1);
+      ans += cnt * x * m[a[s[i]]];
     }
-    return (dp[s][1][0] + dp[s][1][1] + dp[s][0][1]) % MOD;
-  };
-  vll ch(n, false);
-  ll ans = 1;
-  rep(i, n)
+  }
+  for (auto [v, cnt] : m)
   {
-    ll root = uf.root(i);
-    if (!ch[root])
-    {
-      ch[root] = true;
-      ans *= culc(uf.size(root));
-      ans %= MOD;
-    }
+    ans += (cnt - 1) * cnt / 2;
   }
   cout << ans << endl;
-};
-
+}
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
@@ -177,4 +124,9 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)*/
+__builtin_popcount(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

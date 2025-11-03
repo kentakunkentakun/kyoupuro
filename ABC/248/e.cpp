@@ -61,6 +61,17 @@ inline bool chmin(T &a, T b)
   }
   return false;
 }
+ll dx[4] = {0, 1, 0, -1};
+ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
+
 // Union Find
 
 template <typename T>
@@ -106,68 +117,87 @@ struct UnionFind
     return sizes[root(x)];
   }
 };
-
-ll dx[4] = {0, 1, 0, -1};
-ll dy[4] = {1, 0, -1, 0};
+// gcd lcm
+ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a; }
 int main()
 {
-  ll n;
-  cin >> n;
-  vll p(n), q(n);
-  rep(i, n) cin >> p[i];
-  rep(i, n) cin >> q[i];
-  UnionFind<ll> uf(n);
+  ll n, k;
+  cin >> n >> k;
+
+  vll x(n), y(n);
+
   rep(i, n)
   {
-    p[i]--;
-    q[i]--;
-    uf.unite(p[i], q[i]);
+    cin >> x[i] >> y[i];
   }
-
-  auto culc = [&](ll s) -> ll
+  if (k == 1)
   {
-    vvvll dp(s + 1, vvll(2, vll(2, 0)));
-    dp[0][0][0] = 1;
-
-    rep(i, s)
-    {
-      if (i == 0)
-      {
-        // 1番目使用
-        dp[i + 1][1][1] += dp[0][0][0];
-        // 未使用
-        dp[i + 1][0][0] += dp[0][0][0];
-      }
-      else
-      {
-        rep(z, 2)
-        {
-          dp[i + 1][1][z] += dp[i][0][z];
-          dp[i + 1][1][z] %= MOD;
-          dp[i + 1][1][z] += dp[i][1][z];
-          dp[i + 1][1][z] %= MOD;
-          dp[i + 1][0][z] += dp[i][1][z];
-          dp[i + 1][0][z] %= MOD;
-        }
-      }
-    }
-    return (dp[s][1][0] + dp[s][1][1] + dp[s][0][1]) % MOD;
-  };
-  vll ch(n, false);
-  ll ans = 1;
+    cout << "Infinity" << endl;
+    return 0;
+  }
+  // 正負,bunshi,bunbo i
+  map<tuple<ll, ll, ll>, vector<pll>> m;
   rep(i, n)
   {
-    ll root = uf.root(i);
-    if (!ch[root])
+    for (int j = i + 1; j < n; j++)
     {
-      ch[root] = true;
-      ans *= culc(uf.size(root));
-      ans %= MOD;
+      ll seihu = 1;
+      ll bunshi = y[i] - y[j];
+      ll bunbo = x[i] - x[j];
+      if (bunshi < 0 && bunbo < 0)
+      {
+        bunshi *= -1;
+        bunbo *= -1;
+      }
+      else if (bunshi < 0)
+      {
+        bunshi *= -1;
+        seihu = 0;
+      }
+      else if (bunbo < 0)
+      {
+        bunbo *= -1;
+        seihu = 0;
+      }
+      ll gc = gcd(bunshi, bunbo);
+
+      bunshi /= gc;
+      bunbo /= gc;
+      if (bunshi == 0)
+      {
+        bunbo = 1;
+        seihu = 1;
+      }
+      if (bunbo == 0)
+      {
+        bunshi = 1;
+        seihu = 1;
+      }
+      m[{seihu, bunshi, bunbo}].pb({i, j});
+    }
+  }
+  ll ans = 0;
+  for (auto &p : m)
+  {
+    auto v = p.S;
+    UnionFind<ll> uf(n);
+    for (auto [i, j] : v)
+    {
+      uf.unite(i, j);
+    }
+    set<ll> s;
+    rep(i, n)
+    {
+      ll root = uf.root(i);
+      if (uf.size(root) >= k && !s.count(root))
+      {
+        ans++;
+        s.insert(root);
+      }
     }
   }
   cout << ans << endl;
-};
-
+}
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
@@ -177,4 +207,9 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)*/
+__builtin_popcount(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

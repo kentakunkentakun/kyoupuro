@@ -22,12 +22,13 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
+const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -62,54 +63,101 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
-  ll n, m;
-  cin >> n >> m;
-  vvll t(n, vll(0));
-  rep(i, m)
+  ll q;
+  cin >> q;
+  vector<pair<string, ll>> query(q);
+  rep(i, q)
   {
-    ll u, v;
-    cin >> u >> v;
-    u--;
-    v--;
-    t[u].pb(v);
-    t[v].pb(u);
+    cin >> query[i].F;
+    if (query[i].F != "DELETE")
+    {
+      cin >> query[i].S;
+    }
+    else
+    {
+      query[i].S = -1;
+    }
   }
-  ll ans = 0;
-  vb used(n, false);
-  auto dfs = [&](auto dfs, ll now, ll par) -> void
+  ll cnt = 1;
+  map<ll, ll> load;
+  // iter,cnt;
+  map<ll, ll> save;
+  map<ll, ll> save_b;
+  repR(i, q)
   {
-    ans++;
-    if (ans == 1000000)
+    if (query[i].F == "DELETE")
+      cnt++;
+    if (query[i].F == "LOAD")
     {
-      return;
+      chmax(load[query[i].S], cnt);
+      cnt = 1;
     }
-    used[now] = true;
-    for (auto nx : t[now])
+    if (query[i].F == "SAVE")
     {
-      if (nx != par && !used[nx])
-      {
-        dfs(dfs, nx, now);
-        if (ans == 1000000)
-        {
-          return;
-        }
-      }
+      save[i] = load[query[i].S];
+      chmax(save_b[query[i].S], save[i]);
+      chmax(save[i], save_b[query[i].S]);
+      load[query[i].S] = 0;
     }
-    if (ans == 1000000)
+  }
+  vll tmp(0);
+  map<ll, vll> ssd;
+  rep(i, q)
+  {
+    string qry = query[i].F;
+    ll x = query[i].S;
+    if (qry == "ADD")
     {
-      return;
+      tmp.pb(x);
     }
-    used[now] = false;
-  };
-  dfs(dfs, 0, -1);
-  cout << ans << endl;
+    if (qry == "SAVE")
+    {
+      ll count = save[i];
+      int k = min<ll>(count, (ll)tmp.size());
+      vector<ll> last(tmp.end() - k, tmp.end());
+      ssd[x] = last;
+    }
+    if (qry == "LOAD")
+    {
+      tmp = ssd[x];
+    }
+    if (qry == "DELETE")
+    {
+      if (tmp.size())
+        tmp.pop_back();
+    }
+    if (tmp.size())
+    {
+      cout << tmp.back() << endl;
+    }
+    else
+    {
+      cout << -1 << endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
+__int128
 
-__builtin_popcount(i)*/
+//ソート済み
+v.erase(unique(v.begin(), v.end()), v.end());
+__builtin_popcount(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

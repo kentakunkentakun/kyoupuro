@@ -28,6 +28,8 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
+using vvvvll = vector<vvvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -66,11 +68,47 @@ int main()
 {
   string s;
   cin >> s;
-  ll ma = s.size() * 9;
-  for (int i = 1; i <= ma; i++)
+  ll n = s.size();
+  ll init = 1;
+  rep(i, n - 1) init *= 10;
+  ll ans = 0;
+  rep(u, 150)
   {
-    vector<vector<vector<ll>>> dp(s.size() + 1, vvll(i));
+    if (u == 0)
+      continue;
+    vvvvll dp(n + 1, vvvll(u + 5, vvll(200, vll(2, 0))));
+    // iまでみて、jで割っている、z桁和、
+    dp[0][0][0][0] = 1;
+    ll ten = init;
+    rep(i, n)
+    {
+      rep(j, u)
+      {
+        rep(k, 150)
+        {
+          rep(z, 10)
+          {
+            ll nv = j + ten * z;
+            ll nk = k + z;
+            nv %= u;
+            dp[i + 1][nv][nk][1] += dp[i][j][k][1];
+            if (z < (s[i] - '0'))
+            {
+              dp[i + 1][nv][nk][1] += dp[i][j][k][0];
+            }
+            if (z == (s[i] - '0'))
+            {
+              dp[i + 1][nv][nk][0] += dp[i][j][k][0];
+            }
+          }
+        }
+      }
+      ten /= 10;
+    }
+    // cout << dp[n][0][u][1] << " " << dp[n][0][u][0] << " " << u << endl;
+    ans += dp[n][0][u][1] + dp[n][0][u][0];
   }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -64,6 +64,27 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  string s;
+  cin >> s;
+  ll n = s.size();
+  vll d(s.size() + 1);
+  ll ten = 1;
+  repR(i, n)
+  {
+    ll a = ten * (s[i] - '0') % 2019;
+    d[i] += (d[i + 1] + a);
+    d[i] %= 2019;
+    ten *= 10;
+    ten %= 2019;
+  }
+  vll cnt(2019);
+  ll ans = 0;
+  repR(i, n + 1)
+  {
+    ans += cnt[d[i]];
+    cnt[d[i]]++;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -61,7 +61,25 @@ inline bool chmin(T &a, T b)
   }
   return false;
 }
-// Union Find
+ll dx[4] = {0, 1, 0, -1};
+ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
+struct edge
+{
+  ll u, v, cost;
+};
+bool comp(const edge &e1, const edge &e2)
+{
+  return e1.cost < e2.cost;
+}
+// Union Finds
 
 template <typename T>
 struct UnionFind
@@ -107,67 +125,41 @@ struct UnionFind
   }
 };
 
-ll dx[4] = {0, 1, 0, -1};
-ll dy[4] = {1, 0, -1, 0};
 int main()
 {
-  ll n;
-  cin >> n;
-  vll p(n), q(n);
-  rep(i, n) cin >> p[i];
-  rep(i, n) cin >> q[i];
-  UnionFind<ll> uf(n);
-  rep(i, n)
+  ll n, m;
+  cin >> n >> m;
+  vector<edge> e(m);
+  rep(i, m)
   {
-    p[i]--;
-    q[i]--;
-    uf.unite(p[i], q[i]);
+    ll a, b, c;
+    cin >> a >> b >> c;
+    a--;
+    b--;
+    e[i] = {a, b, c};
   }
-
-  auto culc = [&](ll s) -> ll
+  sort(all(e), comp);
+  UnionFind<ll> uf(n);
+  set<ll> used;
+  ll ans = 0;
+  rep(i, m)
   {
-    vvvll dp(s + 1, vvll(2, vll(2, 0)));
-    dp[0][0][0] = 1;
-
-    rep(i, s)
+    edge now = e[i];
+    if (!uf.same(now.u, now.v))
     {
-      if (i == 0)
-      {
-        // 1番目使用
-        dp[i + 1][1][1] += dp[0][0][0];
-        // 未使用
-        dp[i + 1][0][0] += dp[0][0][0];
-      }
-      else
-      {
-        rep(z, 2)
-        {
-          dp[i + 1][1][z] += dp[i][0][z];
-          dp[i + 1][1][z] %= MOD;
-          dp[i + 1][1][z] += dp[i][1][z];
-          dp[i + 1][1][z] %= MOD;
-          dp[i + 1][0][z] += dp[i][1][z];
-          dp[i + 1][0][z] %= MOD;
-        }
-      }
+      uf.unite(now.u, now.v);
+      used.insert(i);
     }
-    return (dp[s][1][0] + dp[s][1][1] + dp[s][0][1]) % MOD;
-  };
-  vll ch(n, false);
-  ll ans = 1;
-  rep(i, n)
-  {
-    ll root = uf.root(i);
-    if (!ch[root])
+    else
     {
-      ch[root] = true;
-      ans *= culc(uf.size(root));
-      ans %= MOD;
+      if (now.cost > 0)
+      {
+        ans += now.cost;
+      }
     }
   }
   cout << ans << endl;
-};
-
+}
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
@@ -177,4 +169,9 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)*/
+__builtin_popcount(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

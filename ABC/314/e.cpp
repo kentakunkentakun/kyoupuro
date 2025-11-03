@@ -61,113 +61,67 @@ inline bool chmin(T &a, T b)
   }
   return false;
 }
-// Union Find
-
-template <typename T>
-struct UnionFind
-{
-  vector<T> par;
-  vector<T> rank;
-  vector<T> sizes;
-  UnionFind(T n) : par(n), rank(n, 0), sizes(n, 1)
-  {
-    for (T i = 0; i < n; i++)
-    {
-      par[i] = i;
-    }
-  }
-  T root(T x)
-  {
-    return par[x] == x ? x : par[x] = root(par[x]);
-  }
-
-  bool unite(T x, T y)
-  {
-    if (x == y)
-      return false;
-    x = root(x);
-    y = root(y);
-    if (x == y)
-      return false;
-    if (rank[x] < rank[y])
-      swap(x, y);
-    if (rank[x] == rank[y])
-      rank[x]++;
-    par[y] = x;
-    sizes[x] = sizes[x] + sizes[y];
-    return true;
-  }
-  bool same(T x, T y)
-  {
-    return root(x) == root(y);
-  }
-  T size(T x)
-  {
-    return sizes[root(x)];
-  }
-};
-
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
+
 int main()
 {
-  ll n;
-  cin >> n;
-  vll p(n), q(n);
-  rep(i, n) cin >> p[i];
-  rep(i, n) cin >> q[i];
-  UnionFind<ll> uf(n);
+  cout << fixed << setprecision(10);
+
+  ll n, m;
+  cin >> n >> m;
+  vvll s(n, vll(0));
+  vector<double> c(n);
+  vector<double> p(n);
+  vll zero(n);
   rep(i, n)
   {
-    p[i]--;
-    q[i]--;
-    uf.unite(p[i], q[i]);
-  }
-
-  auto culc = [&](ll s) -> ll
-  {
-    vvvll dp(s + 1, vvll(2, vll(2, 0)));
-    dp[0][0][0] = 1;
-
-    rep(i, s)
+    cin >> c[i] >> p[i];
+    rep(P, p[i])
     {
-      if (i == 0)
+      ll S;
+      cin >> S;
+      if (S == 0)
       {
-        // 1番目使用
-        dp[i + 1][1][1] += dp[0][0][0];
-        // 未使用
-        dp[i + 1][0][0] += dp[0][0][0];
+        zero[i]++;
       }
       else
-      {
-        rep(z, 2)
-        {
-          dp[i + 1][1][z] += dp[i][0][z];
-          dp[i + 1][1][z] %= MOD;
-          dp[i + 1][1][z] += dp[i][1][z];
-          dp[i + 1][1][z] %= MOD;
-          dp[i + 1][0][z] += dp[i][1][z];
-          dp[i + 1][0][z] %= MOD;
-        }
-      }
-    }
-    return (dp[s][1][0] + dp[s][1][1] + dp[s][0][1]) % MOD;
-  };
-  vll ch(n, false);
-  ll ans = 1;
-  rep(i, n)
-  {
-    ll root = uf.root(i);
-    if (!ch[root])
-    {
-      ch[root] = true;
-      ans *= culc(uf.size(root));
-      ans %= MOD;
+        s[i].pb(S);
     }
   }
-  cout << ans << endl;
-};
-
+  vector<double> dp(m + 1, -1);
+  auto dfs = [&](auto dfs, ll point) -> double
+  {
+    if (point >= m)
+    {
+      return 0.0;
+    }
+    if (dp[point] != -1)
+    {
+      return dp[point];
+    }
+    double cost = 1e9;
+    rep(i, n)
+    {
+      double tmp = 0.0;
+      rep(j, s[i].size())
+      {
+        tmp += dfs(dfs, point + s[i][j]);
+      }
+      chmin(cost, tmp / (p[i] - zero[i]) + c[i] * p[i] / (p[i] - zero[i]));
+    }
+    return dp[point] = cost;
+  };
+  cout << dfs(dfs, 0) << endl;
+}
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
@@ -177,4 +131,9 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)*/
+__builtin_popcount(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/
