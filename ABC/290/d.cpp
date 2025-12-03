@@ -71,8 +71,31 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+// gcd lcm
+ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a; }
+ll lcm(ll a, ll b) { return a / gcd(a, b) * b; }
+
 int main()
 {
+  ll t;
+  cin >> t;
+  vll ans(t);
+  rep(T, t)
+  {
+    ll n, d, k;
+    cin >> n >> d >> k;
+    k--;
+    d %= n;
+    ll g = gcd(n, d);
+    ll syuki = n / g;
+    ll a = k % syuki;
+    ll b = k / syuki;
+    ans[T] = (b + a * d) % n;
+  }
+  rep(i, t)
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

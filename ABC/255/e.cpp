@@ -79,28 +79,38 @@ int main()
   rep(i, n - 1) cin >> s[i];
   vll x(m);
   rep(i, m) cin >> x[i];
-  map<ll, ll> v;
-  v[0]++;
+  map<pll, ll> mp;
+  mp[{0, 1}]++;
   ll now = 0;
   rep(i, n - 1)
   {
-    now = s[i] - now;
-    v[now]++;
+    ll nx = s[i] - now;
+    mp[{nx, i % 2}]++;
+    now = nx;
   }
+
   ll ans = 0;
-  for (auto [value, cnt] : v)
+  for (auto [v, cnt] : mp)
   {
     rep(i, m)
     {
       ll res = 0;
+      ll xv = x[i] - v.F;
+      if (v.S == 0)
+        xv *= -1;
+
       rep(j, m)
       {
-        ll nv = value + (x[j] - x[i]);
-        if (v.count(nv))
+        if (mp.count({x[j] + xv, 0}))
         {
-          res += v[nv];
+          res += mp[{x[j] + xv, 0}];
+        }
+        if (mp.count({x[j] - xv, 1}))
+        {
+          res += mp[{x[j] - xv, 1}];
         }
       }
+
       chmax(ans, res);
     }
   }

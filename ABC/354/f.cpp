@@ -64,6 +64,49 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll t;
+  cin >> t;
+  rep(T, t)
+  {
+    ll n;
+    cin >> n;
+    vll a(n);
+    rep(i, n) cin >> a[i];
+    vll dp(n + 1, INF);
+    vll cnt(n, 0);
+    rep(i, n)
+    {
+      auto iter = lower_bound(all(dp), a[i]) - dp.begin();
+      dp[iter] = a[i];
+      cnt[i] = iter;
+    }
+    ll len = lower_bound(all(dp), INF) - dp.begin();
+    vll ra = a;
+    reverse(all(ra));
+    rep(i, n)
+    {
+      ra[i] *= -1;
+    }
+    vll rdp(n + 1, INF);
+    vll back_cnt(n, 0);
+    rep(i, n)
+    {
+      auto iter = lower_bound(all(rdp), ra[i]) - rdp.begin();
+      rdp[iter] = ra[i];
+      back_cnt[n - i - 1] = iter;
+    }
+    vll ans(0);
+    rep(i, n)
+    {
+      if (cnt[i] + back_cnt[i] + 1 == len)
+      {
+        ans.pb(i + 1);
+      }
+    }
+    sort(all(ans));
+    cout << ans.size() << endl;
+    printArray(ans);
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

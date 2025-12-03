@@ -62,8 +62,56 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct edge
+{
+  ll to, cost;
+};
 int main()
 {
+  ll n;
+  cin >> n;
+  vector<vector<edge>> t(n, vector<edge>(0));
+  rep(i, n - 1)
+  {
+    ll u, v, c;
+    cin >> u >> v >> c;
+    u--;
+    v--;
+    t[u].pb({v, c});
+    t[v].pb({u, c});
+  }
+  vll dist(n, INF);
+  dist[0] = 0;
+  queue<ll> que;
+  que.push(0);
+  while (que.size())
+  {
+    ll now = que.front();
+    que.pop();
+    for (auto [nx, c] : t[now])
+    {
+      if (dist[nx] != INF)
+        continue;
+      dist[nx] = dist[now] ^ c;
+      que.push(nx);
+    }
+  }
+  ll ans = 0;
+  rep(i, 61)
+  {
+    ll zero = 0;
+    ll one = 0;
+    rep(j, n)
+    {
+      if (dist[j] >> i & 1)
+        one++;
+      else
+        zero++;
+    }
+    ans += (one * zero * ((1LL << i) % MOD)) % MOD;
+    ans %= MOD;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

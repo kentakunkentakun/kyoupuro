@@ -64,6 +64,28 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll m = 100000000;
+  ll n;
+  cin >> n;
+  vll a(n);
+  rep(i, n)
+  {
+    cin >> a[i];
+  }
+  sort(all(a));
+  vll tmp(0);
+  ll ans = 0;
+  ll sum = 0;
+  rep(i, n)
+  {
+    ll k = m - a[i];
+    ll cnt = tmp.end() - lower_bound(all(tmp), k);
+
+    ans += sum + tmp.size() * a[i] - cnt * m;
+    sum += a[i];
+    tmp.pb(a[i]);
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

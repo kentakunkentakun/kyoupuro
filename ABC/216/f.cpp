@@ -28,6 +28,7 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -64,6 +65,49 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vector<pll> a(n);
+  vll b(n), t(n);
+  rep(i, n)
+  {
+    cin >> a[i].F;
+    a[i].S = i;
+  }
+  sort(all(a));
+  rep(i, n) cin >> b[i];
+  rep(i, n)
+  {
+    t[i] = b[a[i].S];
+  }
+  vvll dp(n + 1, vll(5005));
+  dp[0][0] = 1;
+  rep(i, n)
+  {
+    rep(j, 5001)
+    {
+      dp[i + 1][j] += dp[i][j];
+      dp[i + 1][j] %= MOD;
+      if (j + t[i] <= 5000)
+      {
+        dp[i + 1][j + t[i]] += dp[i][j];
+        dp[i + 1][j + t[i]] %= MOD;
+      }
+    }
+  }
+  ll ans = 0;
+  rep(i, n)
+  {
+    for (int j = 0; j <= a[i].F; j++)
+    {
+      if (j + t[i] <= a[i].F)
+      {
+        ans += dp[i][j];
+        ans %= MOD;
+      }
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

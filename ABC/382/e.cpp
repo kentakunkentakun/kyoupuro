@@ -62,109 +62,59 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
-struct LazySegmentTree
-{
-private:
-  int n;           // 葉の数（2 の冪）
-  vector<ll> node; // 各区間の現在の総和
-  vector<ll> lazy; // 要素あたりの未反映加算量 Δ
-
-  /* 子へ押し下げる */
-  void push(int k)
-  {
-    if (lazy[k] == 0 || k >= n)
-      return;                   // 葉 or 仕事なし
-    apply(k << 1, lazy[k]);     // 左子
-    apply(k << 1 | 1, lazy[k]); // 右子
-    lazy[k] = 0;
-  }
-
-  /* ノード k (区間長 len) へ Δ を適用 */
-  inline void apply(int k, ll delta)
-  {
-    node[k] = delta; // 総和を更新
-    lazy[k] = delta; // 子・孫への先送り分
-  }
-
-public:
-  /*--- コンストラクタ ---*/
-  LazySegmentTree(const vector<ll> &v)
-  {
-    int sz = (int)v.size();
-    n = 1;
-    while (n < sz)
-      n <<= 1;
-    node.assign(2 * n, 0);
-    lazy.assign(2 * n, 0);
-
-    for (int i = 0; i < sz; ++i)
-      node[i + n] = v[i];
-    for (int i = n - 1; i > 0; --i)
-      node[i] = node[i << 1] + node[i << 1 | 1];
-  }
-
-  /*--- 区間 [a,b) をxに ---*/
-  void assign(int a, int b, ll x, int k = 1, int l = 0, int r = -1)
-  {
-    if (r == -1)
-      r = n;
-    if (b <= l || r <= a)
-      return; // 完全に外
-    if (a <= l && r <= b)
-    { // 完全に内
-      apply(k, x);
-      return;
-    }
-    push(k); // 部分的なら子へ
-    int m = (l + r) >> 1;
-    assign(a, b, x, k << 1, l, m);
-    assign(a, b, x, k << 1 | 1, m, r);
-    node[k] = max(node[k << 1], node[k << 1 | 1]);
-  }
-
-  /*--- 区間 [a,b) の最大値 ---*/
-  ll getmax(int a, int b, int k = 1, int l = 0, int r = -1)
-  {
-    if (r == -1)
-      r = n;
-    if (b <= l || r <= a)
-      return 0; // 完全に外
-    if (a <= l && r <= b)
-      return node[k]; // 完全に内
-    push(k);          // 子に潜る前に伝播
-    int m = (l + r) >> 1;
-    return max(getmax(a, b, k << 1, l, m),
-               getmax(a, b, k << 1 | 1, m, r));
-  }
-};
 
 int main()
 {
-  ll h, w, n;
-  cin >> h >> w >> n;
-  vector<tuple<ll, ll, ll, ll>> t(n);
+  cout << fixed << setprecision(10);
+
+  ll n, x;
+  cin >> n >> x;
+  vector<double> p(n);
+  rep(i, n) cin >> p[i];
+
+  vector<vector<double>> t(n + 1, vector<double>(n + 1, 0));
+  t[0][0] = 1;
   rep(i, n)
   {
-    ll r, c, l;
-    cin >> r >> c >> l;
-    t[i] = {r, c, l, i};
+    rep(j, n + 1)
+    {
+      if (t[i][j] == 0)
+        continue;
+      t[i + 1][j + 1] += t[i][j] * p[i] / 100;
+      t[i + 1][j] += t[i][j] * (100 - p[i]) / 100;
+    }
   }
-  sort(rall(t));
-  vector<ll> ini(w + 1);
-  LazySegmentTree seg(ini);
-  vll ans(n);
-  rep(i, n)
+  vector<double> prob(min(x + 1, n + 1));
+  rep(i, n + 1)
   {
-    auto [r, c, l, iter] = t[i];
-    ll ma = seg.getmax(c, c + l);
-    ans[iter] = h - ma;
-    ma++;
-    seg.assign(c, c + l, ma);
+    if (i <= x)
+      prob[i] = t[n][i];
+    else
+      prob[x] += t[n][i];
   }
-  rep(i, n)
+  vector<double> dp(x + 1, -1);
+  auto dfs = [&](auto dfs, int remain) -> double
   {
-    cout << ans[i] << endl;
-  }
+    if (remain == 0)
+    {
+      return dp[remain] = 0.0;
+    }
+    if (remain < 0)
+    {
+      return 0.0;
+    }
+    if (dp[remain] != -1)
+      return dp[remain];
+    double k = 1.0 / (1 - prob[0]);
+    rep(i, prob.size())
+    {
+      if (i == 0)
+        continue;
+      k += prob[i] * (dfs(dfs, remain - i)) * 1.0 / (1 - prob[0]);
+    }
+    return dp[remain] = k;
+  };
+  cout << dfs(dfs, x) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

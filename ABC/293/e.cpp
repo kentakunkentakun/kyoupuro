@@ -63,16 +63,8 @@ int main()
 {
   ll a, x, m;
   cin >> a >> x >> m;
-  ll ans = 1;
-  ll res = 0;
-  while (x > 0)
-  {
-    if (x & 1)
-      res += ans * a % m;
-    a = a * a % m;
-    x >>= 1;
-  }
-  cout << res << endl;
+  ll res = 1;
+  
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

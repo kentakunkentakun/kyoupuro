@@ -62,8 +62,123 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+template <typename T>
+struct SegmentTree
+{
+  typedef function<T(T, T)> F;
+  int n; // 要素数
+  F f;   // 2項演算
+  T e;   // 単位元
+  vector<T> dat;
+  SegmentTree(int n_, F f, T e) : f(f), e(e)
+  {
+    init(n_);
+    build();
+  }
+  SegmentTree(int n_, F f, T e, vector<T> &v) : f(f), e(e)
+  {
+    init(n_);
+    build(n_, v);
+  }
+  void init(int n_)
+  {
+    n = 1;
+    while (n < n_)
+      n <<= 1;
+    dat.clear();
+    dat.resize(n << 1, e);
+  }
+  void build(int n_, const vector<T> &v)
+  {
+    for (int i = 0; i < n_; ++i)
+      dat[n + i] = v[i];
+    build();
+  }
+  void build()
+  {
+    for (int i = n - 1; i >= 1; --i)
+    {
+      dat[i] = f(dat[i << 1], dat[i << 1 | 1]);
+    }
+  }
+  void update(int k, const T &x)
+  {
+    dat[k += n] = x;
+    while (k >>= 1)
+    {
+      dat[k] = f(dat[k << 1], dat[k << 1 | 1]);
+    }
+  }
+  T query(int a, int b)
+  {
+    T l = e, r = e;
+    for (a += n, b += n; a < b; a >>= 1, b >>= 1)
+    {
+      if (a & 1)
+        l = f(l, dat[a++]);
+      if (b & 1)
+        r = f(dat[--b], r);
+    }
+    return f(l, r);
+  }
+};
+long long modpow(long long a, long long n, long long mod)
+{
+  a %= mod;
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
+
+// a^{-1} mod を計算する
+
+long long modinv(long long a, long long mod)
+{
+  return modpow(a, mod - 2, mod);
+}
 int main()
 {
+  ll n;
+  cin >> n;
+  map<pll, ll> m;
+  vector<ll> a(n);
+  rep(i, n) cin >> a[i];
+
+  vector<pll> p(n);
+  rep(i, n)
+  {
+    p[i] = {a[i], i};
+  }
+  sort(all(p));
+  rep(i, n)
+  {
+    m[{p[i].F, p[i].S}] = i;
+  }
+  SegmentTree<ll> seg(n, [](ll a, ll b)
+                      { return a + b; }, 0);
+  SegmentTree<ll> seg2(n, [](ll a, ll b)
+                       { return a + b; }, 0);
+  ll res = 0;
+  rep(i, n)
+  {
+    ll iter = m[{a[i], i}];
+    ll mi = seg2.query(0, iter) + 1;
+    mi *= 2;
+    mi--;
+    res += mi * a[i];
+    res %= MOD;
+    res += (seg.query(iter + 1, n) % MOD) * 2;
+    res %= MOD;
+    seg2.update(iter, 1);
+    seg.update(iter, a[i]);
+    cout << (res * modinv((i + 1) * (i + 1), MOD)) % MOD << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

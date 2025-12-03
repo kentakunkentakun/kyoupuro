@@ -64,10 +64,90 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, k;
+  cin >> n >> k;
+  vvll t(3, vll(n));
+  rep(i, 3)
+  {
+    rep(j, n) cin >> t[i][j];
+    sort(all(t[i]));
+  }
+  multiset<tuple<ll, ll, ll, ll>> s;
+  auto culc = [&](ll x, ll y, ll z) -> ll
+  {
+    return x * y + x * z + y * z;
+  };
+  vvll ano(3, vll(2));
+  ano[0][0] = 1;
+  ano[0][1] = 2;
+  ano[1][0] = 0;
+  ano[1][1] = 2;
+  ano[2][0] = 0;
+  ano[2][1] = 1;
+  vvll its(3, vll(3, n - 1));
+  auto mi = [&](vll &tmp, ll now) -> pll
+  {
+    ll res = -1;
+    ll iter = -1;
+    ll a0 = ano[now][0];
+    ll a1 = ano[now][1];
+    if (tmp[now] > 0)
+      if (chmax(res, culc(t[now][tmp[now] - 1], t[a0][tmp[a0]], t[a1][tmp[a1]])))
+      {
+        iter = now;
+      }
+    if (tmp[a0] > 0 && tmp[now] < tmp[a0])
+    {
+      if (chmax(res, culc(t[now][tmp[now]], t[a0][tmp[a0] - 1], t[a1][tmp[a1]])))
+      {
+        iter = a0;
+      }
+    }
+    if (tmp[a1] > 0 && tmp[now] < tmp[a1])
+    {
+      if (chmax(res, culc(t[now][tmp[now]], t[a0][tmp[a0]], t[a1][tmp[a1] - 1])))
+      {
+        iter = a1;
+      }
+    }
+    return {res, iter};
+  };
+  s.insert({culc(t[0][n - 1], t[1][n - 1], t[2][n - 1]), n - 1, n - 1, n - 1});
+  while ((ll)s.size() < k)
+  {
+    rep(i, 3)
+    {
+      ll a0 = ano[i][0];
+      ll a1 = ano[i][1];
+      if (mi(its[i], i).F >= mi(its[a0], a0).F && mi(its[i], i).F >= mi(its[a1], a1).F)
+      {
+        auto [res, iter] = mi(its[i], i);
+        its[i][iter]--;
+        cout << res << " " << its[i][0] << " " << its[i][1] << " " << its[i][2] << endl;
+
+        s.insert({res, its[i][0], its[i][1], its[i][2]});
+        break;
+      }
+    }
+  }
+  for (auto [res, x, y, z] : s)
+  {
+    // cout << res << " " << x << " " << y << " " << z << endl;
+  }
+  while (s.size() > k)
+  {
+    s.erase(s.begin());
+  }
+  auto [res, x, y, z] = *s.begin();
+  cout << res << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
+  auto min3 = [&](ll x, ll y, ll z) ->
+  {
+    return min(x, min(y, z));
+  };
 
 cout << fixed << setprecision(10);
 

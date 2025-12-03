@@ -62,8 +62,122 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+template <typename T>
+struct SegmentTree
+{
+  typedef function<T(T, T)> F;
+  int n; // 要素数
+  F f;   // 2項演算
+  T e;   // 単位元
+  vector<T> dat;
+  SegmentTree(int n_, F f, T e) : f(f), e(e)
+  {
+    init(n_);
+    build();
+  }
+  SegmentTree(int n_, F f, T e, vector<T> &v) : f(f), e(e)
+  {
+    init(n_);
+    build(n_, v);
+  }
+  void init(int n_)
+  {
+    n = 1;
+    while (n < n_)
+      n <<= 1;
+    dat.clear();
+    dat.resize(n << 1, e);
+  }
+  void build(int n_, const vector<T> &v)
+  {
+    for (int i = 0; i < n_; ++i)
+      dat[n + i] = v[i];
+    build();
+  }
+  void build()
+  {
+    for (int i = n - 1; i >= 1; --i)
+    {
+      dat[i] = f(dat[i << 1], dat[i << 1 | 1]);
+    }
+  }
+  void update(int k, const T &x)
+  {
+    dat[k += n] = x;
+    while (k >>= 1)
+    {
+      dat[k] = f(dat[k << 1], dat[k << 1 | 1]);
+    }
+  }
+  T query(int a, int b)
+  {
+    T l = e, r = e;
+    for (a += n, b += n; a < b; a >>= 1, b >>= 1)
+    {
+      if (a & 1)
+        l = f(l, dat[a++]);
+      if (b & 1)
+        r = f(dat[--b], r);
+    }
+    return f(l, r);
+  }
+};
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  SegmentTree<ll> seg(n, [](ll a, ll b)
+                      { return a + b; }, 0);
+  // iter,左にある自分より小さい,右にある自分より小さい,左にある自分より大きい,右にある自分より大きい
+
+  map<ll, vector<tuple<ll, ll, ll, ll, ll>>> mp;
+  rep(i, n)
+  {
+    mp[a[i]].pb({i, -1, -1, -1, -1});
+  }
+  ll res = 0;
+  for (auto &[p, v] : mp)
+  {
+    for (auto &[iter, lmi, rmi, lma, rma] : v)
+    {
+      ll q = seg.query(iter, n);
+      res += q;
+      rmi = q;
+      lmi = seg.query(0, iter);
+    }
+    for (auto &[iter, lmi, rmi, lma, rma] : v)
+    {
+      seg.update(iter, 1);
+    }
+    for (auto &[iter, lmi, rmi, lma, rma] : v)
+    {
+      ll q = n - iter - seg.query(iter, n);
+      rma = q;
+      lma = iter - seg.query(0, iter);
+    }
+  }
+  ll iter = 0;
+  for (auto it = mp.rbegin(); it != mp.rend(); ++it)
+  {
+    auto [v, vec] = *it;
+    while (iter + v < m)
+    {
+      cout << res << endl;
+      iter++;
+    }
+    for (auto &[iter, lmi, rmi, lma, rma] : vec)
+    {
+      res -= rmi + rma;
+      res += lmi + lma;
+    }
+  }
+  while (iter < m)
+  {
+    cout << res << endl;
+    iter++;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

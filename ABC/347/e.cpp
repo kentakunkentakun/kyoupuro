@@ -66,37 +66,48 @@ int main()
 {
   ll n, q;
   cin >> n >> q;
-  vll sum(q + 1);
-  set<ll> s;
-  vvll a(n, vll(0));
+  vll x(q);
   rep(i, q)
   {
-    ll x;
-    cin >> x;
-    x--;
-    if (s.count(x))
-      s.erase(x);
-    else
-      s.insert(x);
-    a[x].pb(i);
-    sum[i + 1] = sum[i] + s.size();
+    cin >> x[i];
+    x[i]--;
   }
-  vll ans(n);
+  vll a(n);
+  vvll d(n, vll(0));
+  set<ll> s;
+  vll t(q + 1);
+  rep(i, q)
+  {
+    if (s.count(x[i]))
+    {
+      s.erase(x[i]);
+    }
+    else
+    {
+      s.insert(x[i]);
+    }
+    d[x[i]].pb(i);
+    t[i + 1] += s.size();
+  }
   rep(i, n)
   {
-    if (a[i].size() % 2)
-      a[i].pb(q);
-    rep(j, a[i].size())
+    if (d[i].size() % 2 == 1)
     {
-      if (j % 2)
-      {
-        ans[i] += sum[a[i][j]] - sum[a[i][j - 1]];
-      }
+      d[i].pb(q);
     }
   }
+  rep(i, q)
+  {
+    t[i + 1] += t[i];
+  }
   rep(i, n)
   {
-    cout << ans[i] << " ";
+    ll res = 0;
+    for (int j = 0; j < d[i].size(); j += 2)
+    {
+      res += t[d[i][j + 1]] - t[d[i][j]];
+    }
+    cout << res << " ";
   }
   cout << endl;
 }

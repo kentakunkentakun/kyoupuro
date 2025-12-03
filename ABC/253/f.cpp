@@ -64,6 +64,7 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

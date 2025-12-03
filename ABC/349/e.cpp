@@ -1,0 +1,188 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+#define ll long long
+#define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
+#define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
+#define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
+#define repR(i, n) for (ll i = n - 1; i >= 0LL; i--)
+#define all(v) (v).begin(), (v).end()
+#define rall(v) (v).rbegin(), (v).rend()
+#define F first
+#define S second
+#define pb push_back
+#define pu push
+#define COUT(x) cout << (x) << "\n"
+#define PQ(x) priority_queue<x>
+#define PQR(x) priority_queue<x, vector<x>, greater<x>>
+#define YES(n) cout << ((n) ? "YES\n" : "NO\n")
+#define Yes(n) cout << ((n) ? "Yes\n" : "No\n")
+#define mp make_pair
+#define sz(x) (ll)(x).size()
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef tuple<ll, ll, ll> tll;
+// const ll MOD = 1000000007LL;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+using vll = vector<ll>;
+using vb = vector<bool>;
+using vvb = vector<vb>;
+using vvll = vector<vll>;
+using vvvll = vector<vvll>;
+using vstr = vector<string>;
+using vc = vector<char>;
+using vvc = vector<vc>;
+template <class T>
+constexpr void printArray(const vector<T> &vec, char split = ' ')
+{
+  rep(i, vec.size())
+  {
+    cout << vec[i];
+    cout << (i == (int)vec.size() - 1 ? '\n' : split);
+  }
+}
+template <class T>
+inline bool chmax(T &a, T b)
+{
+  if (a < b)
+  {
+    a = b;
+    return true;
+  }
+  return false;
+}
+template <class T>
+inline bool chmin(T &a, T b)
+{
+  if (a > b)
+  {
+    a = b;
+    return true;
+  }
+  return false;
+}
+ll dx[4] = {0, 1, 0, -1};
+ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
+int main()
+{
+  vvll a(3, vll(3));
+  rep(i, 3) rep(j, 3) cin >> a[i][j];
+  vector<set<ll>> c(2);
+
+  auto isWin = [&](ll who) -> bool
+  {
+    rep(i, 3)
+    {
+      ll ch = true;
+      rep(j, 3)
+      {
+        if (!c[who].count(i * 3 + j))
+          ch = false;
+      }
+      if (ch)
+        return true;
+    }
+    rep(i, 3)
+    {
+      ll ch = true;
+      rep(j, 3)
+      {
+        if (!c[who].count(j * 3 + i))
+          ch = false;
+      }
+      if (ch)
+        return true;
+    }
+    if (c[who].count(0) && c[who].count(4) && c[who].count(8))
+    {
+      return true;
+    }
+    if (c[who].count(2) && c[who].count(4) && c[who].count(6))
+    {
+      return true;
+    }
+    return false;
+  };
+  auto dfs = [&](auto dfs, ll turn, ll t) -> ll
+  {
+    if (isWin(turn % 2))
+    {
+      return 1;
+    }
+    else if (isWin(1 - (turn % 2)))
+    {
+      return 0;
+    }
+    if (t == 9)
+    {
+      ll aoki = 0;
+      ll taka = 0;
+      for (auto p : c[0])
+      {
+        aoki += a[p / 3][p % 3];
+      }
+      for (auto p : c[1])
+      {
+        taka += a[p / 3][p % 3];
+      }
+      if (aoki > taka)
+      {
+        return 0;
+      }
+      else
+      {
+        return 1;
+      }
+    }
+    set<ll> s;
+    rep(i, 9)
+    {
+      if ((!c[0].count(i)) && (!c[1].count(i)))
+      {
+        c[turn].insert(i);
+        s.insert(dfs(dfs, 1 - turn, t + 1));
+        c[turn].erase(i);
+      }
+    }
+    rep(i, 10)
+    {
+      if (!s.count(i))
+      {
+        return i;
+      }
+    }
+    return 0;
+  };
+  if (dfs(dfs, 0, 0))
+  {
+    cout << "Takahashi" << endl;
+  }
+  else
+  {
+    cout << "Aoki" << endl;
+  }
+}
+/*cin.tie(0);
+ios::sync_with_studio(false);
+next_permutation(v.begin(), v.end())
+
+cout << fixed << setprecision(10);
+__int128
+
+//ソート済み
+v.erase(unique(v.begin(), v.end()), v.end());
+__builtin_popcount(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

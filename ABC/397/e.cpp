@@ -64,6 +64,58 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, k;
+  cin >> n >> k;
+  vvll t(n * k, vll(0));
+  rep(i, n * k - 1)
+  {
+    ll u, v;
+    cin >> u >> v;
+    u--;
+    v--;
+    t[u].pb(v);
+    t[v].pb(u);
+  }
+  bool ok = true;
+  auto dfs = [&](auto dfs, ll now, ll par) -> ll
+  {
+    if (!ok)
+    {
+      return 0;
+    }
+    ll cnt = 0;
+    ll positive_cnt = 0;
+    for (auto nx : t[now])
+    {
+      if (nx != par)
+      {
+        ll res = dfs(dfs, nx, now);
+        cnt += res;
+        if (res)
+          positive_cnt++;
+      }
+    }
+    if (positive_cnt > 2)
+    {
+      ok = false;
+      return 0;
+    }
+    if (positive_cnt == 2 && cnt != k - 1)
+    {
+      ok = false;
+      return 0;
+    }
+    return (cnt + 1) % k;
+  };
+  dfs(dfs, 0, -1);
+  if (ok)
+  {
+    cout << "Yes" << endl;
+  }
+  else
+  {
+    cout << "No" << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

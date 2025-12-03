@@ -62,8 +62,85 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
+
 int main()
 {
+  ll h, w;
+  cin >> h >> w;
+  set<pll> b;
+  queue<pll> que;
+  vector<vector<char>> s(h, vector<char>(w));
+  rep(i, h)
+  {
+    rep(j, w)
+    {
+      cin >> s[i][j];
+      if (s[i][j] == '#')
+      {
+        b.insert({i, j});
+        que.push({i, j});
+      }
+    }
+  }
+  auto canBlack = [&](ll nx, ll ny, ll h, ll w) -> bool
+  {
+    if (s[nx][ny] == '#')
+      return false;
+    ll cnt = 0;
+    rep(i, 4)
+    {
+      ll nnx = nx + dx[i];
+      ll nny = ny + dy[i];
+      if (isIn(nnx, nny, h, w) && s[nnx][nny] == '#')
+      {
+        cnt++;
+      }
+    }
+    return cnt == 1;
+  };
+  while (1)
+  {
+    vector<pll> up(0);
+    while (que.size())
+    {
+      auto [x, y] = que.front();
+      que.pop();
+      rep(z, 4)
+      {
+        ll nx = dx[z] + x;
+        ll ny = dy[z] + y;
+        if (isIn(nx, ny, h, w) && canBlack(nx, ny, h, w))
+        {
+          up.pb({nx, ny});
+        }
+      }
+    }
+    if (up.size() == 0)
+      break;
+    rep(i, up.size())
+    {
+      que.push(up[i]);
+      s[up[i].F][up[i].S] = '#';
+    }
+  }
+  ll ans = 0;
+  rep(i, h)
+  {
+    rep(j, w)
+    {
+      if (s[i][j] == '#')
+        ans++;
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

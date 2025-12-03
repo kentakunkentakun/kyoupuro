@@ -62,8 +62,177 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+template <typename T>
+struct SegmentTree
+{
+  typedef function<T(T, T)> F;
+  int n; // 要素数
+  F f;   // 2項演算
+  T e;   // 単位元
+  vector<T> dat;
+  SegmentTree(int n_, F f, T e) : f(f), e(e)
+  {
+    init(n_);
+    build();
+  }
+  SegmentTree(int n_, F f, T e, vector<T> &v) : f(f), e(e)
+  {
+    init(n_);
+    build(n_, v);
+  }
+  void init(int n_)
+  {
+    n = 1;
+    while (n < n_)
+      n <<= 1;
+    dat.clear();
+    dat.resize(n << 1, e);
+  }
+  void build(int n_, const vector<T> &v)
+  {
+    for (int i = 0; i < n_; ++i)
+      dat[n + i] = v[i];
+    build();
+  }
+  void build()
+  {
+    for (int i = n - 1; i >= 1; --i)
+    {
+      dat[i] = f(dat[i << 1], dat[i << 1 | 1]);
+    }
+  }
+  void update(int k, const T &x)
+  {
+    dat[k += n] = x;
+    while (k >>= 1)
+    {
+      dat[k] = f(dat[k << 1], dat[k << 1 | 1]);
+    }
+  }
+  T query(int a, int b)
+  {
+    T l = e, r = e;
+    for (a += n, b += n; a < b; a >>= 1, b >>= 1)
+    {
+      if (a & 1)
+        l = f(l, dat[a++]);
+      if (b & 1)
+        r = f(dat[--b], r);
+    }
+    return f(l, r);
+  }
+};
+struct e
+{
+  ll l, r, v;
+  bool empty;
+};
+
+// a^n mod を計算する
+
+long long modpow(long long a, long long n, long long mod)
+{
+  a %= mod;
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
+
 int main()
 {
+  ll B = 10010010;
+  ll n, q;
+  cin >> n >> q;
+  string s;
+  cin >> s;
+  vector<e> init(n), initr(n);
+  rep(i, n)
+  {
+    init[i] = {i, i + 1, s[i] - 'a', false};
+    initr[n - i - 1] = {n - i - 1, n - i, s[i] - 'a', false};
+  }
+
+  SegmentTree<e> seg(n, [&](e a, e b)
+                     {
+    if(a.empty){
+      return b;
+    }else if(b.empty){
+      return a;
+    }
+    ll res = a.v*modpow(B,b.r-b.l,MOD) + b.v;
+    res %=MOD;
+    e r ={
+      a.l,b.r,res,false
+    };
+    return r; }, {0, 0, 0, true}, init);
+  SegmentTree<e> segR(n, [&](e a, e b)
+                      {
+    if(a.empty){
+      return b;
+    }else if(b.empty){
+      return a;
+    }
+    ll res = a.v*modpow(B,b.r-b.l,MOD) + b.v;
+    res %=MOD;
+    e r ={
+      a.l,b.r,res,false
+    };
+    return r; }, {0, 0, 0, true}, initr);
+  rep(i, q)
+  {
+    ll Q;
+    cin >> Q;
+    if (Q == 1)
+    {
+      ll x;
+      char c;
+      cin >> x >> c;
+      x--;
+      e up = {
+          x, x + 1, c - 'a', false};
+      seg.update(x, up);
+      e upr = {
+          n - 1 - x, n - x, c - 'a', false};
+      segR.update(n - 1 - x, upr);
+    }
+    else
+    {
+      ll l, r;
+      cin >> l >> r;
+      l--;
+      r--;
+      ll mid = (l + r) / 2;
+
+      if ((l + r) % 2)
+      {
+        if (seg.query(l, mid + 1).v == segR.query(n - 1 - r, n - 1 - mid).v)
+        {
+          cout << "Yes" << endl;
+        }
+        else
+        {
+          cout << "No" << endl;
+        }
+      }
+      else
+      {
+        if (seg.query(l, mid).v == segR.query(n - 1 - r, n - 1 - mid).v)
+        {
+          cout << "Yes" << endl;
+        }
+        else
+        {
+          cout << "No" << endl;
+        }
+      }
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

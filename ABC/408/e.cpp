@@ -70,57 +70,35 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 struct edge
 {
-  ll to;
+  ll u, v;
   ll cost;
 };
+bool comp(edge a, edge b)
+{
+  return a.cost < b.cost;
+}
 int main()
 {
   ll n, m;
   cin >> n >> m;
-  vector<vector<edge>> p(n, vector<edge>(0));
-  vector<ll> dist(n, INF);
-  vector<ll> dist2(n, INF);
-  rep(k, m)
+  vector<edge> e(m);
+  rep(i, m)
   {
     ll u, v, w;
     cin >> u >> v >> w;
     u--;
     v--;
-    p[u].pb(edge{v, w});
-    p[v].pb(edge{u, w});
+    e[i] = {u, v, w};
   }
-  PQ(pll)
-  que;
-  dist[0] = 0;
-  que.push(pll(0, 0));
-  while (que.size())
+  sort(rall(e), comp);
+  repR(i, 31)
   {
-    pll now = que.top();
-    que.pop();
-    if (dist[now.S] < now.F)
-      continue;
-    for (auto e : p[now.S])
+    vector<edge> nx;
+    rep(j, m)
     {
-      if (chmin(dist[e.to], e.cost | dist[now.S]))
-        que.push(pll(dist[e.to], e.to));
+      if ()
     }
   }
-
-  que.push(pll(0, n - 1));
-  dist2[n - 1] = 0;
-  while (que.size())
-  {
-    pll now = que.top();
-    que.pop();
-    if (dist2[now.S] < now.F)
-      continue;
-    for (auto e : p[now.S])
-    {
-      if (chmin(dist2[e.to], e.cost | dist2[now.S]))
-        que.push(pll(dist2[e.to], e.to));
-    }
-  }
-  cout << min(dist[n - 1], dist2[0]) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

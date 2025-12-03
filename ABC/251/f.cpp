@@ -64,6 +64,61 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vvll t(n, vll(0));
+  rep(i, m)
+  {
+    ll u, v;
+    cin >> u >> v;
+    u--;
+    v--;
+    t[u].pb(v);
+    t[v].pb(u);
+  }
+  vector<pll> p1(0);
+  vector<pll> p2(0);
+  vll ch1(n, -1);
+  vll ch2(n, -1);
+  ch1[0] = 1;
+  ch2[0] = 1;
+  auto dfs = [&](auto dfs, ll now) -> void
+  {
+    for (auto nx : t[now])
+    {
+      if (ch1[nx] == -1)
+      {
+        ch1[nx] = 1;
+        p1.pb({now + 1, nx + 1});
+        dfs(dfs, nx);
+      }
+    }
+  };
+  dfs(dfs, 0);
+  queue<ll> que;
+  que.push(0);
+  while (que.size())
+  {
+    ll now = que.front();
+    que.pop();
+    for (auto nx : t[now])
+    {
+      if (ch2[nx] == -1)
+      {
+        ch2[nx] = 1;
+        p2.pb({now + 1, nx + 1});
+        que.push(nx);
+      }
+    }
+  }
+  rep(i, n - 1)
+  {
+    cout << p1[i].F << " " << p1[i].S << endl;
+  }
+  rep(i, n - 1)
+  {
+    cout << p2[i].F << " " << p2[i].S << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

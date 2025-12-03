@@ -71,8 +71,129 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+// Union Find
+
+template <typename T>
+struct UnionFind
+{
+  vector<T> par;
+  vector<T> rank;
+  vector<T> sizes;
+  UnionFind(T n) : par(n), rank(n, 0), sizes(n, 1)
+  {
+    for (T i = 0; i < n; i++)
+    {
+      par[i] = i;
+    }
+  }
+  T root(T x)
+  {
+    return par[x] == x ? x : par[x] = root(par[x]);
+  }
+
+  bool unite(T x, T y)
+  {
+    if (x == y)
+      return false;
+    x = root(x);
+    y = root(y);
+    if (x == y)
+      return false;
+    if (rank[x] < rank[y])
+      swap(x, y);
+    if (rank[x] == rank[y])
+      rank[x]++;
+    par[y] = x;
+    sizes[x] = sizes[x] + sizes[y];
+    return true;
+  }
+  bool same(T x, T y)
+  {
+    return root(x) == root(y);
+  }
+  T size(T x)
+  {
+    return sizes[root(x)];
+  }
+};
+long long modpow(long long a, long long n, long long mod)
+{
+  a %= mod;
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
+
+// a^{-1} mod を計算する
+
+long long modinv(long long a, long long mod)
+{
+  return modpow(a, mod - 2, mod);
+}
 int main()
 {
+  ll n;
+  cin >> n;
+  UnionFind<ll> uf(n);
+  vll d(n, 0);
+  vll tmp(n, 0);
+  vector<set<ll>> s(n);
+  vll ans(n, 0);
+  rep(i, n)
+  {
+    s[i].insert(i);
+  }
+
+  rep(i, n - 1)
+  {
+    ll u, v;
+    cin >> u >> v;
+    u--;
+    v--;
+    ll u_root = uf.root(u);
+    ll v_root = uf.root(v);
+    if (s[u_root].size() > s[v_root].size())
+    {
+      swap(u_root, v_root);
+    }
+    uf.unite(u, v);
+    ll root = uf.root(u);
+    ll min_root = u_root;
+    ll max_root = v_root;
+    if (root != v_root)
+    {
+      swap(s[u_root], s[v_root]);
+      min_root = v_root;
+      max_root = u_root;
+    }
+
+    ll tmp = (s[min_root].size()) * modinv(s[v_root].size() + s[u_root].size(), MOD);
+    tmp %= MOD;
+    for (auto p : s[min_root])
+    {
+      ans[p] += d[u_root] + tmp;
+      ans[p] %= MOD;
+    }
+    d[root] = (d[v_root] + (s[max_root].size()) * modinv(s[v_root].size() + s[u_root].size(), MOD)) % MOD;
+    for (auto p : s[min_root])
+    {
+      ans[p] += (MOD - d[root]);
+      ans[p] %= MOD;
+      s[max_root].insert(p);
+    }
+  }
+  ll root = uf.root(0);
+  rep(i, n)
+  {
+    cout << (ans[i] + d[root]) % MOD << " ";
+  }
+  cout << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

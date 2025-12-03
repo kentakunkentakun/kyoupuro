@@ -73,6 +73,69 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vvll t(n, vll(0));
+  rep(i, m)
+  {
+    ll u, v;
+    cin >> u >> v;
+    u--;
+    v--;
+    t[u].pb(v);
+    t[v].pb(u);
+  }
+
+  vll ans(1 << n, INF);
+  ans[0] = 0;
+
+  vvll dp(n, vll(1 << n, INF));
+  queue<tuple<ll, ll, ll>> que;
+
+  rep(i, n)
+  {
+    dp[i][1 << i] = 1;
+    que.push({i, 1 << i, 1});
+  }
+
+  while (que.size())
+  {
+    auto [now, k, dist] = que.front();
+    que.pop();
+    if (dist > dp[now][k])
+      continue;
+    for (auto nx : t[now])
+    {
+      ll kx;
+      if ((k >> nx) & 1)
+      {
+        kx = k - (1 << nx);
+      }
+      else
+      {
+        kx = k + (1 << nx);
+      }
+
+      if (chmin(dp[nx][kx], dist + 1))
+      {
+        que.push({nx, kx, dp[nx][kx]});
+      }
+    }
+  }
+  rep(j, n)
+  {
+    for (int bit = 0; bit < (1 << n); bit++)
+    {
+      chmin(ans[bit], dp[j][bit]);
+    }
+  }
+
+  ll res = 0;
+  rep(i, 1 << n)
+  {
+    res += ans[i];
+  }
+  cout << res << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

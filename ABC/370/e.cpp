@@ -62,8 +62,54 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+long long modpow(long long a, long long n, long long mod)
+{
+  a %= mod;
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
+
+// a^{-1} mod を計算する
+
+long long modinv(long long a, long long mod)
+{
+  return modpow(a, mod - 2, mod);
+}
 int main()
 {
+  ll n, k;
+  cin >> n >> k;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  map<ll, ll> m;
+  vll d(n + 1);
+  rep(i, n)
+  {
+    d[i + 1] += d[i] + a[i];
+  }
+  vll dp(n + 1, 0);
+  ll sum = 0;
+  dp[0] = 1;
+  sum += 1;
+  m[0] = 1;
+  rep(i, n)
+  {
+    ll no = d[i + 1] - k;
+    dp[i + 1] = sum - m[no] + MOD;
+    dp[i + 1] %= MOD;
+    m[d[i + 1]] += dp[i + 1];
+    m[d[i + 1]] %= MOD;
+    sum += dp[i + 1];
+    sum %= MOD;
+  }
+  cout << dp[n] << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

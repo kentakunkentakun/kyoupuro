@@ -70,6 +70,45 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll t;
+  cin >> t;
+  vll ans(0);
+  rep(T, t)
+  {
+    ll n;
+    cin >> n;
+    string s;
+    cin >> s;
+    vvll dp(n + 1, vll(3, INF));
+    // 0 = これまで0
+    // 1 = いま1
+    // 0 = これ以降0
+    dp[0][0] = 0;
+    rep(i, n)
+    {
+      if (s[i] == '1')
+      {
+        chmin(dp[i + 1][0], dp[i][0] + 1);
+        chmin(dp[i + 1][1], dp[i][0]);
+        chmin(dp[i + 1][1], dp[i][1]);
+        chmin(dp[i + 1][2], dp[i][1] + 1);
+        chmin(dp[i + 1][2], dp[i][2] + 1);
+      }
+      else
+      {
+        chmin(dp[i + 1][0], dp[i][0]);
+        chmin(dp[i + 1][1], dp[i + 1][0] + 1);
+        chmin(dp[i + 1][1], dp[i][1] + 1);
+        chmin(dp[i + 1][2], dp[i][1]);
+        chmin(dp[i + 1][2], dp[i][2]);
+      }
+    }
+    ans.pb(min(dp[n][0], min(dp[n][1], dp[n][2])));
+  }
+  rep(i, t)
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

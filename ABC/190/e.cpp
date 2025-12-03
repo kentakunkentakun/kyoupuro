@@ -64,6 +64,86 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vvll t(n, vll(0));
+  rep(i, m)
+  {
+    ll a, b;
+    cin >> a >> b;
+    a--;
+    b--;
+    t[a].pb(b);
+    t[b].pb(a);
+  }
+  ll k;
+  cin >> k;
+  vll c(k);
+  rep(i, k)
+  {
+    cin >> c[i];
+    c[i]--;
+  }
+  vvll dist(k, vll(k));
+  rep(i, k)
+  {
+    vll d(n, INF);
+    d[c[i]] = 0;
+    queue<ll> que;
+    que.push(c[i]);
+    while (que.size())
+    {
+      ll now = que.front();
+      que.pop();
+      for (auto nx : t[now])
+      {
+        if (d[nx] != INF)
+          continue;
+        d[nx] = d[now] + 1;
+        que.push(nx);
+      }
+    }
+    rep(j, k)
+    {
+      dist[i][j] = d[c[j]];
+      if (dist[i][j] == INF)
+      {
+        cout << -1 << endl;
+        return 0;
+      }
+    }
+  }
+  vvll dp((1 << k), vll(k, INF));
+  auto dfs = [&](auto &&dfs, ll r, ll now) -> ll
+  {
+    if (r == (1 << k) - 1)
+    {
+      return dp[r][now] = 0;
+    }
+    if (dp[r][now] != INF)
+      return dp[r][now];
+
+    ll res = INF;
+    rep(i, k)
+    {
+      if (!(r >> i & 1))
+      {
+        chmin(res, dfs(dfs, r | (1 << i), i) + dist[now][i]);
+      }
+    }
+    return dp[r][now] = res;
+  };
+  ll ans = INF;
+  rep(i, k)
+  {
+    chmin(ans, dfs(dfs, 1 << i, i));
+  }
+  if (ans == INF)
+  {
+    cout << -1 << endl;
+  }
+  else
+    cout << ans + 1 << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

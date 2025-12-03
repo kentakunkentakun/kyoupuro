@@ -28,6 +28,7 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -64,18 +65,47 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, x;
+  cin >> n >> x;
+  vll a(n);
+  rep(i, n)
+  {
+    cin >> a[i];
+  }
+  ll ans = INF;
+  rep(k, n + 1)
+  {
+    if (k == 0)
+      continue;
+    vvvll dp(n + 1, vvll(k, vll(k + 1, -1)));
+    dp[0][0][0] = 0;
+    rep(i, n)
+    {
+      rep(j, k)
+      {
+        rep(z, k + 1)
+        {
+          if (dp[i][j][z] != -1 && z + 1 <= k)
+          {
+            chmax(dp[i + 1][(j + a[i]) % k][z + 1], dp[i][j][z] + a[i]);
+          }
+          chmax(dp[i + 1][j][z], dp[i][j][z]);
+        }
+      }
+    }
+    ll remain = x % k;
+    if (dp[n][remain][k] != -1)
+      chmin(ans, (x - dp[n][remain][k]) / k);
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
-<<<<<<< Updated upstream
 __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-=======
-
->>>>>>> Stashed changes
 __builtin_popcount(i)*/

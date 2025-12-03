@@ -68,58 +68,28 @@ int main()
   cin >> n;
   string s;
   cin >> s;
+  vvll dp(n + 1, vll(2));
+  dp[1][s[0] - '0'] = 1;
   ll res = 0;
-  vll t(n);
-  ll cnt = 0;
-  repR(i, n)
-  {
-    if (s[i] == '1')
-      cnt++;
-    else
-      cnt = 0;
-    t[i] = cnt;
-  }
   rep(i, n)
   {
     if (i == 0)
+      continue;
+    if (s[i] == '0')
     {
-      if (s[i] == '1')
-        res++;
+      dp[i + 1][1] += dp[i][0];
+      dp[i + 1][1] += dp[i][1];
     }
     else
     {
-      if (s[i] == '0')
-        res++;
-      else
-      {
-        res += (t[i] + 1) / 2;
-        i += t[i] - 1;
-      }
+      dp[i + 1][1] += dp[i][0];
+      dp[i + 1][0] += dp[i][1];
     }
+    dp[i + 1][s[i] - '0']++;
+    res += dp[i + 1][1];
   }
+  res += s[0] - '0';
   cout << res << endl;
-  ll ans = 0;
-  // rep(i, n)
-  // {
-  //   if (i == 0)
-  //   {
-  //     if (s[i] == '0')
-  //       res--;
-  //     ans += res;
-  //     continue;
-  //   }
-  //   if (s[i] == '0')
-  //   {
-  //     res--;
-  //     if (i < n - 1)
-  //     {
-  //       if (s[i + 1] == '1')
-  //       {
-  //       }
-  //     }
-  //   }
-  // }
-  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

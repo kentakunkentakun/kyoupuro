@@ -60,6 +60,21 @@ inline bool chmin(T &a, T b)
   }
   return false;
 }
+// 返り値: a と b の最大公約数
+// ax + by = gcd(a, b) を満たす (x, y) が格納される
+long long extGCD(long long a, long long b, long long &x, long long &y)
+{
+  if (b == 0)
+  {
+    x = 1;
+    y = 0;
+    return a;
+  }
+  long long d = extGCD(b, a % b, y, x);
+  y -= a / b * x;
+  return d;
+}
+
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()

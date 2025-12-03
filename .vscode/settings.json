@@ -80,7 +80,10 @@
     "__split_buffer": "cpp",
     "__tree": "cpp",
     "stack": "cpp",
-    "__tuple": "cpp"
+    "__tuple": "cpp",
+    "dsu": "cpp",
+    "fenwicktree": "cpp",
+    "lazysegtree": "cpp"
   },
   "cmake.sourceDirectory": "/home/kenta2/atcoder/ac-library/test/benchmark"
 }

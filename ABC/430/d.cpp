@@ -73,6 +73,50 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n;
+  cin >> n;
+  vll x(n);
+  rep(i, n) cin >> x[i];
+
+  set<ll> s;
+  s.insert(0);
+  map<ll, ll> dist;
+  dist[0] = INF;
+  ll sum = INF;
+  for (int i = 0; i < n; i++)
+  {
+    auto s_it = s.lower_bound(x[i]);
+    auto r_it = prev(s_it);
+    ll sv, rv;
+    if (s_it == s.end())
+    {
+      sv = INF;
+      rv = *r_it;
+    }
+
+    else
+    {
+      rv = *r_it;
+      sv = *s_it;
+    }
+    ll d = min(abs(x[i] - rv), abs(x[i] - sv));
+    dist[x[i]] = d;
+    if (sv != INF && dist[sv] > abs(x[i] - sv))
+    {
+      sum -= dist[sv];
+      sum += abs(x[i] - sv);
+      dist[sv] = abs(x[i] - sv);
+    }
+    if (dist[rv] > abs(x[i] - rv))
+    {
+      sum -= dist[rv];
+      sum += abs(x[i] - rv);
+      dist[rv] = abs(x[i] - rv);
+    }
+    sum += d;
+    cout << sum << endl;
+    s.insert(x[i]);
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

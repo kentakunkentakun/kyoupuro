@@ -62,8 +62,64 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+
+// a^n mod を計算する
+
+long long modpow(long long a, long long n, long long mod)
+{
+  a %= mod;
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
+
 int main()
 {
+  cout << fixed << setprecision(10);
+
+  ll n;
+  cin >> n;
+  vector<vector<double>> dp(n + 1, vector<double>(32, 1e15));
+
+  dp[0][0] = 0.0;
+  vll x(n), y(n);
+  rep(i, n)
+  {
+    cin >> x[i] >> y[i];
+  }
+  dp[0][0] = 0;
+  rep(i, n)
+  {
+    rep(j, 32)
+    {
+      rep(z, j + 1)
+      {
+        if (i - z - 1 >= 0)
+        {
+          chmin(dp[i][j], dp[i - z - 1][j - z] + sqrt(abs(x[i] - x[i - z - 1]) * abs(x[i] - x[i - z - 1]) + abs(y[i] - y[i - z - 1]) * abs(y[i] - y[i - z - 1])));
+        }
+      }
+    }
+  }
+  double ans = 1e15;
+  rep(i, 32)
+  {
+    if (i == 0)
+    {
+      chmin(ans, dp[n - 1][0]);
+    }
+    else
+    {
+      chmin(ans, dp[n - 1][i] + modpow(2, i - 1, INF));
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

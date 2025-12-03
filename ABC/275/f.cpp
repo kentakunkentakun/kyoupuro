@@ -28,6 +28,7 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -64,6 +65,33 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  vvvll dp(n + 1, vvll(3005, vll(2, INF)));
+  dp[0][0][1] = 0;
+  dp[0][0][0] = 0;
+  rep(i, n)
+  {
+    rep(j, 3001)
+    {
+      if (j + a[i] <= 3000)
+      {
+        chmin(dp[i + 1][j + a[i]][0], dp[i][j][0]);
+        chmin(dp[i + 1][j + a[i]][0], dp[i][j][1] + 1);
+      }
+      chmin(dp[i + 1][j][1], dp[i][j][1]);
+      chmin(dp[i + 1][j][1], dp[i][j][0]);
+    }
+  }
+  rep(i, m)
+  {
+    ll res = min(dp[n][i + 1][0], dp[n][i + 1][1] + 1);
+    if (res == INF)
+      res = -1;
+    cout << res << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -62,8 +62,65 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+long long modpow(long long a, long long n, long long mod)
+{
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
 int main()
 {
+  ll a, b, c;
+  cin >> a >> b >> c;
+  if (a + b > 2 * 60 - __builtin_popcountll(c) || a + b < __builtin_popcountll(c) || abs(a - b) > __builtin_popcountll(c) || (__builtin_popcountll(c) - abs(a - b)) % 2 != 0)
+  {
+    cout << -1 << endl;
+    return 0;
+  }
+  ll aa = 0;
+  ll bb = 0;
+  ll iter = 0;
+  set<ll> A;
+  set<ll> B;
+  while (c)
+  {
+    if (c % 2)
+    {
+      if (a > b)
+      {
+        aa += modpow(2, iter, INF * 2);
+        a--;
+        A.insert(iter);
+      }
+      else
+      {
+        bb += modpow(2, iter, INF * 2);
+        b--;
+        B.insert(iter);
+      }
+    }
+    iter++;
+    c /= 2;
+  }
+  ll remain = a + b;
+  iter = 0;
+  while (remain)
+  {
+    if (!A.count(iter) && !B.count(iter))
+    {
+      aa += modpow(2, iter, INF * 2);
+      bb += modpow(2, iter, INF * 2);
+      remain -= 2;
+    }
+    iter++;
+  }
+  cout << aa << " " << bb << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -68,8 +68,145 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+// Union Find
+
+template <typename T>
+struct UnionFind
+{
+  vector<T> par;
+  vector<T> rank;
+  vector<T> sizes;
+  UnionFind(T n) : par(n), rank(n, 0), sizes(n, 1)
+  {
+    for (T i = 0; i < n; i++)
+    {
+      par[i] = i;
+    }
+  }
+  T root(T x)
+  {
+    return par[x] == x ? x : par[x] = root(par[x]);
+  }
+
+  bool unite(T x, T y)
+  {
+    if (x == y)
+      return false;
+    x = root(x);
+    y = root(y);
+    if (x == y)
+      return false;
+    if (rank[x] < rank[y])
+      swap(x, y);
+    if (rank[x] == rank[y])
+      rank[x]++;
+    par[y] = x;
+    sizes[x] = sizes[x] + sizes[y];
+    return true;
+  }
+  bool same(T x, T y)
+  {
+    return root(x) == root(y);
+  }
+  T size(T x)
+  {
+    return sizes[root(x)];
+  }
+};
+
 int main()
 {
+  ll n, q;
+  cin >> n >> q;
+  vector<pll> d(n);
+  priority_queue<tuple<ll, ll, ll>, vector<tuple<ll, ll, ll>>, greater<tuple<ll, ll, ll>>> que;
+  rep(i, n)
+  {
+    ll x, y;
+    cin >> x >> y;
+    d[i] = {x, y};
+  }
+  rep(i, n)
+  {
+    for (int j = i + 1; j < n; j++)
+    {
+      que.push({abs(d[i].F - d[j].F) + abs(d[i].S - d[j].S), i, j});
+    }
+  }
+  UnionFind<ll> uf(3000);
+  vector<string> ans(0);
+  rep(i, q)
+  {
+    ll t;
+    cin >> t;
+    if (t == 1)
+    {
+      ll a, b;
+      cin >> a >> b;
+      rep(j, d.size())
+      {
+        que.push({abs(d[j].F - a) + abs(d[j].S - b), j, d.size()});
+      }
+      d.pb({a, b});
+    }
+    else if (t == 2)
+    {
+      ll mi = INF;
+      while (mi != INF || que.size())
+      {
+        auto [dist, u, v] = que.top();
+        if (uf.same(u, v))
+        {
+          que.pop();
+          continue;
+        }
+        mi = dist;
+        uf.unite(u, v);
+        break;
+      }
+      if (mi == INF)
+      {
+        ans.pb("-1");
+        continue;
+      }
+      else
+      {
+        ans.pb(to_string(mi));
+      }
+      while (que.size())
+      {
+        auto [dist, u, v] = que.top();
+        if (mi == dist)
+        {
+          que.pop();
+          uf.unite(u, v);
+        }
+        else
+        {
+          break;
+        }
+      }
+    }
+    else
+    {
+      ll u, v;
+      cin >> u >> v;
+      u--;
+      v--;
+      if (uf.same(u, v))
+      {
+        ans.pb("Yes");
+      }
+      else
+      {
+        ans.pb("No");
+      }
+    }
+  }
+  rep(i, ans.size())
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

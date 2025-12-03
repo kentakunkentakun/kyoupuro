@@ -62,8 +62,76 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vvll t(n, vll(0));
+  rep(i, m)
+  {
+    ll u, v;
+    cin >> u >> v;
+    u--;
+    v--;
+    t[u].pb(v);
+    t[v].pb(u);
+  }
+  vector<pll> w(n);
+  vll a(n), W(n);
+  rep(i, n)
+  {
+    cin >> w[i].F;
+    W[i] = w[i].F;
+    w[i].S = i;
+  }
+  rep(i, n) cin >> a[i];
+  sort(all(w));
+  vll c(n, 0);
+  rep(i, n)
+  {
+    auto [cnt, it] = w[i];
+    vll tmp(0);
+    vll s(0);
+    for (auto nx : t[it])
+    {
+      if (W[it] > W[nx])
+      {
+        tmp.pb(W[nx]);
+        s.pb(c[nx]);
+      }
+    }
+    vll dp(5001, -1);
+    dp[0] = 0;
+    rep(z, tmp.size())
+    {
+      vll old(5001, 0);
+      swap(old, dp);
+      rep(j, 5001)
+      {
+        if (old[j] != -1)
+        {
+          chmax(dp[j], old[j]);
+          if (j + tmp[z] <= 5000)
+          {
+            chmax(dp[j + tmp[z]], old[j] + s[z]);
+          }
+        }
+      }
+    }
+    ll res = 0;
+    rep(j, W[it])
+    {
+      chmax(res, dp[j]);
+    }
+    c[it] = res + 1;
+  }
+  ll ans = 0;
+  rep(i, n)
+  {
+    ans += c[i] * a[i];
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

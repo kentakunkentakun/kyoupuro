@@ -60,10 +60,111 @@ inline bool chmin(T &a, T b)
   }
   return false;
 }
+// Union Find
+
+template <typename T>
+struct UnionFind
+{
+  vector<T> par;
+  vector<T> rank;
+  vector<T> sizes;
+  UnionFind(T n) : par(n), rank(n, 0), sizes(n, 1)
+  {
+    for (T i = 0; i < n; i++)
+    {
+      par[i] = i;
+    }
+  }
+  T root(T x)
+  {
+    return par[x] == x ? x : par[x] = root(par[x]);
+  }
+
+  bool unite(T x, T y)
+  {
+    if (x == y)
+      return false;
+    x = root(x);
+    y = root(y);
+    if (x == y)
+      return false;
+    if (rank[x] < rank[y])
+      swap(x, y);
+    if (rank[x] == rank[y])
+      rank[x]++;
+    par[y] = x;
+    sizes[x] = sizes[x] + sizes[y];
+    return true;
+  }
+  bool same(T x, T y)
+  {
+    return root(x) == root(y);
+  }
+  T size(T x)
+  {
+    return sizes[root(x)];
+  }
+};
+
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct edge
+{
+  ll u, v, cost;
+};
+bool comp(edge u, edge v)
+{
+  return u.cost < v.cost;
+}
 int main()
 {
+  ll n, m, k;
+  cin >> n >> m >> k;
+  UnionFind<ll> uf(n);
+  vector<edge> e(m);
+  vector<vector<ll>> s(n, vector<ll>(2));
+  rep(i, m)
+  {
+    ll u, v, w;
+    cin >> u >> v >> w;
+    u--;
+    v--;
+    e[i] = {u, v, w};
+  }
+  rep(i, k)
+  {
+    ll a;
+    cin >> a;
+    a--;
+    s[a][0]++;
+  }
+  rep(i, k)
+  {
+    ll b;
+    cin >> b;
+    b--;
+    s[b][1]++;
+  }
+  sort(all(e), comp);
+
+  ll ans = 0;
+  rep(i, m)
+  {
+    auto [u, v, c] = e[i];
+    ll u_root = uf.root(u);
+    ll v_root = uf.root(v);
+    if (!uf.same(u_root, v_root))
+    {
+      ll cnt = max(min(s[u_root][0], s[v_root][1]), min(s[v_root][0], s[u_root][1]));
+      ans += cnt * c;
+      uf.unite(u_root, v_root);
+      ll root = uf.root(u_root);
+      ll another = root == u_root ? v_root : u_root;
+      s[root][0] = s[root][0] + s[another][0] - cnt;
+      s[root][1] = s[root][1] + s[another][1] - cnt;
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

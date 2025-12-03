@@ -64,6 +64,41 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll q, k;
+  cin >> q >> k;
+  vll dp(k + 1, 0);
+  dp[0] = 1;
+  rep(i, q)
+  {
+    char c;
+    ll x;
+    cin >> c >> x;
+    vll tmp = dp;
+    if (c == '+')
+    {
+      rep(j, k)
+      {
+        if (j + x <= k)
+        {
+          dp[j + x] += tmp[j];
+          dp[j + x] %= MOD;
+        }
+      }
+    }
+    else
+    {
+      rep(j, k + 1)
+      {
+        if (j + x <= k)
+        {
+          dp[j + x] -= dp[j];
+          dp[j + x] += MOD;
+          dp[j + x] %= MOD;
+        }
+      }
+    }
+    cout << dp[k] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

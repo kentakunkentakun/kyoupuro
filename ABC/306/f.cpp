@@ -62,8 +62,112 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+template <typename T>
+struct SegmentTree
+{
+  typedef function<T(T, T)> F;
+  int n; // 要素数
+  F f;   // 2項演算
+  T e;   // 単位元
+  vector<T> dat;
+  SegmentTree(int n_, F f, T e) : f(f), e(e)
+  {
+    init(n_);
+    build();
+  }
+  SegmentTree(int n_, F f, T e, vector<T> &v) : f(f), e(e)
+  {
+    init(n_);
+    build(n_, v);
+  }
+  void init(int n_)
+  {
+    n = 1;
+    while (n < n_)
+      n <<= 1;
+    dat.clear();
+    dat.resize(n << 1, e);
+  }
+  void build(int n_, const vector<T> &v)
+  {
+    for (int i = 0; i < n_; ++i)
+      dat[n + i] = v[i];
+    build();
+  }
+  void build()
+  {
+    for (int i = n - 1; i >= 1; --i)
+    {
+      dat[i] = f(dat[i << 1], dat[i << 1 | 1]);
+    }
+  }
+  void update(int k, const T &x)
+  {
+    dat[k += n] = x;
+    while (k >>= 1)
+    {
+      dat[k] = f(dat[k << 1], dat[k << 1 | 1]);
+    }
+  }
+  T query(int a, int b)
+  {
+    T l = e, r = e;
+    for (a += n, b += n; a < b; a >>= 1, b >>= 1)
+    {
+      if (a & 1)
+        l = f(l, dat[a++]);
+      if (b & 1)
+        r = f(dat[--b], r);
+    }
+    return f(l, r);
+  }
+};
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vvll a(n, vll(m));
+  vector<tuple<ll, ll, ll>> p(0);
+  rep(i, n)
+  {
+    rep(j, m)
+    {
+      cin >> a[i][j];
+    }
+    sort(all(a[i]));
+  }
+  if (n == 1)
+  {
+    cout << 0 << endl;
+    return 0;
+  }
+  rep(i, n)
+  {
+    rep(j, m)
+    {
+      p.pb({a[i][j], i, j});
+    }
+  }
+  SegmentTree<ll> seg(n * m, [](ll a, ll b)
+                      { return a + b; }, 0);
+  map<pll, ll> mp;
+  sort(all(p));
+  rep(k, n * m)
+  {
+    auto [v, i, j] = p[k];
+    mp[{i, j}] = k;
+  }
+  ll ans = 0;
+  repR(i, n)
+  {
+    repR(j, m)
+    {
+      ll iter = mp[{i, j}];
+      ans += seg.query(0, iter) + (j + 1) * (n - 1 - i);
+      seg.update(iter, 1);
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -62,9 +62,80 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct edge
+{
+  ll to, cost;
+};
 int main()
 {
+  ll n, m, k;
+  cin >> n >> m >> k;
+  vector<pll> p(m);
+  vll it(0);
+  it.pb(0);
+  rep(i, m)
+  {
+    cin >> p[i].F >> p[i].S;
+    p[i].F--;
+    p[i].S--;
+    it.pb(p[i].F);
+    it.pb(p[i].S);
+  }
+  sort(all(it));
+  it.erase(unique(it.begin(), it.end()), it.end());
+
+  sort(all(p));
+  vector<vector<edge>> t(it.size(), vector<edge>(0));
+  map<ll, ll> mp;
+  rep(i, it.size())
+  {
+    mp[it[i]] = i;
+  }
+  rep(i, m)
+  {
+    auto [u, v] = p[i];
+    t[mp[u]].pb({mp[v], 1});
+  }
+
+  rep(i, it.size())
+  {
+    if (i == it.size() - 1)
+    {
+      t[mp[it[i]]].pb({mp[it[0]], n - it[i]});
+    }
+    else
+    {
+      t[mp[it[i]]].pb({mp[it[i + 1]], it[i + 1] - it[i]});
+    }
+  }
+  vvll dp(k + 1, vll(it.size(), 0));
+  dp[0][0] = 1;
+  ll ans = 0;
+  rep(i, k)
+  {
+    rep(j, it.size())
+    {
+      for (auto [to, cost] : t[j])
+      {
+        if (dp[i][j])
+        {
+          if (i + cost >= k)
+          {
+            ans += dp[i][j];
+            ans %= MOD;
+          }
+          else
+          {
+            dp[i + cost][to] += dp[i][j];
+            dp[i + cost][to] %= MOD;
+          }
+        }
+      }
+    }
+  }
+  cout << ans << endl;
 }
+
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())

@@ -81,80 +81,64 @@ long long modinv(long long a, long long mod)
 {
   return modpow(a, mod - 2, mod);
 }
-struct LazySegmentTree
+template <typename T>
+struct SegmentTree
 {
-private:
-  int n;           // 葉の数（2 の冪）
-  vector<ll> node; // 各区間の現在の総和
-  vector<ll> lazy; // 要素あたりの未反映加算量 Δ
-
-  /* 子へ押し下げる */
-  void push(int k, int l, int r)
+  typedef function<T(T, T)> F;
+  int n; // 要素数
+  F f;   // 2項演算
+  T e;   // 単位元
+  vector<T> dat;
+  SegmentTree(int n_, F f, T e) : f(f), e(e)
   {
-    if (lazy[k] == 0 || r - l == 1)
-      return; // 葉 or 仕事なし
-    int m = (l + r) >> 1;
-    apply(k << 1, lazy[k], m - l);     // 左子
-    apply(k << 1 | 1, lazy[k], r - m); // 右子
-    lazy[k] = 0;
+    init(n_);
+    build();
   }
-
-  /* ノード k (区間長 len) へ Δ を適用 */
-  inline void apply(int k, ll delta, int len)
+  SegmentTree(int n_, F f, T e, vector<T> &v) : f(f), e(e)
   {
-    node[k] += delta * len; // 総和を更新
-    lazy[k] += delta;       // 子・孫への先送り分
+    init(n_);
+    build(n_, v);
   }
-
-public:
-  /*--- コンストラクタ ---*/
-  LazySegmentTree(const vector<ll> &v)
+  void init(int n_)
   {
-    int sz = (int)v.size();
     n = 1;
-    while (n < sz)
+    while (n < n_)
       n <<= 1;
-    node.assign(2 * n, 0);
-    lazy.assign(2 * n, 0);
-
-    for (int i = 0; i < sz; ++i)
-      node[i + n] = v[i];
-    for (int i = n - 1; i > 0; --i)
-      node[i] = node[i << 1] + node[i << 1 | 1];
+    dat.clear();
+    dat.resize(n << 1, e);
   }
-
-  /*--- 区間 [a,b) に +x ---*/
-  void add(int a, int b, ll x, int k = 1, int l = 0, int r = -1)
+  void build(int n_, const vector<T> &v)
   {
-    if (r == -1)
-      r = n;
-    if (b <= l || r <= a)
-      return; // 完全に外
-    if (a <= l && r <= b)
-    { // 完全に内
-      apply(k, x, r - l);
-      return;
+    for (int i = 0; i < n_; ++i)
+      dat[n + i] = v[i];
+    build();
+  }
+  void build()
+  {
+    for (int i = n - 1; i >= 1; --i)
+    {
+      dat[i] = f(dat[i << 1], dat[i << 1 | 1]);
     }
-    push(k, l, r); // 部分的なら子へ
-    int m = (l + r) >> 1;
-    add(a, b, x, k << 1, l, m);
-    add(a, b, x, k << 1 | 1, m, r);
-    node[k] = node[k << 1] + node[k << 1 | 1];
   }
-
-  /*--- 区間 [a,b) の総和 ---*/
-  ll getsum(int a, int b, int k = 1, int l = 0, int r = -1)
+  void update(int k, const T &x)
   {
-    if (r == -1)
-      r = n;
-    if (b <= l || r <= a)
-      return 0; // 完全に外
-    if (a <= l && r <= b)
-      return node[k]; // 完全に内
-    push(k, l, r);    // 子に潜る前に伝播
-    int m = (l + r) >> 1;
-    return getsum(a, b, k << 1, l, m) +
-           getsum(a, b, k << 1 | 1, m, r);
+    dat[k += n] = x;
+    while (k >>= 1)
+    {
+      dat[k] = f(dat[k << 1], dat[k << 1 | 1]);
+    }
+  }
+  T query(int a, int b)
+  {
+    T l = e, r = e;
+    for (a += n, b += n; a < b; a >>= 1, b >>= 1)
+    {
+      if (a & 1)
+        l = f(l, dat[a++]);
+      if (b & 1)
+        r = f(dat[--b], r);
+    }
+    return f(l, r);
   }
 };
 
@@ -165,23 +149,17 @@ int main()
   vector<ll> a(n - 1);
   rep(i, n - 1) cin >> a[i];
   vector<ll> dp(n);
-  LazySegmentTree seg(dp);
-  rep(i, n)
+  SegmentTree<ll> seg(n + 1, [](ll a, ll b)
+                      { return a + b; }, 0);
+  repR(i, n - 1)
   {
-    ll v = seg.getsum(i, i + 1);
-    if (i == n - 1)
-    {
-      dp[i] = v;
-      break;
-    }
-    dp[i] = (a[i] + 1) * modinv(a[i], MOD) * v + 1 * modinv(a[i], MOD);
-    dp[i] %= MOD;
-    seg.add((dp[i] + 1) * modinv(a[i] + 1, MOD) % MOD, i + 1, i + a[i] + 1);
+    ll v = seg.query(i + 1, min(n, i + a[i] + 1));
+    v %= MOD;
+    ll res = v * modinv(a[i], MOD) + (a[i] + 1) * modinv(a[i], MOD);
+    res %= MOD;
+    seg.update(i, res);
   }
-  rep(i, n)
-  {
-    cout << dp[i] << " ";
-  }
+  cout << seg.query(0, 1) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

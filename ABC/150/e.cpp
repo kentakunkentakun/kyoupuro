@@ -22,7 +22,7 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 998244353LL;
+const ll MOD = 1e9 + 7LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
@@ -71,8 +71,46 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+
+long long modpow(long long a, long long n, long long mod)
+{
+  a %= mod;
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
+
 int main()
 {
+  ll n;
+  cin >> n;
+  vll c(n);
+  rep(i, n) cin >> c[i];
+  sort(all(c));
+  ll ans = 0;
+  ll comb = 1;
+  ll t = 1;
+  repR(i, n)
+  {
+    ll res = c[i] * comb;
+    res %= MOD;
+    ans += res + ans;
+    ans %= MOD;
+    comb *= 2;
+    comb += t;
+    comb %= MOD;
+    t *= 2;
+    t %= MOD;
+  }
+  ans *= modpow(2, n, MOD);
+  ans %= MOD;
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -64,6 +64,142 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, m, l;
+  cin >> n >> m >> l;
+  vll a(n), b(m), c(l);
+  rep(i, n) cin >> a[i];
+  rep(i, m) cin >> b[i];
+  rep(i, l) cin >> c[i];
+  vector<pll> p(0);
+  ll ak = 0;
+  ll bk = 0;
+  ll ck = 0;
+  rep(i, n)
+  {
+    p.pb({a[i], 0});
+  }
+  rep(i, m)
+  {
+    p.pb({b[i], 1});
+  }
+  rep(i, l)
+  {
+    p.pb({c[i], 2});
+  }
+  sort(all(p));
+
+  repR(i, p.size())
+  {
+    ak *= 2;
+    bk *= 2;
+    ck *= 2;
+    if (p[i].S == 0)
+    {
+      ak++;
+    }
+    else if (p[i].S == 1)
+    {
+      bk++;
+    }
+    else
+    {
+      ck++;
+    }
+  }
+  ll k = n + m + l;
+  map<tuple<ll, ll, ll, ll>, int> dp;
+  auto dfs = [&](auto dfs, ll ak, ll bk, ll ck, ll turn) -> int
+  {
+    if (dp.count({ak, bk, ck, turn}))
+    {
+      return dp[{ak, bk, ck, turn}];
+    }
+
+    if (turn == 0 && ak == 0)
+    {
+      return dp[{ak, bk, ck, turn}] = 0;
+    }
+    if (turn == 1 && bk == 0)
+    {
+      return dp[{ak, bk, ck, turn}] = 0;
+    }
+    int res = 1;
+    if (turn == 0)
+    {
+      vector<pll> tehuda(0);
+      vector<pll> ba(0);
+      rep(i, k)
+      {
+        if (ak >> i & 1)
+        {
+          tehuda.pb({p[i].F, i});
+        }
+        if (ck >> i & 1)
+        {
+          ba.pb({p[i].F, i});
+        }
+      }
+      rep(i, tehuda.size())
+      {
+        rep(j, ba.size())
+        {
+          if (tehuda[i].F > ba[j].F)
+          {
+            ll nx_ak = ak & ~(1 << tehuda[i].S);
+            nx_ak |= (1 << ba[j].S);
+            ll nx_ck = ck & ~(1 << ba[j].S);
+            nx_ck |= (1 << tehuda[i].S);
+            chmin(res, dfs(dfs, nx_ak, bk, nx_ck, 1 - turn));
+          }
+        }
+        ll nx_ak = ak & ~(1 << tehuda[i].S);
+        ll nx_ck = ck | (1 << tehuda[i].S);
+        chmin(res, dfs(dfs, nx_ak, bk, nx_ck, 1 - turn));
+      }
+    }
+    else
+    {
+      vector<pll> tehuda(0);
+      vector<pll> ba(0);
+      rep(i, k)
+      {
+        if (bk >> i & 1)
+        {
+          tehuda.pb({p[i].F, i});
+        }
+        if (ck >> i & 1)
+        {
+          ba.pb({p[i].F, i});
+        }
+      }
+      rep(i, tehuda.size())
+      {
+        rep(j, ba.size())
+        {
+          if (tehuda[i].F > ba[j].F)
+          {
+            ll nx_bk = bk & ~(1LL << tehuda[i].S);
+            nx_bk |= (1 << ba[j].S);
+            ll nx_ck = ck & ~(1LL << ba[j].S);
+            nx_ck |= (1 << tehuda[i].S);
+            chmin(res, dfs(dfs, ak, nx_bk, nx_ck, 1 - turn));
+          }
+        }
+        ll nx_bk = bk & ~(1LL << tehuda[i].S);
+        ll nx_ck = ck | (1LL << tehuda[i].S);
+        chmin(res, dfs(dfs, ak, nx_bk, nx_ck, 1 - turn));
+      }
+    }
+    return dp[{ak, bk, ck, turn}] = 1 - res;
+  };
+  if (dfs(dfs, ak, bk, ck, 0))
+  {
+    cout << "Takahashi" << endl;
+  }
+  else
+  {
+    cout << "Aoki" << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

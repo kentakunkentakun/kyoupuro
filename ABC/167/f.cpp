@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +63,147 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct S
+{
+  ll v, minus, empty;
+};
+S op(S a, S b)
+{
+  if (a.empty)
+  {
+    return b;
+  }
+  else if (b.empty)
+  {
+    return a;
+  }
+  if (a.v == b.v)
+  {
+    if (a.minus < b.minus)
+    {
+      return b;
+    }
+    else
+    {
+      return a;
+    }
+  }
+  else if (a.v > b.v)
+  {
+    return a;
+  }
+  return b;
+}
+S e()
+{
+  return {-INF, 0, true};
+}
 int main()
 {
+  ll n;
+  cin >> n;
+  vector<string> s(n);
+  rep(i, n) cin >> s[i];
+  ll cnt = 0;
+  rep(i, n)
+  {
+    rep(j, s[i].size())
+    {
+      if (s[i][j] == ')')
+      {
+        cnt--;
+      }
+      else
+      {
+        cnt++;
+      }
+    }
+  }
+  if (cnt != 0)
+  {
+    cout << "No" << endl;
+    return 0;
+  }
+  vector<pll> p(0);
+  rep(i, n)
+  {
+    ll tmp = 0;
+    ll saitei = INF;
+    ll tmp2 = 0;
+    rep(j, s[i].size())
+    {
+      if (s[i][j] == ')')
+      {
+        tmp2--;
+        tmp--;
+      }
+      else
+      {
+        tmp2++;
+        tmp++;
+      }
+      chmin(saitei, tmp);
+    }
+    p.pb({tmp2, saitei});
+  }
+  vector<S> ini(1000005);
+
+  PQ(pll)
+  que;
+  vector<priority_queue<ll>> wait(1000005);
+  rep(i, p.size())
+  {
+    if (p[i].S >= 0)
+    {
+      que.push(p[i]);
+    }
+    else
+    {
+      wait[p[i].S * -1].push(p[i].F);
+    }
+  }
+  rep(i, 1000005)
+  {
+    if (wait[i].size() == 0)
+      ini[i] = e();
+    else
+    {
+      ini[i] = {wait[i].top(), i, false};
+    }
+  }
+  que.push({-INF, 0});
+  segtree<S, op, e> seg(ini);
+  ll now = 0;
+  rep(i, n)
+  {
+    S ma = seg.prod(0, now + 1);
+    pll tp = que.top();
+    if (ma.v >= tp.F && !ma.empty)
+    {
+      now += ma.v;
+      wait[ma.minus].pop();
+      if (wait[ma.minus].size())
+      {
+        ll nx = wait[ma.minus].top();
+        seg.set(ma.minus, {nx, ma.minus, false});
+      }
+      else
+      {
+        seg.set(ma.minus, e());
+      }
+    }
+    else
+    {
+      now += tp.F;
+      que.pop();
+    }
+    if (now < 0)
+    {
+      cout << "No" << endl;
+      return 0;
+    }
+  }
+  cout << "Yes" << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

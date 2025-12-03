@@ -22,8 +22,7 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
@@ -32,6 +31,8 @@ using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -71,8 +72,70 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+
+// a^n mod を計算する
+
+long long modpow(long long a, long long n, long long mod)
+{
+  a %= mod;
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
 int main()
 {
+  ll b = 911382323;
+  ll t;
+  cin >> t;
+  rep(T, t)
+  {
+    string x, y;
+    cin >> x >> y;
+    ll yh = 0;
+    rep(i, y.size())
+    {
+      yh *= b;
+      yh += (y[i] - '0');
+      yh %= MOD;
+    }
+    ll xh = 0;
+    rep(i, x.size())
+    {
+      xh *= b;
+      xh += (x[i] - '0');
+      xh %= MOD;
+    }
+    bool ok = false;
+    ll cnt = 0;
+    rep(i, x.size())
+    {
+      if (xh == yh)
+      {
+        ok = true;
+        break;
+      }
+      xh -= (x[i] - '0') * modpow(b, x.size() - 1, MOD);
+      xh += MOD;
+      xh *= b;
+      xh += (x[i] - '0');
+      xh %= MOD;
+      cnt++;
+    }
+    if (ok)
+    {
+      cout << cnt << endl;
+    }
+    else
+    {
+      cout << -1 << endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

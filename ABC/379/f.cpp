@@ -62,8 +62,108 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+template <typename T>
+struct SegmentTree
+{
+  typedef function<T(T, T)> F;
+  int n; // 要素数
+  F f;   // 2項演算
+  T e;   // 単位元
+  vector<T> dat;
+  SegmentTree(int n_, F f, T e) : f(f), e(e)
+  {
+    init(n_);
+    build();
+  }
+  SegmentTree(int n_, F f, T e, vector<T> &v) : f(f), e(e)
+  {
+    init(n_);
+    build(n_, v);
+  }
+  void init(int n_)
+  {
+    n = 1;
+    while (n < n_)
+      n <<= 1;
+    dat.clear();
+    dat.resize(n << 1, e);
+  }
+  void build(int n_, const vector<T> &v)
+  {
+    for (int i = 0; i < n_; ++i)
+      dat[n + i] = v[i];
+    build();
+  }
+  void build()
+  {
+    for (int i = n - 1; i >= 1; --i)
+    {
+      dat[i] = f(dat[i << 1], dat[i << 1 | 1]);
+    }
+  }
+  void update(int k, const T &x)
+  {
+    dat[k += n] = x;
+    while (k >>= 1)
+    {
+      dat[k] = f(dat[k << 1], dat[k << 1 | 1]);
+    }
+  }
+  T query(int a, int b)
+  {
+    T l = e, r = e;
+    for (a += n, b += n; a < b; a >>= 1, b >>= 1)
+    {
+      if (a & 1)
+        l = f(l, dat[a++]);
+      if (b & 1)
+        r = f(dat[--b], r);
+    }
+    return f(l, r);
+  }
+};
 int main()
 {
+  ll n, q;
+  cin >> n >> q;
+  vll h(n);
+  rep(i, n) cin >> h[i];
+  SegmentTree<ll> seg(n, [](ll a, ll b)
+                      { return max(a, b); }, 0, h);
+  vector<ll> watch(0);
+  vector<tuple<ll, ll, ll>> query(q);
+  rep(i, q)
+  {
+    ll l, r;
+    cin >> l >> r;
+    l--;
+    r--;
+    query[i] = {r, l, i};
+  }
+  sort(rall(query));
+  ll it = n - 1;
+  vll ans(q);
+
+  rep(i, q)
+  {
+    auto [r, l, iter] = query[i];
+    while (r < it)
+    {
+      while (watch.size() && (watch[watch.size() - 1] > -1 * h[it]))
+      {
+        watch.pop_back();
+      }
+      watch.pb(-1 * h[it]);
+      it--;
+    }
+    ll ma = seg.query(l + 1, r + 1);
+    ll cnt = watch.end() - upper_bound(all(watch), -1 * ma);
+    ans[iter] = watch.size() - cnt;
+  }
+  rep(i, q)
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

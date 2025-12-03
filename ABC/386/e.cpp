@@ -64,6 +64,33 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, k;
+  cin >> n >> k;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  ll res = 0;
+  ll sum = 0;
+  if (k > n / 2)
+  {
+    k = n - k;
+    rep(i, n) sum ^= a[i];
+  }
+  auto dfs = [&](auto dfs, ll now, int cnt, ll x)
+  {
+    if (cnt == k)
+    {
+      chmax(res, sum ^ x);
+      return 0;
+    }
+    for (int nx = now + 1; nx <= n - (k - cnt); nx++)
+    {
+      dfs(dfs, nx, cnt + 1, x ^ a[nx]);
+    }
+    return 0;
+  };
+  dfs(dfs, -1, 0, 0);
+
+  cout << res << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

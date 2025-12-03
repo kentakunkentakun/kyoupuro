@@ -62,8 +62,101 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+long long modpow(long long a, long long n, long long mod)
+{
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
+struct edge
+{
+  ll u, v, cost;
+};
+bool comp(edge a, edge b)
+{
+  return a.cost > b.cost;
+}
+// Union Find
+
+template <typename T>
+struct UnionFind
+{
+  vector<T> par;
+  vector<T> rank;
+  vector<T> sizes;
+  UnionFind(T n) : par(n), rank(n, 0), sizes(n, 1)
+  {
+    for (T i = 0; i < n; i++)
+    {
+      par[i] = i;
+    }
+  }
+  T root(T x)
+  {
+    return par[x] == x ? x : par[x] = root(par[x]);
+  }
+
+  bool unite(T x, T y)
+  {
+    if (x == y)
+      return false;
+    x = root(x);
+    y = root(y);
+    if (x == y)
+      return false;
+    if (rank[x] < rank[y])
+      swap(x, y);
+    if (rank[x] == rank[y])
+      rank[x]++;
+    par[y] = x;
+    sizes[x] = sizes[x] + sizes[y];
+    return true;
+  }
+  bool same(T x, T y)
+  {
+    return root(x) == root(y);
+  }
+  T size(T x)
+  {
+    return sizes[root(x)];
+  }
+};
+
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  vector<edge> e(0);
+  rep(i, n)
+  {
+    for (int j = i + 1; j < n; j++)
+    {
+      ll cost = modpow(a[i], a[j], m) + modpow(a[j], a[i], m);
+      cost %= m;
+      e.pb({i, j, cost});
+    }
+  }
+
+  sort(all(e), comp);
+  UnionFind<ll> uf(n);
+  ll ans = 0;
+  rep(i, e.size())
+  {
+    auto [u, v, cost] = e[i];
+    if (uf.same(u, v))
+      continue;
+    ans += cost;
+    uf.unite(u, v);
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

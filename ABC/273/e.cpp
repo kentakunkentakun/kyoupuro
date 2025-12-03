@@ -71,80 +71,51 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+struct node
+{
+  ll v, back;
+};
 int main()
 {
   ll q;
   cin >> q;
   vector<pair<string, ll>> query(q);
+  vector<node> a(0);
+  a.pb({-1, 0});
+  map<ll, ll> note;
+  ll now = 0;
+  vll ans(0);
   rep(i, q)
   {
-    cin >> query[i].F;
-    if (query[i].F != "DELETE")
+    string s;
+    cin >> s;
+    if (s == "ADD")
     {
-      cin >> query[i].S;
+      ll v;
+      cin >> v;
+      ll iter = a.size();
+      a.pb({v, now});
+      now = iter;
     }
-    else
+    else if (s == "DELETE")
     {
-      query[i].S = -1;
+      now = a[now].back;
     }
+    else if (s == "SAVE")
+    {
+      ll v;
+      cin >> v;
+      note[v] = now;
+    }
+    else if (s == "LOAD")
+    {
+      ll v;
+      cin >> v;
+      now = note[v];
+    }
+    ans.pb(a[now].v);
   }
-  ll cnt = 1;
-  map<ll, ll> load;
-  // iter,cnt;
-  map<ll, ll> save;
-  map<ll, ll> save_b;
-  repR(i, q)
-  {
-    if (query[i].F == "DELETE")
-      cnt++;
-    if (query[i].F == "LOAD")
-    {
-      chmax(load[query[i].S], cnt);
-      cnt = 1;
-    }
-    if (query[i].F == "SAVE")
-    {
-      save[i] = load[query[i].S];
-      chmax(save_b[query[i].S], save[i]);
-      chmax(save[i], save_b[query[i].S]);
-      load[query[i].S] = 0;
-    }
-  }
-  vll tmp(0);
-  map<ll, vll> ssd;
-  rep(i, q)
-  {
-    string qry = query[i].F;
-    ll x = query[i].S;
-    if (qry == "ADD")
-    {
-      tmp.pb(x);
-    }
-    if (qry == "SAVE")
-    {
-      ll count = save[i];
-      int k = min<ll>(count, (ll)tmp.size());
-      vector<ll> last(tmp.end() - k, tmp.end());
-      ssd[x] = last;
-    }
-    if (qry == "LOAD")
-    {
-      tmp = ssd[x];
-    }
-    if (qry == "DELETE")
-    {
-      if (tmp.size())
-        tmp.pop_back();
-    }
-    if (tmp.size())
-    {
-      cout << tmp.back() << endl;
-    }
-    else
-    {
-      cout << -1 << endl;
-    }
-  }
+  printArray(ans);
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

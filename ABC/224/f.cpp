@@ -71,8 +71,42 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+
+// a^n mod を計算する
+
+long long modpow(long long a, long long n, long long mod)
+{
+  a %= mod;
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
+
 int main()
 {
+  string s;
+  cin >> s;
+  ll n = s.size();
+  vvll dp(n + 1, vll(2));
+  rep(i, n)
+  {
+    ll num = s[i] - '0';
+    dp[i + 1][1] += dp[i][1] * 2;
+    dp[i + 1][1] %= MOD;
+    dp[i + 1][1] += dp[i][0];
+    dp[i + 1][1] %= MOD;
+    dp[i + 1][0] += dp[i][0] * 10;
+    dp[i + 1][0] %= MOD;
+    dp[i + 1][0] += num * modpow(2, i, MOD);
+    dp[i + 1][0] %= MOD;
+  }
+  cout << (dp[n][1] + dp[n][0]) % MOD << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

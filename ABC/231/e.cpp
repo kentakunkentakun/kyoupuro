@@ -64,6 +64,27 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, x;
+  cin >> n >> x;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  sort(rall(a));
+  map<pll, ll> dp;
+  auto dfs = [&](auto dfs, ll i, ll remain) -> ll
+  {
+    if (dp.count({i, remain}))
+    {
+      return dp[{i, remain}];
+    }
+    if (remain == 0)
+    {
+      return dp[{i, remain}] = 0;
+    }
+    ll r = remain - remain / a[i] * a[i];
+    ll k = abs(remain - (remain + a[i] - 1) / a[i] * a[i]);
+    return dp[{i, remain}] = min(dfs(dfs, i + 1, r) + remain / a[i], dfs(dfs, i + 1, k) + (remain + a[i] - 1) / a[i]);
+  };
+  cout << dfs(dfs, 0, x) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

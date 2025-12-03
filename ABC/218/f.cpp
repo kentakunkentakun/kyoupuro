@@ -71,8 +71,107 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+struct e
+{
+  ll to, iter;
+};
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vector<vector<e>> t(n, vector<e>(0));
+  vector<vector<e>> rt(n, vector<e>(0));
+
+  rep(i, m)
+  {
+    ll u, v;
+    cin >> u >> v;
+    u--;
+    v--;
+    t[u].pb({v, i});
+    rt[v].pb({u, i});
+  }
+  vll dist(n, INF);
+  dist[0] = 0;
+  queue<ll> que;
+  que.push(0);
+  while (que.size())
+  {
+    ll now = que.front();
+    que.pop();
+    for (auto [nx, iter] : t[now])
+    {
+      if (dist[nx] == INF)
+      {
+        que.push(nx);
+        dist[nx] = dist[now] + 1;
+      }
+    }
+  }
+  set<ll> path;
+  vll rdist(n, INF);
+  que.push(n - 1);
+  rdist[n - 1] = 0;
+  while (que.size())
+  {
+    ll now = que.front();
+    que.pop();
+    for (auto [nx, iter] : rt[now])
+    {
+      if (rdist[nx] == INF)
+      {
+        rdist[nx] = rdist[now] + 1;
+        que.push(nx);
+      }
+    }
+  }
+  ll len = dist[n - 1];
+  if (len == INF)
+    len = 0;
+  ll now = 0;
+  rep(i, len)
+  {
+    for (auto [nx, iter] : t[now])
+    {
+      if (dist[nx] == dist[now] + 1 && dist[nx] + rdist[nx] == len && !path.count(iter))
+      {
+        path.insert(iter);
+        now = nx;
+        break;
+      }
+    }
+    if (now == n - 1)
+    {
+      break;
+    }
+  }
+  rep(i, m)
+  {
+    if (path.count(i))
+    {
+      vll d(n, INF);
+      d[0] = 0;
+      que.push(0);
+      while (que.size())
+      {
+        ll now = que.front();
+        que.pop();
+        for (auto [nx, iter] : t[now])
+        {
+          if (iter != i && d[nx] == INF)
+          {
+            d[nx] = d[now] + 1;
+            que.push(nx);
+          }
+        }
+      }
+      cout << (d[n - 1] != INF ? d[n - 1] : -1) << endl;
+    }
+    else
+    {
+      cout << (dist[n - 1] != INF ? dist[n - 1] : -1) << endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

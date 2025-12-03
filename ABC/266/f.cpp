@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/dsu>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +63,67 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+
 int main()
 {
+
+  int timer = 0;
+  ll N;
+  cin >> N;
+  dsu uf(N);
+  vvll G(N, vll(0));
+  rep(i, N)
+  {
+    ll u, v;
+    cin >> u >> v;
+    u--;
+    v--;
+    G[u].pb(v);
+    G[v].pb(u);
+  }
+  vector<int> ord(N, -1), low(N, -1);
+
+  auto dfs = [&](auto dfs, int u, int p) -> void
+  {
+    ord[u] = low[u] = timer++;
+    for (int v : G[u])
+    {
+      if (v == p)
+        continue;
+      if (ord[v] == -1)
+      { // まだ見てない → 木辺
+        dfs(dfs, v, u);
+        low[u] = min(low[u], low[v]);
+        if (low[v] > ord[u])
+        {
+          // (u, v) は橋
+          uf.merge(u, v);
+        }
+      }
+      else
+      { // すでに見た → 後退辺
+        low[u] = min(low[u], ord[v]);
+      }
+    }
+  };
+  dfs(dfs, 0, -1);
+  ll q;
+  cin >> q;
+  rep(i, q)
+  {
+    ll x, y;
+    cin >> x >> y;
+    x--;
+    y--;
+    if (uf.same(x, y))
+    {
+      cout << "Yes" << endl;
+    }
+    else
+    {
+      cout << "No" << endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

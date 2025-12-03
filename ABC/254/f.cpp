@@ -22,7 +22,7 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
+const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
@@ -62,8 +62,122 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+template <typename T>
+struct SegmentTree
+{
+  typedef function<T(T, T)> F;
+  int n; // 要素数
+  F f;   // 2項演算
+  T e;   // 単位元
+  vector<T> dat;
+  SegmentTree(int n_, F f, T e) : f(f), e(e)
+  {
+    init(n_);
+    build();
+  }
+  SegmentTree(int n_, F f, T e, vector<T> &v) : f(f), e(e)
+  {
+    init(n_);
+    build(n_, v);
+  }
+  void init(int n_)
+  {
+    n = 1;
+    while (n < n_)
+      n <<= 1;
+    dat.clear();
+    dat.resize(n << 1, e);
+  }
+  void build(int n_, const vector<T> &v)
+  {
+    for (int i = 0; i < n_; ++i)
+      dat[n + i] = v[i];
+    build();
+  }
+  void build()
+  {
+    for (int i = n - 1; i >= 1; --i)
+    {
+      dat[i] = f(dat[i << 1], dat[i << 1 | 1]);
+    }
+  }
+  void update(int k, const T &x)
+  {
+    dat[k += n] = x;
+    while (k >>= 1)
+    {
+      dat[k] = f(dat[k << 1], dat[k << 1 | 1]);
+    }
+  }
+  T query(int a, int b)
+  {
+    T l = e, r = e;
+    for (a += n, b += n; a < b; a >>= 1, b >>= 1)
+    {
+      if (a & 1)
+        l = f(l, dat[a++]);
+      if (b & 1)
+        r = f(dat[--b], r);
+    }
+    return f(l, r);
+  }
+};
+// gcd lcm
+ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a; }
+ll lcm(ll a, ll b) { return a / gcd(a, b) * b; }
+
 int main()
 {
+  ll n, q;
+  cin >> n >> q;
+  vll a(n), b(n);
+  rep(i, n) cin >> a[i];
+  rep(i, n) cin >> b[i];
+  SegmentTree<ll> segA(n - 1, [](ll a, ll b)
+                       { return gcd(a, b); }, 0);
+  SegmentTree<ll> segB(n - 1, [](ll a, ll b)
+                       { return gcd(a, b); }, 0);
+  SegmentTree<ll> minA(n, [](ll a, ll b)
+                       { return min(a, b); }, INF);
+  SegmentTree<ll> minB(n, [](ll a, ll b)
+                       { return min(a, b); }, INF);
+  rep(i, n)
+  {
+    if (i < n - 1)
+    {
+      segA.update(i, a[i] - a[i + 1]);
+      segB.update(i, b[i] - b[i + 1]);
+    }
+    minA.update(i, a[i]);
+    minB.update(i, b[i]);
+  }
+  vll ans(0);
+  rep(i, q)
+  {
+    ll h1, h2, w1, w2;
+    cin >> h1 >> h2 >> w1 >> w2;
+    ll mi = minA.query(h1 - 1, h2) + minB.query(w1 - 1, w2);
+    if (h1 == h2 && w1 == w2)
+    {
+      ans.pb(mi);
+    }
+    else if (h1 == h2)
+    {
+      ans.pb(gcd(mi, segB.query(w1 - 1, w2 - 1)));
+    }
+    else if (w1 == w2)
+    {
+      ans.pb(gcd(mi, segA.query(h1 - 1, h2 - 1)));
+    }
+    else
+    {
+      ans.pb(gcd(mi, gcd(segA.query(h1 - 1, h2 - 1), segB.query(w1 - 1, w2 - 1))));
+    }
+  }
+  rep(i, q)
+  {
+    cout << abs(ans[i]) << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
