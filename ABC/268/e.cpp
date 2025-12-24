@@ -64,6 +64,149 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll p(n);
+  ll minus = 0;
+  ll plus = 0;
+  ll res = 0;
+  ll ans = INF;
+  if (n % 2 == 0)
+  {
+    vvll t(n, vll(2));
+    rep(i, n)
+    {
+      cin >> p[i];
+      ll rev, f;
+      if (p[i] > i)
+      {
+        rev = (p[i] - i);
+        f = n - (p[i] - i);
+      }
+      else if (p[i] < i)
+      {
+        rev = n - (i - p[i]);
+        f = i - p[i];
+      }
+      else
+      {
+        rev = n;
+        f = 0;
+      }
+      ll mi = min(rev, f);
+      res += mi;
+      if (rev > f)
+      {
+        plus++;
+        // そこまでプラス
+        t[n / 2 - mi][0]++;
+      }
+      else if (rev < f)
+      {
+        t[mi][1]++;
+        minus++;
+      }
+      else if (mi == n / 2)
+      {
+        t[0][0]++;
+        plus++;
+      }
+      else
+      {
+        t[0][1]++;
+        minus++;
+      }
+    }
+    rep(i, n)
+    {
+      chmin(ans, res);
+      minus += t[i][0] - t[i][1];
+      plus += t[i][1] - t[i][0];
+      res = res + plus - minus;
+      if (i + n / 2 < n)
+      {
+        t[i + n / 2][1] += t[i][0];
+        t[i + n / 2][0] += t[i][1];
+      }
+    }
+    chmin(ans, res);
+    cout << ans << endl;
+  }
+  else
+  {
+    vvll t(n, vll(3));
+    rep(i, n)
+    {
+      cin >> p[i];
+      ll rev, f;
+      if (p[i] > i)
+      {
+        rev = (p[i] - i);
+        f = n - (p[i] - i);
+      }
+      else if (p[i] < i)
+      {
+        rev = n - (i - p[i]);
+        f = i - p[i];
+      }
+      else
+      {
+        rev = n;
+        f = 0;
+      }
+      ll mi = min(rev, f);
+      res += mi;
+      if (rev > f)
+      {
+        if (f < n / 2)
+        {
+          plus++;
+          // そこまでプラス
+          t[n / 2 - mi][0]++;
+        }
+        else
+        {
+          t[n / 2 - mi + 1][1]++;
+        }
+      }
+      else if (rev < f)
+      {
+        if (rev < n / 2)
+        {
+          t[mi][2]++;
+          minus++;
+        }
+        else
+        {
+          t[n / 2][2]++;
+          minus++;
+        }
+      }
+      else
+      {
+        t[0][2]++;
+        minus++;
+      }
+    }
+    rep(i, n)
+    {
+      chmin(ans, res);
+      minus += t[i][1] - t[i][2];
+      plus += t[i][2] - t[i][0];
+      if (i + 1 < n)
+      {
+        t[i + 1][1] += t[i][0];
+      }
+      res = res + plus - minus;
+      if (i + n / 2 < n)
+      {
+        t[i + n / 2][2] += t[i][1];
+        t[i + n / 2][0] += t[i][2];
+      }
+    }
+    chmin(ans, res);
+    cout << ans << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

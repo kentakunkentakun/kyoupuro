@@ -70,6 +70,74 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll t;
+  cin >> t;
+  vll ans(t);
+  rep(T, t)
+  {
+    ll h, w;
+    cin >> h >> w;
+    vector<vector<char>> s(h, vector<char>(w));
+    rep(i, h)
+    {
+      rep(j, w)
+      {
+        cin >> s[i][j];
+      }
+    }
+    if (h > w)
+    {
+      vector<vector<char>> tmp(w, vector<char>(h));
+      rep(i, h)
+      {
+        rep(j, w)
+        {
+          tmp[j][i] = s[i][j];
+        }
+      }
+      s = tmp;
+      swap(h, w);
+    }
+    vvll t(w, vll(h + 1));
+    rep(i, w)
+    {
+      rep(j, h)
+      {
+        t[i][j + 1] += t[i][j] + ((s[j][i] == '#') ? -1 : 1);
+      }
+    }
+    vll tmp(2 * h * w + 5, 0);
+    ll mid = (h * w);
+
+    ll res = 0;
+    rep(i, h)
+    {
+      for (int j = i + 1; j <= h; j++)
+      {
+        
+        tmp[mid]++;
+        ll cnt = mid;
+        vll c(w);
+        rep(z, w)
+        {
+          cnt += t[z][j] - t[z][i];
+          res += tmp[cnt];
+          tmp[cnt]++;
+          c[z] = cnt;
+        }
+        rep(z, w)
+        {
+          tmp[c[z]]--;
+        }
+        tmp[mid] = 0;
+      }
+    }
+    ans[T] = res;
+  }
+  rep(i, t)
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/lazysegtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,9 +63,111 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+ll op(ll a, ll b)
+{
+  return a + b;
+}
+ll e()
+{
+  return 0;
+}
+struct Act
+{
+  ll v;
+};
+ll mapping(Act f, ll a)
+{
+  return a + f.v;
+}
+Act composition(Act a, Act b)
+{
+  return {a.v + b.v};
+}
+Act id()
+{
+  return {0};
+}
 int main()
 {
-  ll n
+  ll n, m, q;
+  cin >> n >> m >> q;
+  vector<pll> p(m);
+  vll ini(m);
+  lazy_segtree<ll, op, e, Act, mapping, composition, id> seg(ini);
+  vector<tuple<ll, ll, ll, ll>> query(q);
+  vector<vector<tuple<ll, ll, ll>>> u(n, vector<tuple<ll, ll, ll>>(0));
+  ll iter = 0;
+  rep(i, q)
+  {
+    ll t;
+    cin >> t;
+    if (t == 1)
+    {
+      ll l, r, x;
+      cin >> l >> r >> x;
+      query[i] = {t, l, r, x};
+    }
+    else if (t == 2)
+    {
+      ll j, x;
+      cin >> j >> x;
+      query[i] = {t, j, x, -1};
+    }
+    else
+    {
+      ll x, y;
+      cin >> x >> y;
+      query[i] = {t, x, y, iter};
+      iter++;
+    }
+  }
+  vll ans(iter);
+
+  rep(i, m)
+  {
+    // 初期値,それまでの累積
+    p[i] = {0, 0};
+  }
+  repR(i, q)
+  {
+    auto [t, _, __, ___] = query[i];
+    if (t == 1)
+    {
+      auto [_, l, r, x] = query[i];
+      l--;
+      r--;
+      seg.apply(l, r + 1, {x});
+    }
+    else if (t == 2)
+    {
+      auto [_, j, x, __] = query[i];
+      j--;
+      for (auto [rui, y, iter] : u[j])
+      {
+        ans[iter] = seg.prod(y, y + 1) - rui + x;
+      }
+      u[j] = {};
+    }
+    else
+    {
+      auto [_, x, y, it] = query[i];
+      x--;
+      y--;
+      // 累積,yの値,ansのiter
+      u[x].pb({seg.prod(y, y + 1), y, it});
+    }
+  }
+  rep(i, n)
+  {
+    for (auto [rui, y, iter] : u[i])
+    {
+      ans[iter] = seg.prod(y, y + 1) - rui;
+    }
+  }
+  rep(i, ans.size())
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/lazysegtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -22,15 +23,20 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -62,46 +68,78 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
+struct S
+{
+  ll k, v;
+};
+S op(S a, S b)
+{
+  return {(a.k + b.k) % MOD, (a.v + b.v) % MOD};
+}
+S e()
+{
+  return {
+      0, 0};
+}
+struct Act
+{
+  ll a;
+  bool id;
+};
+S mapping(Act f, S a)
+{
+  if (f.id)
+  {
+    return a;
+  }
+  return {a.k, a.k * f.a % MOD};
+}
+Act composition(Act f, Act g)
+{
+  if (f.id)
+  {
+    return g;
+  }
+  return {f.a, false};
+}
+Act id()
+{
+  return {0, true};
+};
 int main()
 {
-  ll h, w, m;
-  cin >> h >> w >> m;
-  vll h_min(h, w), w_min(w, h);
-  ll ans = 0;
-  ll h_last = h;
-  ll w_last = w;
-  rep(i, m)
+  ll n, q;
+  cin >> n >> q;
+  vector<S> ini(n);
+  ll tmp = 1;
+  repR(i, n)
   {
-    ll x, y;
-    cin >> x >> y;
-    x--;
-    y--;
-    chmin(h_min[x], y);
-    chmin(w_min[y], x);
-    if (y == 0)
-    {
-      chmin(h_last, x);
-    }
-    if (x == 0)
-    {
-      chmin(w_last, y);
-    }
+    ini[i] = {tmp, tmp};
+    tmp *= 10;
+    tmp %= MOD;
   }
-  vll t(0);
-  rep(i, w)
+  vll ans(q);
+  lazy_segtree<S, op, e, Act, mapping, composition, id> seg(ini);
+  rep(i, q)
   {
-    if (i == 0)
-      continue;
-    t.pb(w_min[i]);
+    ll l, r, d;
+    cin >> l >> r >> d;
+    l--;
+    r--;
+    seg.apply(l, r + 1, {d, false});
+    ans[i] = seg.all_prod().v;
   }
-  sort(all(t));
-  ll dupl = 0;
-  rep(i, h_last)
+  rep(i, q)
   {
-    if (i == 0)
-      continue;
-    ans += h_min[i];
-    dupl += lower_bound(all(t),);
+    cout << ans[i] << endl;
   }
 }
 /*cin.tie(0);
@@ -113,4 +151,9 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)*/
+__builtin_popcountll(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

@@ -34,6 +34,7 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -71,6 +72,75 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  string ini = "";
+  rep(i, n * 2 + 1)
+  {
+    ini += '$';
+  }
+  vector<vector<string>> dp(2001, vector<string>(2, ini));
+  dp[1][0] = "1";
+  dp[1][1] = "1";
+  dp[11][0] = "11";
+  dp[11][1] = "11";
+  dp[111][0] = "111";
+  dp[111][1] = "111";
+  dp[1111][0] = "1111";
+  dp[1111][1] = "1111";
+  // 0 = 積 1 = 和
+  for (int i = 2; i <= n; i++)
+  {
+    for (int j = 1; j < i; j++)
+    {
+      if (i % j == 0 && j != 1)
+      {
+        if (dp[i][0].size() > dp[i / j][0].size() + dp[j][0].size() + 1)
+        {
+          dp[i][0] = dp[i / j][0] + '*' + dp[j][0];
+        }
+        if (dp[i][0].size() > dp[i / j][0].size() + dp[j][1].size() + 3)
+        {
+          dp[i][0] = dp[i / j][0] + "*(" + dp[j][1] + ')';
+        }
+        if (dp[i][0].size() > dp[i / j][1].size() + dp[j][0].size() + 3)
+        {
+          dp[i][0] = '(' + dp[i / j][1] + ")*" + dp[j][0];
+        }
+        if (dp[i][0].size() > dp[i / j][1].size() + dp[j][1].size() + 5)
+        {
+          dp[i][0] = '(' + dp[i / j][1] + ")*(" + dp[j][1] + ')';
+        }
+      }
+      ll l = i - j;
+      ll r = j;
+
+      if (dp[i][1].size() > dp[l][0].size() + dp[r][0].size() + 1)
+      {
+        dp[i][1] = dp[l][0] + '+' + dp[r][0];
+      }
+      if (dp[i][1].size() > dp[l][1].size() + dp[r][0].size() + 1)
+      {
+        dp[i][1] = dp[l][1] + '+' + dp[r][0];
+      }
+      if (dp[i][1].size() > dp[l][0].size() + dp[r][1].size() + 1)
+      {
+        dp[i][1] = dp[l][0] + '+' + dp[r][1];
+      }
+      if (dp[i][1].size() > dp[l][1].size() + dp[r][1].size() + 1)
+      {
+        dp[i][1] = dp[l][1] + '+' + dp[r][1];
+      }
+    }
+  }
+  if (dp[n][0].size() < dp[n][1].size())
+  {
+    cout << dp[n][0] << endl;
+  }
+  else
+  {
+    cout << dp[n][1] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

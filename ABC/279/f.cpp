@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/dsu>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -64,6 +65,77 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+
+  ll n, q;
+  cin >> n >> q;
+
+  ll MAX_B = 6 * 100000 + 5;
+  dsu uf(MAX_B);
+  vvll box(n, vll(0));
+  vll root(MAX_B);
+  vll ball(MAX_B);
+
+  rep(i, n)
+  {
+    box[i].pb(i);
+    root[i] = i;
+    ball[i] = i;
+  }
+  ll ma = n - 1;
+  vll ans(0);
+  rep(i, q)
+  {
+    ll t;
+    cin >> t;
+    if (t == 1)
+    {
+      ll x, y;
+      cin >> x >> y;
+      x--;
+      y--;
+
+      if (box[y].size() == 0)
+        continue;
+      if (box[x].size() == 0)
+      {
+        root[uf.leader(box[y][0])] = x;
+        box[x].pb(box[y][0]);
+        box[y] = {};
+        continue;
+      }
+      uf.merge(box[x][0], box[y][0]);
+      root[uf.leader(box[x][0])] = x;
+      box[y] = {};
+    }
+    else if (t == 2)
+    {
+      ll x;
+      cin >> x;
+      x--;
+      ma++;
+      if (box[x].size())
+      {
+        uf.merge(box[x][0], ma);
+        root[uf.leader(ma)] = x;
+      }
+      else
+      {
+        box[x].pb(ma);
+        root[uf.leader(ma)] = x;
+      }
+    }
+    else
+    {
+      ll x;
+      cin >> x;
+      x--;
+      ans.pb(root[uf.leader(x)] + 1);
+    }
+  }
+  rep(i, ans.size())
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

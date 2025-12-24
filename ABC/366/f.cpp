@@ -64,6 +64,50 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, k;
+  cin >> n >> k;
+  vector<pll> p(n);
+  rep(i, n)
+  {
+    cin >> p[i].F >> p[i].S;
+  }
+  vvll t(2501, vll(2501, 0));
+  rep(i, 2501)
+  {
+    rep(j, 2501)
+    {
+      ll ai = i / 50;
+      ll aj = (i - ai * 50) + 1;
+      ai++;
+      ll bi = j / 50;
+      ll bj = (j - bi * 50) + 1;
+      bi++;
+      if (ai * (bi + bj) + aj < bi * (ai + aj) + bj)
+      {
+        t[i][j] = 1;
+      }
+    }
+  }
+  auto comp = [&](pll i, pll j) -> bool
+  {
+    return t[(i.F - 1) * 50 + i.S - 1][(j.F - 1) * 50 + j.S - 1];
+  };
+  sort(all(p), comp);
+  vvll dp(n + 1, vll(k + 1, -1));
+  dp[0][0] = 1;
+  rep(i, n)
+  {
+    auto [a, b] = p[i];
+    rep(j, k + 1)
+    {
+      if (dp[i][j] == -1)
+        continue;
+      if (j + 1 <= k)
+        chmax(dp[i + 1][j + 1], dp[i][j] * a + b);
+      chmax(dp[i + 1][j], dp[i][j]);
+    }
+  }
+  cout << dp[n][k] << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

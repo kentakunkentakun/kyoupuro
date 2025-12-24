@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/lazysegtree>
 using namespace std;
+using namespace atcoder;
+
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -19,7 +21,8 @@ using namespace std;
 #define Yes(n) cout << ((n) ? "Yes\n" : "No\n")
 #define mp make_pair
 #define sz(x) (ll)(x).size()
-typedef pair<int, int> pii;
+typedef pair<int, int>
+    pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
 const ll MOD = 1000000007LL;
@@ -62,8 +65,132 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct S
+{
+  ll max_num_zero, max_num_one, right_num, right_len, left_num, left_len;
+
+  bool all, empty;
+};
+S op(S a, S b)
+{
+  if (a.empty)
+  {
+    return b;
+  }
+  else if (b.empty)
+  {
+    return a;
+  }
+  ll ma_one = max(a.max_num_one, b.max_num_one);
+  ll ma_zero = max(a.max_num_zero, b.max_num_zero);
+  if (a.right_num == b.left_num)
+  {
+    if (a.right_num == 0)
+      chmax(ma_zero, a.right_len + b.left_len);
+    else
+    {
+      chmax(ma_one, a.right_len + b.left_len);
+    }
+  }
+  ll nright_num = b.right_num;
+  ll nright_len = b.right_len;
+  ll nleft_num = a.left_num;
+  ll nleft_len = a.left_len;
+  if (b.all && b.right_num == a.right_num)
+  {
+    nright_num = b.right_num;
+    nright_len = a.right_len + b.right_len;
+  }
+  if (a.all && a.left_num == b.left_num)
+  {
+    nleft_num = a.left_num;
+    nleft_len = a.left_len + b.left_len;
+  }
+  bool nall = false;
+  if (a.all && b.all && a.right_num == b.right_num)
+  {
+    nall = true;
+  }
+  return {
+      ma_zero, ma_one, nright_num, nright_len, nleft_num, nleft_len, nall, false};
+}
+S e()
+{
+  return {
+      0, 0, 0, 0, 0, 0, false, false};
+}
+
+struct Act
+{
+  ll v;
+};
+
+S mapping(Act f, S a)
+{
+  if (f.v)
+  {
+    return {
+        a.max_num_one, a.max_num_zero, 1 - a.right_num, a.right_len, 1 - a.left_num, a.left_len, a.all, a.empty};
+  }
+  return a;
+}
+Act composition(Act f, Act g)
+{
+  return {(f.v + g.v) % 2};
+}
+Act id()
+{
+  return {
+      0};
+}
 int main()
 {
+  ll n, q;
+  cin >> n >> q;
+  string s;
+  cin >> s;
+  vector<S> ini(n);
+  rep(i, n)
+  {
+    if (s[i] == '0')
+    {
+      ini[i] = {
+          1, 0, s[i] - '0', 1, s[i] - '0', 1, true, false};
+    }
+    else
+    {
+      ini[i] = {
+          0,
+          1,
+          s[i] - '0',
+          1,
+          s[i] - '0',
+          1,
+          true,
+          false};
+    }
+  }
+  lazy_segtree<S, op, e, Act, mapping, composition, id> seg(ini);
+  vll ans(0);
+  rep(i, q)
+  {
+    ll c, l, r;
+    cin >> c >> l >> r;
+    l--;
+    r--;
+    if (c == 1)
+    {
+      seg.apply(l, r + 1, {1});
+    }
+    else
+    {
+      ans.pb(seg.prod(l, r + 1).max_num_one);
+    }
+  }
+  rep(i, ans.size())
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

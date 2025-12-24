@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -22,15 +23,20 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -62,47 +68,61 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
+struct S
+{
+  ll v, iter;
+};
+S op(S a, S b)
+{
+  if (a.v > b.v)
+  {
+    return a;
+  }
+  return b;
+}
+S e()
+{
+  return {-1, 0};
+};
 int main()
 {
-  ll h, w, m;
-  cin >> h >> w >> m;
-  vll h_min(h, w), w_min(w, h);
-  ll ans = 0;
-  ll h_last = h;
-  ll w_last = w;
-  rep(i, m)
+  ll n;
+  cin >> n;
+  vll p(n);
+  vector<S> ini(n);
+  ll s = 0;
+  rep(i, n)
   {
-    ll x, y;
-    cin >> x >> y;
-    x--;
-    y--;
-    chmin(h_min[x], y);
-    chmin(w_min[y], x);
-    if (y == 0)
+    cin >> p[i];
+    p[i]--;
+    if (p[i] == n - 1)
+      s = i;
+    ini[i] = {p[i], i};
+  }
+  segtree<S, op, e> seg(ini);
+  auto dfs = [&](auto dfs, ll l, ll r, ll par) -> ll
+  {
+    if (l + 1 == r)
     {
-      chmin(h_last, x);
+      if (l + 1 == r)
+        return abs(l - par);
     }
-    if (x == 0)
+    if (l == r)
     {
-      chmin(w_last, y);
+      return 0;
     }
-  }
-  vll t(0);
-  rep(i, w)
-  {
-    if (i == 0)
-      continue;
-    t.pb(w_min[i]);
-  }
-  sort(all(t));
-  ll dupl = 0;
-  rep(i, h_last)
-  {
-    if (i == 0)
-      continue;
-    ans += h_min[i];
-    dupl += lower_bound(all(t),);
-  }
+    S top = seg.prod(l, r);
+    return max(dfs(dfs, l, top.iter, top.iter), dfs(dfs, top.iter + 1, r, top.iter)) + abs(top.iter - par);
+  };
+  cout << dfs(dfs, 0, n, s) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
@@ -113,4 +133,9 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)*/
+__builtin_popcountll(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

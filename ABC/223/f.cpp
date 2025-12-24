@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/lazysegtree>
+#include <atcoder/segtree>
+using namespace atcoder;
 using namespace std;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
@@ -62,8 +64,117 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+ll op(ll a, ll b)
+{
+  return min(a, b);
+}
+ll e()
+{
+  return INF;
+}
+struct Act
+{
+  ll a;
+};
+ll mapping(Act a, ll b)
+{
+  return b + a.a;
+}
+Act composition(Act a, Act b)
+{
+  return {a.a + b.a};
+}
+Act id()
+{
+  return {0};
+}
+
+ll op2(ll a, ll b)
+{
+  return a + b;
+}
+ll e2()
+{
+  return 0;
+}
+
 int main()
 {
+  ll n, q;
+  cin >> n >> q;
+  string s;
+  cin >> s;
+  vll ini(n, 0);
+  vll inisum(n, 0);
+  rep(i, n)
+  {
+    if (s[i] == '(')
+    {
+      ini[i]++;
+      inisum[i]++;
+    }
+    else
+    {
+      ini[i]--;
+      inisum[i]--;
+    }
+    if (i > 0)
+    {
+      ini[i] += ini[i - 1];
+    }
+  }
+  lazy_segtree<ll, op, e, Act, mapping, composition, id> seg(ini);
+  segtree<ll, op2, e2> seg_sum(inisum);
+  vector<string> ans(0);
+  rep(i, q)
+  {
+    ll t;
+    cin >> t;
+    ll l, r;
+    cin >> l >> r;
+    l--;
+    r--;
+    if (t == 1)
+    {
+      if (s[l] == s[r])
+        continue;
+      else if (s[l] == '(')
+      {
+        seg.apply(l, r, {-2});
+        seg_sum.set(l, -1);
+        seg_sum.set(r, 1);
+      }
+      else
+      {
+        seg.apply(l, r, {2});
+        seg_sum.set(l, 1);
+        seg_sum.set(r, -1);
+      }
+      swap(s[l], s[r]);
+    }
+    else
+    {
+      ll left = 0;
+      if (l >= 1)
+      {
+        left = seg_sum.prod(0, l);
+      }
+      ll v = seg.prod(l, r + 1);
+      ll sum = seg_sum.prod(l, r + 1);
+      if (v - left >= 0 && sum == 0)
+      {
+        ans.pb("Yes");
+      }
+      else
+      {
+        ans.pb("No");
+      }
+    }
+  }
+  rep(i, ans.size())
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

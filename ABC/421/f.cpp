@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/lazysegtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +63,131 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct S
+{
+  ll v;
+  bool empty;
+};
+S op(S a, S b)
+{
+  if (a.empty)
+  {
+    return b;
+  }
+  else if (b.empty)
+  {
+    return a;
+  }
+  return {a.v + b.v, false};
+}
+S e()
+{
+  return {0, true};
+}
+
+struct Act
+{
+  bool empty, ini;
+  ll v;
+};
+S mapping(Act f, S a)
+{
+  if (f.ini)
+  {
+    return a;
+  }
+  if (f.empty)
+  {
+    return e();
+  }
+  return {f.v, false};
+}
+Act composition(Act a, Act b)
+{
+  if (a.ini)
+  {
+    return b;
+  }
+  else if (b.ini)
+  {
+    return a;
+  }
+  if (a.empty)
+  {
+    return a;
+  }
+  else if (b.empty)
+  {
+    return a;
+  }
+  else
+  {
+    return {a.empty, false, a.v + b.v};
+  }
+}
+Act id()
+{
+  return {true, true, 0};
+}
 int main()
 {
+  ll q;
+  cin >> q;
+  vector<tuple<ll, ll, ll>> query(q);
+  vector<pll> a(1);
+  a[0] = {0, -1};
+  rep(i, q)
+  {
+    ll t;
+    cin >> t;
+    if (t == 1)
+    {
+      ll x;
+      cin >> x;
+      query[i] = {t, x, -1};
+      auto [_, nx] = a[x];
+      a[x].S = a.size();
+      a.pb({i + 1, nx});
+    }
+    else
+    {
+      ll x, y;
+      cin >> x >> y;
+      query[i] = {t, x, y};
+      a.pb({-1, -1});
+    }
+  }
+  ll iter = 0;
+  ll cnt = 0;
+  map<ll, ll> m;
+  while (iter != -1)
+  {
+    m[a[iter].F] = cnt;
+    iter = a[iter].S;
+    cnt++;
+  }
+  vector<S> ini(a.size(), {0, true});
+  lazy_segtree<S, op, e, Act, mapping, composition, id> seg(ini);
+  vll ans(0);
+  rep(i, q)
+  {
+    auto [u, x, y] = query[i];
+    if (u == 2)
+    {
+      ll l = min(m[x], m[y]) + 1;
+      ll r = max(m[x], m[y]);
+      ans.pb(seg.prod(l, r).v);
+      seg.apply(l, r, {true, false, 0});
+    }
+    else
+    {
+      seg.set(m[i + 1], {i + 1, false});
+    }
+  }
+  rep(i, ans.size())
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

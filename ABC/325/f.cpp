@@ -64,6 +64,44 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll d(n);
+  rep(i, n) cin >> d[i];
+  ll l1, c1, k1, l2, c2, k2;
+  cin >> l1 >> c1 >> k1 >> l2 >> c2 >> k2;
+  vvll dp(n + 1, vll(k1 + 1, INF));
+  dp[0][0] = 0;
+  rep(i, n)
+  {
+    rep(j, k1)
+    {
+      if (dp[i][j] == INF)
+        continue;
+      for (ll z = j; z <= k1; z++)
+      {
+        ll remain = d[i] - (z - j) * l1;
+        ll h = (remain + l2 - 1) / l2;
+        if (h < 0)
+          h = 0;
+        if (h + dp[i][j] <= k2)
+        {
+          chmin(dp[i + 1][z], dp[i][j] + h);
+        }
+      }
+    }
+  }
+  ll ans = INF;
+  rep(i, k1 + 1)
+  {
+    if (dp[n][i] != INF)
+    {
+      chmin(ans, c1 * i + c2 * dp[n][i]);
+    }
+  }
+  if (ans == INF)
+    ans = -1;
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

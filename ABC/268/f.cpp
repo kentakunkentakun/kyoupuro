@@ -62,8 +62,55 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool comp(pll a, pll b)
+{
+  ll fa = b.S * a.F;
+  ll fb = a.S * b.F;
+  if (fa > fb)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
 int main()
 {
+  ll n;
+  cin >> n;
+  vector<pll> s(n);
+  ll ans = 0;
+  rep(i, n)
+  {
+    string tmp;
+    cin >> tmp;
+    ll num = 0;
+    ll x = 0;
+    rep(j, tmp.size())
+    {
+      if (tmp[j] == 'X')
+      {
+        x++;
+      }
+      else
+      {
+        num += tmp[j] - '0';
+        ans += (tmp[j] - '0') * x;
+      }
+    }
+    s[i] = {x, num};
+  }
+  sort(all(s), comp);
+  ll x = 0;
+  ll sum = 0;
+  rep(i, n)
+  {
+    ans += x * s[i].S;
+    x += s[i].F;
+    sum += s[i].S;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

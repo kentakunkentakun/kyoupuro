@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/lazysegtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +63,93 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+// a^n mod を計算する
+
+long long modpow(long long a, long long n, long long mod)
+{
+  a %= mod;
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
+
+// a^{-1} mod を計算する
+
+long long modinv(long long a, long long mod)
+{
+  return modpow(a, mod - 2, mod);
+}
+struct S
+{
+  ll v;
+  bool empty;
+};
+S op(S a, S b)
+{
+  if (a.empty)
+  {
+    return b;
+  }
+  return a;
+}
+S e()
+{
+  return {
+      0, true};
+}
+struct Act
+{
+  ll div, plus;
+};
+S mapping(Act f, S a)
+{
+  return {((a.v * f.div) % MOD + f.plus) % MOD, a.empty};
+}
+Act composition(Act g, Act f)
+{
+  return {
+      (f.div * g.div) % MOD, ((f.plus * g.div) % MOD + g.plus) % MOD};
+}
+Act id()
+{
+  return {
+      1, 0};
+}
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vector<S> ini(n);
+  rep(i, n)
+  {
+    ll a;
+    cin >> a;
+    ini[i] = {a, false};
+  }
+  lazy_segtree<S, op, e, Act, mapping, composition, id> seg(ini);
+  rep(i, m)
+  {
+    ll l, r, x;
+    cin >> l >> r >> x;
+    l--;
+    r--;
+    ll div = (r - l) * modinv((r - l + 1), MOD);
+    ll plus = x * modinv((r - l + 1), MOD);
+    div %= MOD;
+    plus %= MOD;
+    seg.apply(l, r + 1, {div, plus});
+  }
+  rep(i, n)
+  {
+    cout << seg.get(i).v << " ";
+  }
+  cout << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

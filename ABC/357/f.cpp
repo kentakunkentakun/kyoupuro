@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/lazysegtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +63,114 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct S
+{
+  ll v, a_sum, b_sum, length;
+  bool empty;
+};
+S op(S a, S b)
+{
+  if (a.empty)
+  {
+    return b;
+  }
+  else if (b.empty)
+  {
+    return a;
+  }
+  return {
+      (a.v + b.v) % MOD,
+      (a.a_sum + b.a_sum) % MOD,
+      (a.b_sum + b.b_sum) % MOD,
+      a.length + b.length,
+      false};
+}
+S e()
+{
+  return {
+      0, 0, 0, 1, true};
+}
+
+struct Act
+{
+  ll a, b;
+};
+
+S mapping(Act f, S a)
+{
+  ll nv = a.v + (a.a_sum * f.b) % MOD + (a.b_sum * f.a) % MOD + (((f.b * a.length) % MOD * f.a) % MOD) % MOD;
+  nv %= MOD;
+  return {
+      nv,
+      (a.a_sum + a.length * f.a) % MOD,
+      (a.b_sum + a.length * f.b) % MOD,
+      a.length,
+      false};
+}
+Act composition(Act a, Act b)
+{
+  return {
+      (a.a + b.a) % MOD,
+      (a.b + b.b) % MOD};
+}
+Act id()
+{
+  return {
+      0, 0};
+}
+
 int main()
 {
+  ll n, q;
+  cin >> n >> q;
+  vll a(n), b(n);
+  rep(i, n) cin >> a[i];
+  rep(i, n) cin >> b[i];
+  vector<S> ini(n);
+  rep(i, n)
+  {
+    ini[i] = {
+        (a[i] * b[i]) % MOD,
+        a[i],
+        b[i],
+        1,
+        false};
+  }
+  lazy_segtree<S, op, e, Act, mapping, composition, id> seg(ini);
+  vll ans(0);
+  rep(i, q)
+  {
+    ll t;
+    cin >> t;
+    if (t == 1)
+    {
+      ll l, r, x;
+      cin >> l >> r >> x;
+      l--;
+      r--;
+      seg.apply(l, r + 1, {x, 0});
+    }
+    else if (t == 2)
+    {
+      ll l, r, x;
+      cin >> l >> r >> x;
+      l--;
+      r--;
+      seg.apply(l, r + 1, {0, x});
+    }
+    else
+    {
+      ll l, r;
+      cin >> l >> r;
+      l--;
+      r--;
+      ans.pb(seg.prod(l, r + 1).v);
+    }
+  }
+  rep(i, ans.size())
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

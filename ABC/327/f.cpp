@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
+#include <atcoder/lazysegtree>
 
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +64,75 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+ll op(ll a, ll b)
+{
+  return max(a, b);
+}
+ll e()
+{
+  return 0;
+}
+struct Act
+{
+  ll plus;
+};
+ll mapping(Act a, ll b)
+{
+  return b + a.plus;
+}
+Act composition(Act a, Act b)
+{
+  return {a.plus + b.plus};
+}
+
+Act id()
+{
+  return {0};
+}
+
+const ll MAX_X = 2 * 100000 + 5;
 int main()
 {
+  ll n, d, w;
+  cin >> n >> d >> w;
+  vvll t(MAX_X, vll(0));
+  rep(i, n)
+  {
+    ll time, x;
+    cin >> time >> x;
+    t[time].pb(x);
+  }
+  rep(i, n)
+  {
+    if (t[i].size())
+    {
+      sort(all(t[i]));
+    }
+  }
+
+  vll ini(MAX_X, 0);
+  lazy_segtree<ll, op, e, Act, mapping, composition, id> seg(ini);
+  rep(i, d)
+  {
+    rep(j, t[i].size())
+    {
+      seg.apply(t[i][j], min(MAX_X - 1, t[i][j] + w), {1});
+    }
+  }
+  ll ans = seg.all_prod();
+  for (int i = d; i < MAX_X; i++)
+  {
+    rep(j, t[i].size())
+    {
+      seg.apply(t[i][j], min(MAX_X - 1, t[i][j] + w), {1});
+    }
+    rep(j, t[i - d].size())
+    {
+      seg.apply(t[i - d][j], min(MAX_X - 1, t[i - d][j] + w), {-1});
+    }
+    chmax(ans, seg.all_prod());
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

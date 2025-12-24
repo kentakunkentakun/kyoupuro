@@ -64,6 +64,92 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  string s;
+  cin >> s;
+  ll n = s.size();
+  vll t(n, -1);
+  stack<ll> st;
+  rep(i, n)
+  {
+    if (s[i] == '(')
+    {
+      st.push(i);
+    }
+    else if (s[i] == ')')
+    {
+      ll s = st.top();
+      st.pop();
+      t[s] = i;
+    }
+  }
+  int rev = 0;
+  vector<char> ans(n);
+  st.push(0);
+  rep(i, n)
+  {
+    if (s[i] == '(')
+    {
+      ll now = st.top();
+      st.pop();
+      ll nx = t[i];
+      if (rev)
+      {
+        st.push(now - (nx - i + 1));
+        st.push(now - (nx - i));
+      }
+      else
+      {
+        st.push(now + nx - i + 1);
+        st.push(now + nx - i);
+      }
+      rev = 1 - rev;
+    }
+    if (rev)
+    {
+      ll now = st.top();
+      st.pop();
+      if (s[i] == '(' || s[i] == ')')
+      {
+        ans[now] = '$';
+      }
+      else if (isupper(s[i]))
+      {
+        ans[now] = (char)('a' + (s[i] - 'A'));
+      }
+      else
+      {
+        ans[now] = (char)('A' + (s[i] - 'a'));
+      }
+      st.push(now - 1);
+    }
+    else
+    {
+
+      ll now = st.top();
+      st.pop();
+      if (s[i] == '(' || s[i] == ')')
+      {
+        ans[now] = '$';
+      }
+      else
+      {
+        ans[now] = s[i];
+      }
+      st.push(now + 1);
+    }
+
+    if (s[i] == ')')
+    {
+      rev = 1 - rev;
+      st.pop();
+    }
+  }
+  rep(i, n)
+  {
+    if (ans[i] != '$')
+      cout << ans[i];
+  }
+  cout << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

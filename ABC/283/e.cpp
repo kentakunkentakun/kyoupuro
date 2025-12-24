@@ -1,8 +1,6 @@
 #include <bits/stdc++.h>
-#include <atcoder/lazysegtree>
 
 using namespace std;
-using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -25,6 +23,8 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
 using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
@@ -35,6 +35,7 @@ using vc = vector<char>;
 using vvc = vector<vc>;
 const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -74,91 +75,131 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
-struct S
-{
-  ll v;
-  bool empty;
-};
-S op(S a, S b)
-{
-  if (a.empty)
-  {
-    return b;
-  }
-  else if (b.empty)
-  {
-    return a;
-  }
-  S res = {
-      max(a.v, b.v), false};
-  return res;
-}
-S e()
-{
-  return {
-      0, true};
-}
-struct Act
-{
-  ll cnt;
-};
-S mapping(Act f, S x)
-{
-  return {
-      x.v + f.cnt, false};
-}
-Act composition(Act g, Act f)
-{
-  return {g.cnt + f.cnt};
-}
-Act id()
-{
-  return {0};
-}
-ll k;
-bool right_f(S val)
-{
-  if (val.empty)
-    return true;
-  return val.v <= k;
-}
-
-const ll MAX_V = 5 * 100001;
 int main()
 {
-  ll n;
-  cin >> n;
-  vector<S> a(MAX_V);
-  rep(i, MAX_V)
+  ll h, w;
+  cin >> h >> w;
+  vvll a(h, vll(w));
+  rep(i, h)
   {
-    a[i] = {
-        i, false};
+    rep(j, w)
+    {
+      cin >> a[i][j];
+    }
   }
-  lazy_segtree<S, op, e, Act, mapping, composition, id> segtree(a);
-  rep(i, n)
+  vvll dp(h + 1, vll(8, INF));
+  auto ch = [&](ll x, ll y, ll up, ll now, ll down) -> bool
   {
-    ll l, r;
-    cin >> l >> r;
-    ll l_iter, r_iter;
-    k = l - 1;
-    l_iter = segtree.max_right<right_f>(0);
-    k = r;
-    r_iter = segtree.max_right<right_f>(0);
-    segtree.apply(l_iter, r_iter, {1});
-  }
-  ll q;
-  cin >> q;
-  vll ans(q);
-  rep(i, q)
+    int cnt = 0;
+    ll now_v = now ? 1 - a[x][y] : a[x][y];
+    if (x - 1 >= 0)
+    {
+      ll up_v = up ? 1 - a[x - 1][y] : a[x - 1][y];
+      if (now_v != up_v)
+        cnt++;
+    }
+    else
+    {
+      cnt++;
+    }
+    if (y - 1 >= 0)
+    {
+      if (a[x][y - 1] != a[x][y])
+      {
+        cnt++;
+      }
+    }
+    else
+    {
+      cnt++;
+    }
+    if (y + 1 < w)
+    {
+      if (a[x][y + 1] != a[x][y])
+      {
+        cnt++;
+      }
+    }
+    else
+    {
+      cnt++;
+    }
+    if (x + 1 < h)
+    {
+      ll down_v = down ? 1 - a[x + 1][y] : a[x + 1][y];
+      if (down_v != now_v)
+      {
+        cnt++;
+      }
+    }
+    else
+    {
+      cnt++;
+    }
+    if (cnt == 4)
+    {
+      return false;
+    }
+    return true;
+  };
+  auto v = [&](ll bit, ll i) -> bool
   {
-    ll x;
-    cin >> x;
-    ans[i] = segtree.prod(x, x + 1).v;
-  }
-  rep(i, q)
+    bool ok = true;
+    rep(j, w)
+    {
+      ok &= ch(i - 1, j, (bit >> 2) & 1, (bit >> 1) & 1, bit & 1);
+    }
+    if (ok)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  };
+  rep(i, h)
   {
-    cout << ans[i] << endl;
+    if (i == 0)
+    {
+      dp[i + 1][0] = 0;
+      dp[i + 1][1] = 1;
+      continue;
+    }
+    rep(bit, 8)
+    {
+      rep(z, 2)
+      {
+        if (dp[i][bit] != INF)
+        {
+          ll nbit = (bit << 1) % 8 + z;
+          if (v(nbit, i))
+          {
+            chmin(dp[i + 1][nbit], dp[i][bit] + z);
+          }
+        }
+      }
+    }
   }
+  ll ans = INF;
+  rep(bit, 8)
+  {
+    if (dp[h][bit] != INF)
+    {
+      bool ok = true;
+      rep(j, w)
+      {
+        ok &= ch(h - 1, j, (bit >> 1) & 1, (bit & 1), 0);
+      }
+      if (ok)
+      {
+        chmin(ans, dp[h][bit]);
+      }
+    }
+  }
+  if (ans == INF)
+    ans = -1;
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
@@ -169,7 +210,7 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)
+__builtin_popcountll(i)
 
 // maskからnowのビットだけ削除
 mask & ~(1 << now)

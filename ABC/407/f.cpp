@@ -7,6 +7,7 @@
 #include <string>
 #include <cmath>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (b); i++)
@@ -68,8 +69,118 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct S
+{
+  ll v;
+  bool empty;
+};
+S op(S a, S b)
+{
+  if (a.empty)
+  {
+    return b;
+  }
+  else if (b.empty)
+  {
+    return a;
+  }
+  return {max(a.v, b.v), false};
+}
+S e() { return {0, true}; }
+ll lef = INF;
+bool left(S a)
+{
+  if (a.empty)
+  {
+    return true;
+  }
+  if (a.v < lef)
+  {
+    return true;
+  }
+  return false;
+}
+
+ll righ = INF;
+bool right(S a)
+{
+  if (a.empty)
+  {
+    return true;
+  }
+  if (a.v <= righ)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
+  ll n;
+  cin >> n;
+  map<ll, ll> m;
+  vll a(n);
+  vector<S> ini(n);
+  rep(i, n)
+  {
+    cin >> a[i];
+    ini[i] = {a[i], false};
+  }
+  segtree<S, op, e> seg(ini);
+  vll left_p(n + 1);
+  vll right_p(n + 1);
+  vll sum(n + 1);
+  vll left_minus(n + 1);
+  vll right_minus(n + 1);
+  rep(i, n)
+  {
+    lef = a[i];
+    righ = a[i];
+    ll left_i = i - seg.min_left<left>(i) + 1;
+    ll right_i = seg.max_right<right>(i + 1) - i;
+    if (left_i > right_i)
+    {
+      swap(left_i, right_i);
+    }
+    left_p[0] += a[i];
+    left_p[left_i - 1] -= a[i];
+    left_minus[left_i - 1] += a[i] * (left_i - 1);
+    right_p[right_i + left_i - 2] += a[i];
+    right_p[right_i - 1] -= a[i];
+    right_minus[right_i - 1] += a[i] * (left_i - 1);
+    sum[left_i - 1] += a[i] * left_i;
+    sum[right_i] -= a[i] * left_i;
+  }
+  rep(i, n)
+  {
+    left_p[i + 1] += left_p[i];
+  }
+  repR(i, n)
+  {
+    right_p[i] += right_p[i + 1];
+  }
+  rep(i, n)
+  {
+    sum[i + 1] += sum[i];
+  }
+  ll tmp = 0;
+  rep(i, n + 1)
+  {
+    tmp += left_p[i];
+    tmp -= left_minus[i];
+    sum[i] += tmp;
+  }
+  tmp = 0;
+  repR(i, n + 1)
+  {
+    tmp += right_p[i];
+    tmp -= right_minus[i];
+    sum[i] += tmp;
+  }
+  rep(i, n)
+  {
+    cout << sum[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

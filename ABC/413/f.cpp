@@ -33,6 +33,7 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -67,8 +68,64 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
+  ll h, w, k;
+  cin >> h >> w >> k;
+  vvvll dp(h, vvll(w, vll(2, -1)));
+  queue<pll> que;
+  rep(i, k)
+  {
+    ll r, c;
+    cin >> r >> c;
+    r--;
+    c--;
+    dp[r][c][0] = 0;
+    dp[r][c][1] = 0;
+    que.push({r, c});
+  }
+  while (que.size())
+  {
+    auto [x, y] = que.front();
+    que.pop();
+    rep(i, 4)
+    {
+      ll nx = x + dx[i];
+      ll ny = y + dy[i];
+      if (isIn(nx, ny, h, w))
+      {
+        if (dp[nx][ny][0] == -1)
+        {
+          dp[nx][ny][0] = dp[x][y][1] + 1;
+        }
+        else if (dp[nx][ny][1] == -1)
+        {
+          dp[nx][ny][1] = dp[x][y][1] + 1;
+          que.push({nx, ny});
+        }
+      }
+    }
+  }
+  ll ans = 0;
+  rep(i, h)
+  {
+    rep(j, w)
+    {
+      if (dp[i][j][1] != -1)
+      {
+        ans += dp[i][j][1];
+      }
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
