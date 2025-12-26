@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/lazysegtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +63,80 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct S
+{
+  double v;
+  bool empty;
+};
+S op(S a, S b)
+{
+  if (a.empty)
+  {
+    return b;
+  }
+  else if (b.empty)
+  {
+    return a;
+  }
+  return {min(a.v, b.v), false};
+}
+S e()
+{
+  return {0, true};
+}
+S mapping(double f, S a)
+{
+  if (a.empty)
+  {
+    return a;
+  }
+  return {f + a.v, false};
+}
+double composition(double f, double g)
+{
+  return f + g;
+}
+
+double id()
+{
+  return 0;
+}
+
 int main()
 {
+  cout << fixed << setprecision(10);
+
+  ll n, k;
+  cin >> n >> k;
+  double sx, sy;
+  cin >> sx >> sy;
+  vector<double> x(n), y(n);
+  rep(i, n)
+  {
+    cin >> x[i] >> y[i];
+  }
+  vector<S> ini(k);
+  rep(i, k)
+  {
+    ini[i] = {0.0, true};
+  }
+  ini[k - 1] = {sqrt(abs(sx - x[0]) * abs(sx - x[0]) + abs(sy - y[0]) * abs(sy - y[0])), false};
+  lazy_segtree<S, op, e, double, mapping, composition, id> seg(ini);
+  ll s = k - 1;
+  rep(i, n - 1)
+  {
+    s++;
+    if (s == k)
+      s = 0;
+    double a = sqrt(abs(sx - x[i]) * abs(sx - x[i]) + abs(sy - y[i]) * abs(sy - y[i]));
+    double b = sqrt(abs(x[i + 1] - x[i]) * abs(x[i + 1] - x[i]) + abs(y[i + 1] - y[i]) * abs(y[i + 1] - y[i]));
+    double c = sqrt(abs(sx - x[i + 1]) * abs(sx - x[i + 1]) + abs(sy - y[i + 1]) * abs(sy - y[i + 1]));
+    auto [mi, _] = seg.all_prod();
+    seg.apply(0, k, b);
+    seg.set(s, {mi + c + a, false});
+  }
+  auto [mi, _] = seg.all_prod();
+  cout << mi + sqrt(abs(sx - x[n - 1]) * abs(sx - x[n - 1]) + abs(sy - y[n - 1]) * abs(sy - y[n - 1])) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

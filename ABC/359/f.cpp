@@ -69,7 +69,28 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  priority_queue<tuple<ll, ll, ll>, vector<tuple<ll, ll, ll>>, greater<tuple<ll, ll, ll>>> que;
+
+  ll ans = 0;
+  rep(i, n)
+  {
+    ans += a[i];
+    que.push({3 * a[i], 2, a[i]});
+  }
+  rep(i, n - 2)
+  {
+    auto [v, cnt, p] = que.top();
+    que.pop();
+    ans += v;
+    que.push({((cnt + 1) * (cnt + 1) - cnt * cnt) * p, cnt + 1, p});
+  }
+  cout << ans << endl;
 }
+
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())

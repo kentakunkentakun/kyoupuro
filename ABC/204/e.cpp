@@ -22,15 +22,20 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -62,63 +67,78 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
-
-// a^n mod を計算する
-
-long long modpow(long long a, long long n, long long mod)
+bool isIn(ll nx, ll ny, ll h, ll w)
 {
-  a %= mod;
-  long long res = 1;
-  while (n > 0)
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
   {
-    if (n & 1)
-      res = res * a % mod;
-    a = a * a % mod;
-    n >>= 1;
+    return true;
   }
-  return res;
+  return false;
 }
+struct edge
+{
+  ll to, c, d;
+};
 int main()
 {
-  ll n;
-  cin >> n;
-  vll a(n);
-  vector<pll> t(32, {0, 0});
-  ll ans = 0;
-  rep(i, n)
+  ll n, m;
+  cin >> n >> m;
+  vector<vector<edge>> t(n, vector<edge>(0));
+  rep(i, m)
   {
-    ll po = 0;
-    ll tmp = a[i];
-    while (tmp % 2 == 0)
+    ll a, b, c, d;
+    cin >> a >> b >> c >> d;
+    a--;
+    b--;
+    t[a].pb({b, c, d});
+    t[b].pb({a, c, d});
+  }
+  vll dist(n, INF);
+  dist[0] = 0;
+  PQR(pll)
+  que;
+  que.push({0, 0});
+  while (que.size())
+  {
+    auto [v, now] = que.top();
+    que.pop();
+    if (dist[now] < v)
+      continue;
+    for (auto [to, c, d] : t[now])
     {
-      po++;
-      tmp /= 2;
-    }
-    rep(j, 32)
-    {
-      auto [v, cnt] = t[j];
-      if (cnt > 0)
+      ll nx = sqrt(d);
+      ll cost = 0;
+      if (nx >= v)
       {
-        if (j == po)
-        {
-           
-        }
-        else if (j > po)
-        {
-          ans += v * modpow(2, j - po, INF) + cnt * tmp;
-        }
-        else
-        {
-          ans += v + cnt * (tmp * modpow(2, po - j, INF));
-        }
+        cost = c + nx + d / (nx + 1);
+      }
+      else
+      {
+        cost = v + c + d / (v + 1);
+      }
+      if (chmin(dist[to], cost))
+      {
+        que.push({cost, to});
       }
     }
   }
+
+  if (dist[n - 1] == INF)
+    dist[n - 1] = -1;
+  cout << dist[n - 1] << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
+__int128
 
-__builtin_popcount(i)*/
+//ソート済み
+v.erase(unique(v.begin(), v.end()), v.end());
+__builtin_popcountll(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

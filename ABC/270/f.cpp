@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/dsu>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +63,83 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct edge
+{
+  ll to, cost;
+};
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vll x(n), y(n);
+  rep(i, n) cin >> x[i];
+  rep(i, n) cin >> y[i];
+  vector<tuple<ll, ll, ll>> t(m);
+  rep(i, m)
+  {
+    ll a, b, z;
+    cin >> a >> b >> z;
+    a--;
+    b--;
+    t[i] = {a, b, z};
+  }
+  ll ans = INF;
+  rep(u, 4)
+  {
+    priority_queue<tuple<ll, ll, ll>, vector<tuple<ll, ll, ll>>, greater<tuple<ll, ll, ll>>> que;
+    rep(i, m)
+    {
+      auto [a, b, z] = t[i];
+      que.push({z, a, b});
+    }
+    if (u == 1 || u == 3)
+    {
+      rep(i, n)
+      {
+        que.push({x[i], i, n});
+      }
+    }
+    if (u == 2)
+    {
+      rep(i, n)
+      {
+        que.push({y[i], i, n});
+      }
+    }
+    if (u == 3)
+    {
+      rep(i, n)
+      {
+        que.push({y[i], i, n + 1});
+      }
+    }
+    ll si = n;
+    if (u == 3)
+    {
+      si += 2;
+    }
+    else if (u == 1 || u == 2)
+    {
+      si++;
+    }
+    dsu uf(si);
+    ll res = 0;
+    while (que.size() && uf.size(0) != si)
+    {
+      auto [cost, a, b] = que.top();
+      que.pop();
+      if (!uf.same(a, b))
+      {
+        uf.merge(a, b);
+        res += cost;
+      }
+    }
+    if (uf.size(0) == si)
+    {
+      chmin(ans, res);
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
