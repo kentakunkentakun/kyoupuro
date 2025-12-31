@@ -20,7 +20,6 @@
             ],
             "group": {
                 "kind": "build",
-                "isDefault": true
             }
         },
         {
@@ -46,8 +45,8 @@
                 "cwd": "${workspaceFolder}"
             },
             "group": {
-                "kind": "build"
-                
+                "kind": "build",
+                "isDefault": true
             },
             "problemMatcher": ["$gcc"]
         }
