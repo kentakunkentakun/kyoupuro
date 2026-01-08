@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -22,9 +23,9 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-// const ll MOD = 1000000007LL;
-const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
@@ -33,6 +34,9 @@ using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -74,69 +78,6 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
-  ll n;
-  cin >> n;
-  ll ax, ay, bx, by;
-  cin >> ax >> ay >> bx >> by;
-  vector<string> s(n);
-  rep(i, n) cin >> s[i];
-  ax--;
-  ay--;
-  bx--;
-  by--;
-  vvll dist(n, vll(n, INF));
-  dist[ax][ay] = 0;
-  queue<pll> que;
-  que.push({ax, ay});
-  while (que.size())
-  {
-    auto [x, y] = que.front();
-    que.pop();
-    ll nx = x + 1;
-    ll ny = y + 1;
-    while (isIn(nx, ny, n, n) && s[nx][ny] != '#' && dist[nx][ny] == INF)
-    {
-      dist[nx][ny] = dist[x][y] + 1;
-      que.push({nx, ny});
-      nx++;
-      ny++;
-    }
-    nx = x + 1;
-    ny = y - 1;
-    while (isIn(nx, ny, n, n) && s[nx][ny] != '#' && dist[nx][ny] == INF)
-    {
-      dist[nx][ny] = dist[x][y] + 1;
-      que.push({nx, ny});
-      nx++;
-      ny--;
-    }
-    nx = x - 1;
-    ny = y + 1;
-    while (isIn(nx, ny, n, n) && s[nx][ny] != '#' && dist[nx][ny] == INF)
-    {
-      dist[nx][ny] = dist[x][y] + 1;
-      que.push({nx, ny});
-      nx--;
-      ny++;
-    }
-    nx = x - 1;
-    ny = y - 1;
-    while (isIn(nx, ny, n, n) && s[nx][ny] != '#' && dist[nx][ny] == INF)
-    {
-      dist[nx][ny] = dist[x][y] + 1;
-      que.push({nx, ny});
-      nx--;
-      ny--;
-    }
-  }
-  if (dist[bx][by] == INF)
-  {
-    cout << -1 << endl;
-  }
-  else
-  {
-    cout << dist[bx][by] << endl;
-  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
@@ -147,7 +88,7 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)
+__builtin_popcountll(i)
 
 // maskからnowのビットだけ削除
 mask & ~(1 << now)

@@ -22,9 +22,9 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-// const ll MOD = 1000000007LL;
-const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
@@ -33,6 +33,9 @@ using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -74,69 +77,73 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
-  ll n;
-  cin >> n;
-  ll ax, ay, bx, by;
-  cin >> ax >> ay >> bx >> by;
-  vector<string> s(n);
-  rep(i, n) cin >> s[i];
-  ax--;
-  ay--;
-  bx--;
-  by--;
-  vvll dist(n, vll(n, INF));
-  dist[ax][ay] = 0;
-  queue<pll> que;
-  que.push({ax, ay});
-  while (que.size())
+  ll n, k;
+  cin >> n >> k;
+  n++;
+  vll t(n), y(n);
+  vll s(0);
+  rep(i, n)
   {
-    auto [x, y] = que.front();
-    que.pop();
-    ll nx = x + 1;
-    ll ny = y + 1;
-    while (isIn(nx, ny, n, n) && s[nx][ny] != '#' && dist[nx][ny] == INF)
+    if (i == n - 1)
+      break;
+    cin >> t[i + 1] >> y[i + 1];
+  }
+  t[0] = 1;
+  y[0] = 0;
+  repR(i, n)
+  {
+    if (t[i] == 1)
     {
-      dist[nx][ny] = dist[x][y] + 1;
-      que.push({nx, ny});
-      nx++;
-      ny++;
+      s.pb(i);
     }
-    nx = x + 1;
-    ny = y - 1;
-    while (isIn(nx, ny, n, n) && s[nx][ny] != '#' && dist[nx][ny] == INF)
+    if (s.size() == k + 1)
+      break;
+  }
+  reverse(all(s));
+  set<pll> se;
+  ll sum = 0;
+  repR(i, n)
+  {
+    if (t[i] == 2)
     {
-      dist[nx][ny] = dist[x][y] + 1;
-      que.push({nx, ny});
-      nx++;
-      ny--;
+      sum += y[i];
+      se.insert({y[i], i});
     }
-    nx = x - 1;
-    ny = y + 1;
-    while (isIn(nx, ny, n, n) && s[nx][ny] != '#' && dist[nx][ny] == INF)
+    if (i == s[0])
+      break;
+  }
+  ll ans = -INF;
+  ll p = k - s.size() + 1;
+  rep(i, s.size())
+  {
+    while (p)
     {
-      dist[nx][ny] = dist[x][y] + 1;
-      que.push({nx, ny});
-      nx--;
-      ny++;
+      pll it = *se.begin();
+      if (it.F > 0)
+        break;
+      sum -= it.first;
+      se.erase(it);
+      p--;
     }
-    nx = x - 1;
-    ny = y - 1;
-    while (isIn(nx, ny, n, n) && s[nx][ny] != '#' && dist[nx][ny] == INF)
+    chmax(ans, y[s[i]] + sum);
+    p++;
+    if (i < s.size() - 1)
     {
-      dist[nx][ny] = dist[x][y] + 1;
-      que.push({nx, ny});
-      nx--;
-      ny--;
+      for (int j = s[i] + 1; j < s[i + 1]; j++)
+      {
+        if (t[j] == 2 && !se.count({y[j], j}))
+        {
+          p++;
+        }
+        if (t[j] == 2 && se.count({y[j], j}))
+        {
+          sum -= y[j];
+          se.erase({y[j], j});
+        }
+      }
     }
   }
-  if (dist[bx][by] == INF)
-  {
-    cout << -1 << endl;
-  }
-  else
-  {
-    cout << dist[bx][by] << endl;
-  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
@@ -147,7 +154,7 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)
+__builtin_popcountll(i)
 
 // maskからnowのビットだけ削除
 mask & ~(1 << now)
