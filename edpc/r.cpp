@@ -114,7 +114,53 @@ int main()
   {
     cin >> a[i][j];
   }
-  
+  auto calc = [&](mat A, mat B) -> mat
+  {
+    mat c(A.size(), vec(B[0].size()));
+    rep(i, A.size())
+    {
+      rep(j, B.size())
+      {
+        rep(z, B[0].size())
+        {
+          c[i][j] += A[i][z] * B[z][j];
+          c[i][j] %= MOD;
+        }
+      }
+    }
+    return c;
+  };
+  auto mul = [&](mat A, ll n) -> mat
+  {
+    mat c(A.size(), vec(A[0].size()));
+    c = A;
+    mat res(A.size(), vec(A[0].size()));
+    for (int i = 0; i < A.size(); i++)
+    {
+      res[i][i] = 1;
+    }
+    while (n)
+    {
+      if (n % 2)
+      {
+        res = calc(res, c);
+      }
+      c = calc(c, c);
+      n /= 2;
+    }
+    return res;
+  };
+  mat ans = mul(a, k);
+  ll re = 0;
+  rep(i, ans.size())
+  {
+    rep(j, ans.size())
+    {
+      re += ans[i][j];
+      re %= MOD;
+    }
+  }
+  cout << re << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

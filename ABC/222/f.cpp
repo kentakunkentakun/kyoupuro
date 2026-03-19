@@ -74,8 +74,102 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+struct edge
+{
+  ll to, cost;
+};
 int main()
 {
+  ll n;
+  cin >> n;
+  vector<vector<edge>> t(n, vector<edge>(0));
+  rep(i, n - 1)
+  {
+    ll a, b, c;
+    cin >> a >> b >> c;
+    a--;
+    b--;
+    t[a].pb({b, c});
+    t[b].pb({a, c});
+  }
+  vll d(n);
+  rep(i, n) cin >> d[i];
+  vll k(n, 0);
+  auto dfs = [&](auto dfs, ll now, ll par = -1) -> ll
+  {
+    ll res = 0;
+    for (auto [nx, cost] : t[now])
+    {
+      if (nx == par)
+        continue;
+      chmax(res, dfs(dfs, nx, now) + cost);
+    }
+    return k[now] = max(res, d[now]);
+  };
+  dfs(dfs, 0, -1);
+  vll ans(n, 0);
+  auto dfs2 = [&](auto dfs2, ll now, ll cost, ll par = -1) -> void
+  {
+    pll f = {0, 0}, s = {0, 0};
+    if (cost > d[now])
+    {
+      f.F = cost;
+      f.S = par;
+      s.F = d[now];
+      s.S = now;
+    }
+    else
+    {
+      f.F = d[now];
+      f.S = now;
+      s.F = cost;
+      s.S = par;
+    }
+    for (auto [nx, cost] : t[now])
+    {
+      if (nx == par)
+        continue;
+      ll c = cost + k[nx];
+      if (f.F < c)
+      {
+        s.F = f.F;
+        s.S = f.S;
+        f.F = c;
+        f.S = nx;
+      }
+      else if (s.F < c)
+      {
+        s.F = c;
+        s.S = nx;
+      }
+    }
+    if (f.S == now)
+    {
+      ans[now] = s.F;
+    }
+    else
+    {
+      ans[now] = f.F;
+    }
+    for (auto [nx, cost] : t[now])
+    {
+      if (nx == par)
+        continue;
+      if (nx != f.S)
+      {
+        dfs2(dfs2, nx, f.F + cost, now);
+      }
+      else
+      {
+        dfs2(dfs2, nx, s.F + cost, now);
+      }
+    }
+  };
+  dfs2(dfs2, 0, 0);
+  rep(i, n)
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

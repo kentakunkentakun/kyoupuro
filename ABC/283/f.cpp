@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -75,8 +76,59 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+ll op_min(ll a, ll b)
+{
+  return min(a, b);
+}
+ll op_max(ll a, ll b)
+{
+  return max(a, b);
+}
+ll e_min()
+{
+  return INF;
+}
+ll e_max()
+{
+  return -INF;
+}
 int main()
 {
+  ll n;
+  cin >> n;
+  vll p(n);
+  rep(i, n)
+  {
+    cin >> p[i];
+    p[i]--;
+  }
+
+  vll ans(n, INF);
+  rep(k, 2)
+  {
+    segtree<ll, op_max, e_max> seg_max(n);
+    segtree<ll, op_min, e_min> seg_min(n);
+    rep(i, n)
+    {
+      // p[j]<p[i]
+      chmin(ans[i], p[i] + i - seg_max.prod(0, p[i]));
+      ll now = seg_max.get(p[i]);
+      chmax(now, p[i] + i);
+      seg_max.set(p[i], now);
+      // p[i]<p[j]
+      chmin(ans[i], seg_min.prod(p[i] + 1, n) - (p[i] - i));
+      now = seg_min.get(p[i]);
+      chmin(now, p[i] - i);
+      seg_min.set(p[i], now);
+    }
+    reverse(all(ans));
+    reverse(all(p));
+  }
+  rep(i, n)
+  {
+    cout << ans[i] << " ";
+  }
+  cout << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

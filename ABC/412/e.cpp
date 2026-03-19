@@ -39,36 +39,97 @@ using vvc = vector<vc>;
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
-  rep(i, vec.size())
-  {
-    cout << vec[i];
-    cout << (i == (int)vec.size() - 1 ? '\n' : split);
-  }
+	rep(i, vec.size())
+	{
+		cout << vec[i];
+		cout << (i == (int)vec.size() - 1 ? '\n' : split);
+	}
 }
 template <class T>
 inline bool chmax(T &a, T b)
 {
-  if (a < b)
-  {
-    a = b;
-    return true;
-  }
-  return false;
+	if (a < b)
+	{
+		a = b;
+		return true;
+	}
+	return false;
 }
 template <class T>
 inline bool chmin(T &a, T b)
 {
-  if (a > b)
-  {
-    a = b;
-    return true;
-  }
-  return false;
+	if (a > b)
+	{
+		a = b;
+		return true;
+	}
+	return false;
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+
 int main()
 {
+	ll l, r;
+	cin >> l >> r;
+	vector<bool> isPrime1(10000005, true);
+	vector<bool> isPrime2(r - l + 1, true);
+	isPrime1[0] = false;
+	isPrime1[1] = false;
+	for (ll p = 2; p <= 10000000; p++)
+	{
+		if (!isPrime1[p])
+			continue;
+		for (ll q = p * 2; q <= 10000000; q += p)
+		{
+			isPrime1[q] = false;
+		}
+	}
+
+	for (ll p = 2; p * p <= r; p++)
+	{
+		if (!isPrime1[p])
+			continue;
+		ll start = (l + p - 1) / p * p;
+		if (start == p)
+			start = p * 2;
+		for (ll q = start; q <= r; q += p)
+		{
+			isPrime2[q - l] = false;
+		}
+	}
+	ll ans = 0;
+	if (!isPrime2[0])
+	{
+		ans++;
+	}
+	rep(i, isPrime2.size())
+	{
+		if (isPrime2[i])
+		{
+			ans++;
+		}
+	}
+	rep(i, isPrime1.size())
+	{
+		if (isPrime1[i])
+		{
+			__int128 now = i;
+			now *= i;
+			while (now <= l)
+			{
+				now *= i;
+			}
+			ll res = 0;
+			while (now <= r)
+			{
+				res++;
+				now *= i;
+			}
+			ans += res;
+		}
+	}
+	cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -28,7 +29,6 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
-using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -63,16 +63,111 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
-bool isIn(ll nx, ll ny, ll h, ll w)
+ll op(ll a, ll b)
 {
-  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  return a + b;
+}
+ll e()
+{
+  return 0;
+}
+ll fk;
+bool f(ll a)
+{
+  if (a < fk)
   {
     return true;
   }
   return false;
-}
+};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  vvll t(n, vll(0));
+  rep(i, n - 1)
+  {
+    ll u, v;
+    cin >> u >> v;
+    u--;
+    v--;
+    t[u].pb(v);
+    t[v].pb(u);
+  }
+  vll k(n);
+
+  set<ll> s;
+  rep(i, n)
+  {
+    s.insert(a[i]);
+  }
+  segtree<ll, op, e> seg(s.size());
+  map<ll, ll> m;
+  ll it = 0;
+  vll V(0);
+  for (auto p : s)
+  {
+    m[p] = it;
+    V.pb(p);
+    it++;
+  }
+
+  auto dfs = [&](auto dfs, ll now, ll par = -1) -> void
+  {
+    ll v = a[now];
+    ll cnt = seg.get(m[v]);
+    seg.set(m[v], cnt + 1);
+    for (auto nx : t[now])
+    {
+      if (nx == par)
+        continue;
+      dfs(dfs, nx, now);
+    }
+    if (t[now].size() == 1 && par != -1)
+    {
+      ll cnt = seg.all_prod();
+      if (cnt % 2)
+      {
+        fk = (cnt + 1) / 2;
+        ll it = seg.max_right<f>(0);
+        k[now] = V[it];
+      }
+      else
+      {
+        fk = cnt / 2;
+        ll it = seg.max_right<f>(0);
+        fk = 2;
+        ll iit = seg.max_right<f>(it);
+        k[now] = (V[it] + V[iit]) / 2;
+      }
+    }
+    seg.set(m[v], cnt);
+  };
+  dfs(dfs, 0);
+  auto g = [&](auto g, ll now, ll turn, ll par = -1) -> ll
+  {
+    ll ma = -INF, mi = INF;
+    if (t[now].size() == 1 && par != -1)
+    {
+      return k[now];
+    }
+    for (auto nx : t[now])
+    {
+      if (nx == par)
+        continue;
+      ll tmp = g(g, nx, 1 - turn, now);
+      chmax(ma, tmp);
+      chmin(mi, tmp);
+    }
+    if (turn == 0)
+    {
+      return ma;
+    }
+    return mi;
+  };
+  cout << g(g, 0, 0) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
@@ -83,9 +178,4 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)
-
-// maskからnowのビットだけ削除
-mask & ~(1 << now)
-
-*/
+__builtin_popcount(i)*/

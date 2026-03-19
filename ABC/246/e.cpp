@@ -74,6 +74,79 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n;
+  cin >> n;
+  ll ax, ay, bx, by;
+  cin >> ax >> ay >> bx >> by;
+  ax--;
+  ay--;
+  bx--;
+  by--;
+  vector<string> s(n);
+  rep(i, n)
+  {
+    cin >> s[i];
+  }
+  vvvll dp(n, vvll(n, vll(2, INF)));
+  dp[ax][ay][0] = 0;
+  dp[ax][ay][1] = 0;
+  queue<tuple<ll, ll, ll>> que;
+  que.push({ax, ay, 0});
+  while (que.size())
+  {
+    auto [x, y, z] = que.front();
+    que.pop();
+
+    if (dp[x][y][z] > dp[x][y][1 - z])
+    {
+      continue;
+    }
+    ll nx = x + 1;
+    ll ny = y + 1;
+    ll d = min(dp[x][y][0], dp[x][y][1]);
+    while (isIn(nx, ny, n, n) && s[nx][ny] != '#' && dp[nx][ny][0] == INF)
+    {
+      dp[nx][ny][0] = d + 1;
+      que.push({nx, ny, 0});
+      nx++;
+      ny++;
+    }
+    nx = x + 1;
+    ny = y - 1;
+    while (isIn(nx, ny, n, n) && s[nx][ny] != '#' && dp[nx][ny][1] == INF)
+    {
+      dp[nx][ny][1] = d + 1;
+      que.push({nx, ny, 1});
+      nx++;
+      ny--;
+    }
+    nx = x - 1;
+    ny = y + 1;
+    while (isIn(nx, ny, n, n) && s[nx][ny] != '#' && dp[nx][ny][1] == INF)
+    {
+      dp[nx][ny][1] = d + 1;
+      que.push({nx, ny, 1});
+      nx--;
+      ny++;
+    }
+    nx = x - 1;
+    ny = y - 1;
+    while (isIn(nx, ny, n, n) && s[nx][ny] != '#' && dp[nx][ny][0] == INF)
+    {
+      dp[nx][ny][0] = d + 1;
+      que.push({nx, ny, 0});
+      nx--;
+      ny--;
+    }
+  }
+  if (min(dp[bx][by][0], dp[bx][by][1]) == INF)
+  {
+    cout << -1 << endl;
+  }
+  else
+  {
+    cout << min(dp[bx][by][0], dp[bx][by][1]) << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -71,27 +71,30 @@ int main()
   vll b(m);
   rep(i, n) cin >> a[i];
   rep(i, m) cin >> b[i];
-  vvvll dp(n, vvll(m, vll(2, INF)));
-  dp[0][0][0] = 1;
-  if (a[0] == b[0])
-    dp[0][0][1] = 0;
+  vvll dp(n + 1, vll(m + 1, INF));
+  rep(i, n)
+  {
+    dp[i + 1][0] = i + 1;
+  }
+  rep(i, m)
+  {
+    dp[0][i + 1] = i + 1;
+  }
+  dp[0][0] = 0;
   rep(i, n)
   {
     rep(j, m)
     {
-      if (i && j)
+      if (a[i] == b[j])
       {
-        if (a[i] == b[j])
-        {
-          chmin(dp[i][j][1], min(dp[i - 1][j - 1][0], dp[i - 1][j - 1][1]));
-        }
-        chmin(dp[i][j][0], min(dp[i - 1][j][0] + 1, dp[i - 1][j][1] + 1));
-        chmin(dp[i][j][0], min(dp[i][j - 1][0] + 1, dp[i][j - 1][1] + 1));
-        chmin(dp[i][j][0], min(dp[i - 1][j - 1][0] + 1, dp[i - 1][j - 1][1] + 1));
-        chmin(dp[i][j][1], dp[i][j - 1][1] + 1);
+        chmin(dp[i + 1][j + 1], dp[i][j]);
       }
+      chmin(dp[i + 1][j + 1], dp[i][j] + 1);
+      chmin(dp[i + 1][j + 1], dp[i][j + 1] + 1);
+      chmin(dp[i + 1][j + 1], dp[i + 1][j] + 1);
     }
   }
+  cout << dp[n][m] << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -7,6 +7,7 @@
 #include <string>
 #include <cmath>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (b); i++)
@@ -91,14 +92,55 @@ int main()
     e[i] = {u, v, w};
   }
   sort(rall(e), comp);
-  repR(i, 31)
+  vb unuse(m, false);
+  ll ans = 0;
+  vvll t(m, vll(30));
+  rep(i, m)
   {
-    vector<edge> nx;
-    rep(j, m)
+    auto [u, v, w] = e[i];
+    rep(j, 30)
     {
-      if ()
+      t[i][j] = w % 2;
+      w /= 2;
     }
   }
+  repR(i, 30)
+  {
+    dsu uf(n);
+    rep(j, m)
+    {
+      if (unuse[j])
+        continue;
+      auto [u, v, w] = e[j];
+      if (t[j][i] == 0)
+      {
+        uf.merge(u, v);
+      }
+    }
+    if (uf.same(0, n - 1))
+    {
+      rep(j, m)
+      {
+        if (unuse[j])
+          continue;
+        auto [u, v, w] = e[j];
+        if (t[j][i] == 1)
+        {
+          unuse[j] = true;
+        }
+      }
+    }
+    else
+    {
+      ll tmp = 1;
+      rep(k, i)
+      {
+        tmp *= 2;
+      }
+      ans |= tmp;
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

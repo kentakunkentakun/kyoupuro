@@ -74,6 +74,45 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll h, w, c;
+  cin >> h >> w >> c;
+  vvll a(h, vll(w));
+  rep(i, h)
+  {
+    rep(j, w)
+    {
+      cin >> a[i][j];
+    }
+  }
+  ll ans = INF;
+  vvll d(h, vll(w, INF));
+
+  rep(T, 2)
+  {
+    rep(i, h)
+    {
+      rep(j, w)
+      {
+        ll mi = INF;
+        if (i - 1 >= 0)
+        {
+          chmin(mi, d[i - 1][j]);
+        }
+        if (j - 1 >= 0)
+        {
+          chmin(mi, d[i][j - 1]);
+        }
+        chmin(ans, a[i][j] + c * (i + j) + mi);
+        d[i][j] = min(mi, a[i][j] - (i + j) * c);
+      }
+    }
+    rep(i, h)
+    {
+      reverse(all(a[i]));
+    }
+    rep(i, h) rep(j, w) d[i][j] = INF;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

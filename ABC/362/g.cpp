@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/string>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -24,6 +25,7 @@ typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
 const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
+using vii = vector<int>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
@@ -64,6 +66,59 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  string s;
+  cin >> s;
+  ll q;
+  cin >> q;
+  vii sa = suffix_array(s);
+  // auto ch = [&](string u, int it) -> bool
+  // {
+  //   int mi = min((int)u.size(), (int)s.size() - it);
+  //   int u_big = -1;
+  //   rep(i, mi)
+  //   {
+  //     if (u[i] > s[it + i])
+  //     {
+  //       return false;
+  //     }
+  //     else if (u[i] < s[it + i])
+  //     {
+  //       return true;
+  //     }
+  //   }
+  //   if (u.size() > s.size() - it)
+  //   {
+  //     return false;
+  //   }
+  //   else
+  //   {
+  //     return true;
+  //   }
+  // };
+  auto f = [&](string u) -> int
+  {
+    ll m = u.size();
+    ll wa = -1, ac = s.size();
+    while (wa + 1 < ac)
+    {
+      ll mid = (ac + wa) / 2;
+      // if (ch(u, sa[mid]))
+      if (s.substr(sa[mid], m) >= u)
+        ac = mid;
+      else
+        wa = mid;
+    }
+    return ac;
+  };
+  rep(Q, q)
+  {
+    string t;
+    cin >> t;
+    int lower_it = f(t);
+    t += '~';
+    int upper_it = f(t);
+    cout << upper_it - lower_it << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

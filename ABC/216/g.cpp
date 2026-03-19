@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/lazysegtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +63,93 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct S
+{
+  ll n0, n1;
+  bool empty;
+};
+S op(S a, S b)
+{
+  if (a.empty)
+  {
+    return b;
+  }
+  else if (b.empty)
+  {
+    return a;
+  }
+  return {a.n0 + b.n0, a.n1 + b.n1, false};
+}
+S e()
+{
+  return {0, 0, true};
+}
+S mapping(ll f, S a)
+{
+  if (f > 0)
+  {
+    a.n1 += a.n0;
+    a.n0 = 0;
+  }
+  return a;
+}
+ll composition(ll f, ll g)
+{
+  return min(1LL, f + g);
+}
+ll id()
+{
+  return 0;
+}
+ll k;
+bool g(S x)
+{
+  return x.n0 <= k;
+}
+
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vector<S> ini(n);
+  rep(i, n)
+  {
+    ini[i].empty = false;
+    ini[i].n0 = 1;
+  }
+  lazy_segtree<S, op, e, ll, mapping, composition, id> seg(ini);
+  vector<tuple<ll, ll, ll>> p(m);
+  rep(i, m)
+  {
+    ll l, r, x;
+    cin >> l >> r >> x;
+    l--;
+    p[i] = {r, l, x};
+  }
+  sort(all(p));
+  rep(i, m)
+  {
+    auto [r, l, x] = p[i];
+    S res = seg.prod(l, r);
+    x -= res.n1;
+    if (x <= 0)
+      continue;
+    k = x;
+    ll left = seg.min_left<g>(r);
+    seg.apply(left, r, 1);
+  }
+  rep(i, n)
+  {
+    S res = seg.get(i);
+    if (res.n0)
+    {
+      cout << 0 << " ";
+    }
+    else
+    {
+      cout << 1 << " ";
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

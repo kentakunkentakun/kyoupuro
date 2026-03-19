@@ -77,6 +77,77 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n, q;
+  cin >> n >> q;
+  set<pll> s;
+  s.insert({0, n});
+  ll res = n;
+  rep(i, q)
+  {
+    ll l, r;
+    cin >> l >> r;
+    l--;
+    auto it = s.lower_bound({l, 0});
+    if (it != s.begin())
+    {
+      it--;
+    }
+    if (it != s.end())
+    {
+      pll now = *it;
+      while (r > now.F)
+      {
+        if (l <= now.F && now.S <= r)
+        {
+          res -= now.S - now.F;
+          it = s.erase(it);
+          if (it == s.end())
+            break;
+          now = *it;
+          continue;
+        }
+        else if (l <= now.F && r <= now.S && r > now.F)
+        {
+          res -= r - now.F;
+          if (r != now.S)
+          {
+            s.insert({r, now.S});
+          }
+          s.erase(it);
+          break;
+        }
+        else if (now.F <= l && now.S <= r && l < now.S)
+        {
+          res -= now.S - l;
+          it = s.erase(it);
+          if (now.F < l)
+            s.insert({now.F, l});
+
+          if (it == s.end())
+            break;
+          now = *it;
+          continue;
+        }
+        else if (now.F <= l && r <= now.S)
+        {
+          res -= r - l;
+          if (now.F < l)
+            s.insert({now.F, l});
+          if (r < now.S)
+            s.insert({r, now.S});
+          s.erase(it);
+          break;
+        }
+        it++;
+        if (it == s.end())
+        {
+          break;
+        }
+        now = *it;
+      }
+    }
+    cout << res << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

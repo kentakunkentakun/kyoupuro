@@ -67,8 +67,58 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+map<ll, ll> insuu;
+void prime_factor(ll n)
+{
+  ll k = n;
+  for (ll i = 2; i * i <= n; i++)
+  {
+    while (k % i == 0)
+    {
+      insuu[i]++;
+      k /= i;
+    }
+  }
+  if (k != 1)
+    insuu[k]++;
+  return;
+}
+
+long long modpow(long long a, long long n, long long mod)
+{
+  a %= mod;
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
+bool kai(string &t)
+{
+  rep(i, t.size())
+  {
+    if (t[i] != t[t.size() - 1 - i])
+    {
+      return false;
+    }
+  }
+  rep(i, t.size())
+  {
+    if (t[i] == '0')
+    {
+      return false;
+    }
+  }
+  return true;
+}
 int main()
 {
+  ll n;
+  cin >> n;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

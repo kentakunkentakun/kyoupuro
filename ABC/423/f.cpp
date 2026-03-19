@@ -62,8 +62,50 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+// gcd lcm
+ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a; }
+ll lcm(ll a, ll b) { return a / gcd(a, b) * b; }
+
 int main()
 {
+  ll n, m, y;
+  cin >> n >> m >> y;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  vll tmp(0);
+  map<ll, ll> res;
+  auto dfs = [&](auto dfs, ll nx) -> void
+  {
+    tmp.pb(nx);
+    if (tmp.size() == m)
+    {
+      ll k = a[tmp[0]];
+      rep(i, m)
+      {
+        k = lcm(k, a[tmp[i]]);
+      }
+      res[k]++;
+      tmp.pop_back();
+      return;
+    }
+    for (int i = nx + 1; i < n; i++)
+    {
+      dfs(dfs, i);
+    }
+    tmp.pop_back();
+    return;
+  };
+  dfs(dfs, 0);
+  ll ans = 0;
+  for (auto p : res)
+  {
+    cout << p.F << " " << p.S << endl;
+    if (p.S == 1)
+    {
+      ans += y / p.F;
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

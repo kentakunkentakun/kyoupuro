@@ -64,6 +64,37 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, k;
+  cin >> n >> k;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  ll now = 0;
+  vll it(n);
+  rep(i, n) it[i] = i;
+  ll ans = 0;
+  ll f = 0;
+  while (k)
+  {
+    vll tmp(n);
+    rep(i, n)
+    {
+      tmp[i] = it[i] / n * n + a[it[i] % n];
+      if (f == 0)
+      {
+        tmp[i] += i;
+      }
+    }
+    f++;
+    a = tmp;
+    swap(tmp, it);
+    if (k % 2)
+    {
+      ans += it[now] - now;
+      now = ans % n;
+    }
+    k /= 2;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

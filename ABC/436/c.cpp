@@ -78,18 +78,3 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 int main()
 {
 }
-/*cin.tie(0);
-ios::sync_with_studio(false);
-next_permutation(v.begin(), v.end())
-
-cout << fixed << setprecision(10);
-__int128
-
-//ソート済み
-v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcountll(i)
-
-// maskからnowのビットだけ削除
-mask & ~(1 << now)
-
-*/

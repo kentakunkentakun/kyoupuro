@@ -62,8 +62,118 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
+  ll h, w, n;
+  cin >> h >> w >> n;
+  ll sx, sy, gx, gy;
+  cin >> sx >> sy >> gx >> gy;
+  map<ll, vector<ll>> yoko;
+  map<ll, vector<ll>> tate;
+  vll x(n), y(n);
+  map<pll, ll> it;
+  ll iter = 0;
+  it[{sx, sy}] = iter;
+  iter++;
+  rep(i, n)
+  {
+    cin >> x[i] >> y[i];
+    rep(z, 4)
+    {
+      ll nx = x[i] + dx[z];
+      ll ny = y[i] + dy[z];
+      if (!it.count({nx, ny}) && isIn(nx - 1, ny - 1, h, w))
+      {
+        it[{nx, ny}] = iter;
+        iter++;
+      }
+    }
+    yoko[x[i]].pb(y[i]);
+    tate[y[i]].pb(x[i]);
+  }
+  vvll t(iter, vll(0));
+
+  for (auto &[x, v] : yoko)
+  {
+    sort(all(v));
+  }
+  for (auto &[_, v] : tate)
+  {
+    sort(all(v));
+  }
+  if (!it.count({gx, gy}))
+  {
+    cout << -1 << endl;
+    return 0;
+  }
+  vll dist(iter, INF);
+  dist[0] = 0;
+  queue<pll> que;
+  que.push({sx, sy});
+  while (que.size())
+  {
+    auto [nx, ny] = que.front();
+    que.pop();
+    ll V = dist[it[{nx, ny}]];
+    if (yoko.count(nx))
+    {
+      vll &v = yoko[nx];
+      auto lower = lower_bound(all(v), ny);
+      if (lower != v.begin())
+      {
+        lower--;
+        ll l = *lower + 1;
+        if (l < ny && chmin(dist[it[{nx, l}]], V + 1))
+        {
+          que.push({nx, l});
+        }
+      }
+      auto upper = upper_bound(all(v), ny);
+      if (upper != v.end())
+      {
+        ll u = *upper - 1;
+        if (ny < u && chmin(dist[it[{nx, u}]], V + 1))
+        {
+          que.push({nx, u});
+        }
+      }
+    }
+    if (tate.count(ny))
+    {
+      vll &v = tate[ny];
+      auto lower = lower_bound(all(v), nx);
+      if (lower != v.begin())
+      {
+        lower--;
+        ll l = *lower + 1;
+        if (l < nx && chmin(dist[it[{l, ny}]], V + 1))
+        {
+          que.push({l, ny});
+        }
+      }
+      auto upper = upper_bound(all(v), nx);
+      if (upper != v.end())
+      {
+        ll u = *upper - 1;
+        if (nx < u && chmin(dist[it[{u, ny}]], V + 1))
+        {
+          que.push({u, ny});
+        }
+      }
+    }
+  }
+  ll ans = dist[it[{gx, gy}]];
+  if (ans == INF)
+    ans = -1;
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

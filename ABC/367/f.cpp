@@ -68,15 +68,12 @@ int main()
   rep(i, n) cin >> a[i];
   rep(i, n) cin >> b[i];
   const ll N = 200005;
-  const ll MINV = 10000000; // 最低値
-  const ll MAXV = 1000000000LL;
   mt19937_64 rng(random_device{}());
-  uniform_int_distribution<long long> dist(MINV, MAXV);
 
   vector<long long> hash;
   hash.reserve(N);
   for (int i = 0; i < N; ++i)
-    hash.push_back(dist(rng) % mod);
+    hash.push_back(rng() % mod);
   vll sa(n + 1), sb(n + 1);
   rep(i, n)
   {

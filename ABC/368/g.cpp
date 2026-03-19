@@ -5,7 +5,9 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -67,8 +69,83 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+ll op_min(ll a, ll b)
+{
+  return max(a, b);
+}
+ll e_min()
+{
+  return 0;
+}
+
+ll op_sum(ll a, ll b)
+{
+  return a + b;
+}
+ll e_sum()
+{
+  return 0;
+}
+ll k = 1;
+bool right_f(ll a)
+{
+  return a <= k;
+}
 int main()
 {
+  ll n;
+  cin >> n;
+  vll a(n), b(n);
+  rep(i, n) cin >> a[i];
+  rep(i, n) cin >> b[i];
+  ll q;
+  cin >> q;
+  segtree<ll, op_sum, e_sum> seg_sum(a);
+  segtree<ll, op_min, e_min> seg_min(b);
+  rep(i, q)
+  {
+    ll t;
+    cin >> t;
+    if (t == 1)
+    {
+      ll it, x;
+      cin >> it >> x;
+      it--;
+      seg_sum.set(it, x);
+      a[it] = x;
+    }
+    else if (t == 2)
+    {
+      ll it, x;
+      cin >> it >> x;
+      it--;
+      seg_min.set(it, x);
+      b[it] = x;
+    }
+    else
+    {
+      ll l, r;
+      cin >> l >> r;
+      l--;
+      ll v = 0;
+      while (l < r)
+      {
+        if (b[l] != 1)
+        {
+          v = max(v + a[l], v * b[l]);
+          l++;
+        }
+        else
+        {
+          ll nx = seg_min.max_right<right_f>(l);
+          chmin(nx, r);
+          v += seg_sum.prod(l, nx);
+          l = nx;
+        }
+      }
+      cout << v << endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

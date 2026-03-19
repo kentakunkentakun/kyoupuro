@@ -63,8 +63,41 @@ int main()
 {
   ll a, x, m;
   cin >> a >> x >> m;
-  ll res = 1;
-  
+  ll sum = 0;
+  ll s = 1;
+  ll ans = 0;
+  bool first = true;
+  while (x)
+  {
+    if (first)
+    {
+      sum = 1;
+    }
+    else
+    {
+      sum = sum * s + sum;
+    }
+    sum %= m;
+    if (first)
+    {
+      s *= a;
+      first = false;
+    }
+    else
+    {
+      s *= s;
+    }
+    s %= m;
+    if (x % 2)
+    {
+      ans += sum;
+      ans %= m;
+      sum *= s;
+      sum %= m;
+    }
+    x /= 2;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

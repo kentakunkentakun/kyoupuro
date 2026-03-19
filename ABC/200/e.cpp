@@ -62,40 +62,53 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
-ll pas[5001001][4];
-void pa(ll n)
+ll COM(ll u)
 {
-  pas[0][0] = 1;
-  pas[1][0] = 1;
-  pas[1][1] = 1;
-  pas[2][0] = 1;
-  pas[2][1] = 2;
-  pas[2][2] = 1;
-  pas[2][3] = 0;
-  for (ll i = 3; i <= n; i++)
+  if (u <= 0)
   {
-    rep(j, 4)
-    {
-      if (j == 0)
-      {
-        pas[i][j] = 1;
-      }
-      else
-      {
-        pas[i][j] = pas[i - 1][j - 1] + pas[i - 1][j];
-      }
-    }
+    return 0;
   }
+  return u * (u - 1) / 2;
 }
 int main()
 {
   ll n, k;
   cin >> n >> k;
-  vll d(3 * n + 1);
-  
-  auto judge = [&](ll wj) -> bool {
-
-  };
+  ll sum = 0;
+  rep(i, 3 * n)
+  {
+    ll res = COM(i + 2) - 3 * COM(i - (n) + 2) + 3 * COM(i - 2 * (n) + 2) + COM(i - 3 * (n) + 2);
+    if (k <= sum + res)
+    {
+      k -= sum;
+      ll tmp = 0;
+      rep(j, n)
+      {
+        if (i - j > 2 * (n - 1))
+          continue;
+        ll cnt = 0;
+        ll d = 0;
+        if (n - 1 < (i - j))
+        {
+          d = ((i - j) - (n - 1));
+          cnt = (i - j) - 2 * ((i - j) - (n - 1));
+        }
+        else
+        {
+          cnt = i - j;
+        }
+        cnt++;
+        if (tmp + cnt >= k)
+        {
+          k -= tmp;
+          cout << j + 1 << " " << d + k << " " << cnt - (k - 1) + d << endl;
+          return 0;
+        }
+        tmp += cnt;
+      }
+    }
+    sum += res;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

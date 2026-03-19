@@ -74,6 +74,64 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n, k;
+  cin >> n >> k;
+  vvll a(n, vll(n));
+  rep(i, n)
+  {
+    rep(j, n) cin >> a[i][j];
+  }
+  ll ac = 1e9, wa = -1;
+  auto judge = [&](ll wj) -> bool
+  {
+    vvll t(n, vll(n));
+    rep(i, n) rep(j, n)
+    {
+      if (a[i][j] <= wj)
+        t[i][j] = 1;
+    }
+    vvll d(n + 1, vll(n + 1));
+    rep(i, n)
+    {
+      rep(j, n)
+      {
+        d[i + 1][j + 1] += d[i + 1][j] + t[i][j];
+      }
+    }
+    rep(j, n)
+    {
+      rep(i, n)
+      {
+        d[i + 1][j + 1] += d[i][j + 1];
+      }
+    }
+
+    for (int i = k; i <= n; i++)
+    {
+      for (int j = k; j <= n; j++)
+      {
+        ll cnt = d[i][j] - d[i - k][j] - d[i][j - k] + d[i - k][j - k];
+        if (((k * k) + 1) / 2 <= cnt)
+        {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+  while (wa + 1 < ac)
+  {
+    ll mid = (ac + wa) / 2;
+    if (judge(mid))
+    {
+      ac = mid;
+    }
+    else
+    {
+      wa = mid;
+    }
+  }
+  cout << ac << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

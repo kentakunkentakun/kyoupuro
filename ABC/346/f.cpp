@@ -64,6 +64,57 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  string s, t;
+  cin >> s >> t;
+  vvll it(26, vll(0));
+  rep(i, s.size())
+  {
+    it[s[i] - 'a'].pb(i);
+  }
+  auto judge = [&](ll wj) -> bool
+  {
+    ll cnt = 0;
+    // iterまで使った。
+    ll iter = -1;
+    rep(i, t.size())
+    {
+      ll v = t[i] - 'a';
+      if (it[v].size() == 0)
+      {
+        return false;
+      }
+      auto s_it = upper_bound(all(it[v]), iter);
+      if (s_it == it[v].end())
+      {
+        iter = -1;
+        cnt++;
+      }
+      auto s = upper_bound(all(it[v]), iter) - it[v].begin();
+      cnt += (wj - (it[v].size() - s) + it[v].size() - 1) / it[v].size();
+      iter = it[v][(s + wj - 1) % it[v].size()];
+      if (cnt >= n)
+      {
+        return false;
+      }
+    }
+    return true;
+  };
+  ll ac = 0, wa = INF;
+  while (ac + 1 < wa)
+  {
+    ll mid = (ac + wa) / 2;
+    if (judge(mid))
+    {
+      ac = mid;
+    }
+    else
+    {
+      wa = mid;
+    }
+  }
+  cout << ac << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

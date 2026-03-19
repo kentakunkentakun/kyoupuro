@@ -22,7 +22,7 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
+const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
@@ -64,6 +64,41 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, d;
+  cin >> n >> d;
+  vll po(d + 1, 1);
+  ll tmp = 1;
+  rep(i, d + 1)
+  {
+    po[i] *= tmp;
+    po[i] %= MOD;
+    tmp *= 2;
+    tmp %= MOD;
+  }
+  vll f(n + 1), g(n + 1);
+  rep(i, n + 1)
+  {
+    if (i == 0)
+      continue;
+    ll l = i, r = d - l;
+    ll leaf = 0;
+    if (r <= l && r >= 0)
+    {
+      leaf = po[max(l - 1, 0LL)] * po[max(r - 1, 0LL)];
+      if (r != l)
+        leaf *= 2;
+      leaf %= MOD;
+    }
+    g[i] = leaf;
+    cout << i << " " << leaf << endl;
+  }
+  rep(i, n)
+  {
+    f[i + 1] = f[i] * 3 + g[i + 1] * 2;
+    f[i + 1] %= MOD;
+    cout << i + 1 << " " << f[i + 1] << endl;
+  }
+  cout << f[n - 1] << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

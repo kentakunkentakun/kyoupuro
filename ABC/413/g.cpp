@@ -5,7 +5,9 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <atcoder/dsu>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -65,10 +67,93 @@ inline bool chmin(T &a, T b)
   }
   return false;
 }
-ll dx[4] = {0, 1, 0, -1};
-ll dy[4] = {1, 0, -1, 0};
+ll dx[8] = {0, 1, 0, -1, 1, 1, -1, -1};
+ll dy[8] = {1, 0, -1, 0, 1, -1, 1, -1};
 int main()
 {
+  ll h, w, k;
+  cin >> h >> w >> k;
+  map<pll, ll> m;
+  ll iter = 0;
+  rep(i, h)
+  {
+    m[{i + 1, w + 1}] = iter;
+    iter++;
+  }
+  rep(i, h)
+  {
+    m[{i + 1, 0}] = iter;
+    iter++;
+  }
+  rep(i, w)
+  {
+    m[{h + 1, i + 1}] = iter;
+    iter++;
+  }
+  rep(i, w)
+  {
+    m[{0, i + 1}] = iter;
+    iter++;
+  }
+
+  vector<pll> p(k);
+  rep(i, k)
+  {
+    ll r, c;
+    cin >> r >> c;
+    m[{r, c}] = iter;
+    p[i] = {r, c};
+    iter++;
+  }
+  m[{h + 1, 0}] = iter;
+  iter++;
+  m[{0, w + 1}] = iter;
+  iter++;
+  p.pb({h + 1, 0});
+  p.pb({0, w + 1});
+
+  dsu uf(iter);
+  rep(i, h - 1)
+  {
+    uf.merge(i, i + 1);
+  }
+  rep(i, h - 1)
+  {
+    uf.merge(h + i, h + i + 1);
+  }
+  rep(i, w - 1)
+  {
+    uf.merge(2 * h + i, 2 * h + i + 1);
+  }
+  rep(i, w - 1)
+  {
+    uf.merge(2 * h + w + i, 2 * h + w + i + 1);
+  }
+  rep(i, k+2)
+  {
+    auto [x, y] = p[i];
+    rep(z, 8)
+    {
+      ll nx = x + dx[z];
+      ll ny = y + dy[z];
+      if (nx >= 0 && nx <= h + 1 && ny >= 0 && ny <= w + 1)
+      {
+        if (m.count({nx, ny}))
+        {
+          ll iter = m[{nx, ny}];
+          uf.merge(2 * (h + w) + i, iter);
+        }
+      }
+    }
+  }
+  if (uf.same(0, h))
+  {
+    cout << "No" << endl;
+  }
+  else
+  {
+    cout << "Yes" << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

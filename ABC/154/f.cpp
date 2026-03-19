@@ -73,7 +73,7 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   return false;
 }
 // 二項係数 nCr
-const int MAX = 700000;
+const int MAX = 7000000;
 long long fac[MAX], finv[MAX], inv[MAX];
 
 // テーブルを作る前処理
@@ -104,23 +104,8 @@ int main()
   COMinit();
   ll r1, c1, r2, c2;
   cin >> r1 >> c1 >> r2 >> c2;
-  ll ans = 0;
-  for (ll i = r1; i <= r2; i++)
-  {
-    ll tmp = COM(i + c1, i);
-    cout << i << " " << tmp << " " << (r2 - i + 1) * (c2 - c1 + 1) << endl;
-    ans += ((r2 - i + 1) * (c2 - c1 + 1)) % MOD * tmp;
-    ans %= MOD;
-  }
-  for (ll i = c1 + 1; i <= c2; i++)
-  {
-    ll tmp = COM(i + r1, i);
-    cout << i << " " << tmp << " " << (c2 - i + 1) * (r2 - r1 + 1) << endl;
-
-    ans += ((c2 - i + 1) * (r2 - r1 + 1) % MOD) * tmp;
-    ans %= MOD;
-  }
-  cout << ans << endl;
+  ll ans = COM(r2 + c2 + 2, c2 + 1) - COM(r2 + c1 + 1, c1) - COM(c2 + r1 + 1, r1 ) + COM(r1 + c1, c1);
+  cout << ((ans%MOD)+MOD)%MOD << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

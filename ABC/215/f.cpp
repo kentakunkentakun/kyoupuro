@@ -64,6 +64,49 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll x(n), y(n);
+  vector<pll> p(n);
+  rep(i, n) cin >> p[i].F >> p[i].S;
+  sort(all(p));
+  ll ac = 0, wa = 1e10;
+  auto judge = [&](ll wj) -> bool
+  {
+    ll ma = -1, mi = INF;
+    ll it = 0;
+    rep(i, n)
+    {
+      while (p[i].F - p[it].F >= wj && it < n)
+      {
+        chmax(ma, p[it].S);
+        chmin(mi, p[it].S);
+        it++;
+      }
+      if (ma != -1 && abs(p[i].S - ma) >= wj)
+      {
+        return true;
+      }
+      if (mi != INF && abs(p[i].S - mi) >= wj)
+      {
+        return true;
+      }
+    }
+    return false;
+  };
+  while (ac + 1 < wa)
+  {
+    ll mid = (ac + wa) / 2;
+    if (judge(mid))
+    {
+      ac = mid;
+    }
+    else
+    {
+      wa = mid;
+    }
+  }
+  cout << ac << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

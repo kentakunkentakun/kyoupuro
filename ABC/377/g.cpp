@@ -60,10 +60,70 @@ inline bool chmin(T &a, T b)
   }
   return false;
 }
+struct Trie
+{
+  struct Node
+  {
+    map<char, ll> to;
+    ll len;
+    Node(ll l = 0)
+    {
+      len = l;
+    }
+  };
+  vector<Node> d;
+  Trie() : d(1)
+  {
+    d[0].len = 0;
+  };
+
+  void add(const string &s)
+  {
+    ll v = 0;
+    rep(i, s.size())
+    {
+      char c = s[i];
+      if (!d[v].to.count(c))
+      {
+        d[v].to[c] = d.size();
+        d.push_back(Node((ll)s.size() - i - 1));
+      }
+      v = d[v].to[c];
+      chmin(d[v].len, (ll)s.size() - i - 1);
+    }
+  }
+  ll solve(const string &s)
+  {
+    ll ans = INF;
+    ll v = 0;
+    chmin(ans, d[v].len + (ll)s.size());
+    rep(i, s.size())
+    {
+      char c = s[i];
+      if (!d[v].to.count(c))
+      {
+        break;
+      }
+      v = d[v].to[c];
+      chmin(ans, (ll)s.size() - i - 1 + d[v].len);
+    }
+    return ans;
+  }
+};
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  Trie t;
+  rep(i, n)
+  {
+    string s;
+    cin >> s;
+    cout << t.solve(s) << endl;
+    t.add(s);
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

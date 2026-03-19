@@ -71,8 +71,118 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+struct edge
+{
+  ll left, right;
+};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll p(n), l(n), p_it(n), l_it(n);
+  rep(i, n)
+  {
+    cin >> p[i];
+    p[i]--;
+    p_it[p[i]] = i;
+  }
+  rep(i, n)
+  {
+    cin >> l[i];
+    l[i]--;
+    l_it[l[i]] = i;
+  }
+  vector<edge> t(n);
+  rep(i, n)
+  {
+    t[i] = {-1, -1};
+  }
+  if (p[0] != 0)
+  {
+    cout << -1 << endl;
+    return 0;
+  }
+  ll it = 0;
+  auto dfs = [&](auto dfs, ll l, ll r) -> bool
+  {
+    if (it == n - 1)
+    {
+      return true;
+    }
+    ll now = p[it];
+    ll next = p[it + 1];
+    if (l_it[next] < l)
+    {
+      return false;
+    }
+    else if (l < l_it[next] && l_it[next] < r)
+    {
+      bool ok = true;
+      if (l_it[now] < l_it[next])
+      {
+        if (t[now].right != -1)
+          return false;
+        t[now].right = next;
+        it++;
+        ok = dfs(dfs, l_it[now], r);
+      }
+      else
+      {
+        if (t[now].left != -1)
+        {
+          return false;
+        }
+        t[now].left = next;
+        it++;
+        ok = dfs(dfs, l, l_it[now]);
+        if (it != n - 1 && ok)
+        {
+          next = p[it + 1];
+          if (l_it[next] < l)
+          {
+            return false;
+          }
+          else if (l < l_it[next] && l_it[next] < r)
+          {
+            if (l_it[now] < l_it[next])
+            {
+              if (t[now].right != -1)
+              {
+                return false;
+              }
+              t[now].right = next;
+              it++;
+              ok = dfs(dfs, l_it[now], r);
+            }
+            else
+            {
+              ok = false;
+            }
+          }
+        }
+      }
+      return ok;
+    }
+    else
+    {
+      return true;
+    }
+  };
+  if (!dfs(dfs, -1, n))
+  {
+    cout << -1 << endl;
+  }
+  else
+  {
+    rep(i, n)
+    {
+      ll l, r;
+      l = t[i].left + 1;
+      r = t[i].right + 1;
+
+      cout << l << " " << r << endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

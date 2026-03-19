@@ -64,7 +64,62 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
-  
+  ll n, q;
+  cin >> n >> q;
+  vll a(n);
+  rep(i, n)
+  {
+    cin >> a[i];
+    a[i]--;
+  }
+  vvll it(n, vll(60));
+  vvll d(n, vll(60));
+  rep(i, n)
+  {
+    it[i][0] = a[i];
+    d[i][0] = i + 1;
+  }
+  rep(z, 30)
+  {
+    vll tmp(n);
+    rep(i, n)
+    {
+      tmp[i] = d[i][z] + d[it[i][z]][z];
+    }
+    rep(i, n)
+    {
+      d[i][z + 1] = tmp[i];
+    }
+    vll tmp_it(n);
+    rep(i, n)
+    {
+      tmp_it[i] = it[it[i][z]][z];
+    }
+    rep(i, n)
+    {
+      it[i][z + 1] = tmp_it[i];
+    }
+  }
+  rep(i, q)
+  {
+    ll t, b;
+    cin >> t >> b;
+    b--;
+    ll ans = 0;
+    ll iter = 0;
+    ll s = b;
+    while (t)
+    {
+      if (t % 2)
+      {
+        ans += d[s][iter];
+        s = it[s][iter];
+      }
+      iter++;
+      t /= 2;
+    }
+    cout << ans << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

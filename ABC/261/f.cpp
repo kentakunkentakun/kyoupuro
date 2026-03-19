@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +63,64 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+ll op(ll a, ll b)
+{
+  return a + b;
+}
+ll e()
+{
+  return 0;
+}
 int main()
 {
+  ll n;
+  cin >> n;
+  vll c(n), x(n);
+  rep(i, n) cin >> c[i];
+  rep(i, n) cin >> x[i];
+  vector<pll> p(n);
+  vector<vector<pll>> t(n, vector<pll>(0));
+  vll ini(n);
+  vvll iter(n, vll(0));
+  rep(i, n)
+  {
+    c[i]--;
+    x[i]--;
+    t[c[i]].pb({x[i], i});
+    iter[c[i]].pb(i);
+  }
+  ll cnt = 0;
+  rep(i, n)
+  {
+    set<ll> s;
+    rep(j, t[i].size())
+    {
+      s.insert(t[i][j].first);
+    }
+    map<ll, ll> iter;
+    ll it = 0;
+    for (auto v : s)
+    {
+      iter[v] = it;
+      it++;
+    }
+    segtree<ll, op, e> seg(it);
+    rep(j, t[i].size())
+    {
+      cnt += seg.prod(iter[t[i][j].F] + 1, it);
+      ll now = seg.get(iter[t[i][j].F]);
+      seg.set(iter[t[i][j].F], now + 1);
+    }
+  }
+  ll ans = 0;
+  segtree<ll, op, e> seg(n);
+  rep(i, n)
+  {
+    ans += seg.prod(x[i] + 1, n);
+    ll now = seg.get(x[i]);
+    seg.set(x[i], now + 1);
+  }
+  cout << ans - cnt << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

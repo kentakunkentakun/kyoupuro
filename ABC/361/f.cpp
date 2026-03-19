@@ -69,6 +69,59 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll e(62, 1);
+  auto judge = [&](ll wj, ll k) -> bool
+  {
+    __int128_t res = 1;
+    rep(i, k)
+    {
+      res *= wj;
+      if (res > n)
+      {
+        return false;
+      }
+    }
+    return true;
+  };
+  ll ans = 0;
+  repR(i, 61)
+  {
+    if (i < 2)
+    {
+      continue;
+    }
+    ll ac = 1, wa = INF;
+    while (ac + 1 < wa)
+    {
+      ll mid = (ac + wa) / 2;
+      if (judge(mid, i))
+      {
+        ac = mid;
+      }
+      else
+      {
+        wa = mid;
+      }
+    }
+    ans += ac - e[i];
+    vll insuu(0);
+    for (int j = 2; j * j <= i; j++)
+    {
+      if (i % j == 0)
+      {
+        insuu.pb(j);
+        if (j != i / j)
+          insuu.pb(i / j);
+      }
+    }
+    for (auto p : insuu)
+    {
+      e[p] += ac - e[i];
+    }
+  }
+  cout << ans + 1 << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -1,0 +1,154 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
+#define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
+#define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
+#define repR(i, n) for (ll i = n - 1; i >= 0LL; i--)
+#define all(v) (v).begin(), (v).end()
+#define rall(v) (v).rbegin(), (v).rend()
+#define F first
+#define S second
+#define pb push_back
+#define pu push
+#define COUT(x) cout << (x) << "\n"
+#define PQ(x) priority_queue<x>
+#define PQR(x) priority_queue<x, vector<x>, greater<x>>
+#define YES(n) cout << ((n) ? "YES\n" : "NO\n")
+#define Yes(n) cout << ((n) ? "Yes\n" : "No\n")
+#define mp make_pair
+#define sz(x) (ll)(x).size()
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef tuple<ll, ll, ll> tll;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
+using vll = vector<ll>;
+using vb = vector<bool>;
+using vvb = vector<vb>;
+using vvll = vector<vll>;
+using vvvll = vector<vvll>;
+using vstr = vector<string>;
+using vc = vector<char>;
+using vvc = vector<vc>;
+// const ll MOD = 1e9+7LL;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
+template <class T>
+constexpr void printArray(const vector<T> &vec, char split = ' ')
+{
+  rep(i, vec.size())
+  {
+    cout << vec[i];
+    cout << (i == (int)vec.size() - 1 ? '\n' : split);
+  }
+}
+template <class T>
+inline bool chmax(T &a, T b)
+{
+  if (a < b)
+  {
+    a = b;
+    return true;
+  }
+  return false;
+}
+template <class T>
+inline bool chmin(T &a, T b)
+{
+  if (a > b)
+  {
+    a = b;
+    return true;
+  }
+  return false;
+}
+ll dx[3] = {0, 1, 0};
+ll dy[3] = {1, 0, -1};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
+int main()
+{
+  ll n, q;
+  cin >> n >> q;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  sort(rall(a));
+  vll d(n + 2);
+  rep(i, n)
+  {
+    d[i + 1] += d[i] + a[i];
+  }
+  vll dd(n + 2);
+  dd[n - 1] = a[n - 1];
+  dd[n - 2] = a[n - 2];
+  dd[n] = 0;
+  dd[n + 1] = 0;
+
+  repR(i, n)
+  {
+    if (i <= n - 3)
+    {
+      dd[i] = dd[i + 2] + a[i];
+    }
+  }
+
+  auto judge = [&](ll wj, ll k) -> bool
+  {
+    if (wj * 2 >= n)
+    {
+      return false;
+    }
+    if (abs(a[wj] - k) >= abs(a[wj * 2] - k))
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  };
+  rep(i, q)
+  {
+    ll x;
+    cin >> x;
+    ll ac = 0, wa = (n + 1) / 2;
+
+    while (ac + 1 < wa)
+    {
+      ll mid = (ac + wa) / 2;
+      if (judge(mid, x))
+      {
+        ac = mid;
+      }
+      else
+      {
+        wa = mid;
+      }
+    }
+    cout << d[ac + 1] + dd[(ac + 1) * 2] << endl;
+  }
+}
+/*cin.tie(0);
+ios::sync_with_studio(false);
+next_permutation(v.begin(), v.end())
+
+cout << fixed << setprecision(10);
+__int128
+
+//ソート済み
+v.erase(unique(v.begin(), v.end()), v.end());
+__builtin_popcountll(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

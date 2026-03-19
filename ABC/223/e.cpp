@@ -64,6 +64,64 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll x, y;
+  vll d(3);
+
+  cin >> x >> y;
+  rep(i, 3)
+  {
+    cin >> d[i];
+  }
+  rep(k, 2)
+  {
+    ll mx = 0;
+    rep(i, 3)
+    {
+      mx += (d[i] + y - 1) / y;
+    }
+    if (mx <= x)
+    {
+      cout << "Yes" << endl;
+      return 0;
+    }
+    set<ll> s;
+    s.insert(0);
+    s.insert(1);
+    s.insert(2);
+    rep(i, 3)
+    {
+      s.erase(i);
+      rep(j, 3)
+      {
+        ll a = -1, b = -1;
+        rep(u, 3)
+        {
+          if (s.count(u) && a == -1)
+          {
+            a = u;
+          }
+          else if (s.count(u))
+          {
+            b = u;
+          }
+        }
+        ll remain = y - (d[i] + x - 1) / x;
+        ll remain_x = x;
+        if (remain > 0)
+        {
+          remain_x -= (d[a] + remain - 1) / remain;
+        }
+        if (remain_x * remain >= d[b])
+        {
+          cout << "Yes" << endl;
+          return 0;
+        }
+      }
+      s.insert(i);
+    }
+    swap(x, y);
+  }
+  cout << "No" << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -64,8 +64,12 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
-  ll xa,ya,xb,yb,xc,yc;
-  cin>>xa>>ya>>xb>>yb>>xc>>yc;
+  ll xa, ya, xb, yb, xc, yc;
+  cin >> xa >> ya >> xb >> yb >> xc >> yc;
+  xb -= xa;
+  yb -= ya;
+  xc -= xa;
+  yc -= ya;
   
 }
 /*cin.tie(0);

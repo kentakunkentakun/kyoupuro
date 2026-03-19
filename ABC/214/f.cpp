@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +63,75 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct S
+{
+  ll v, rest, iter;
+};
+S op(S a, S b)
+{
+  if (a.rest == 0)
+  {
+    return b;
+  }
+  return a;
+}
+S e()
+{
+  return {0, 0, 0};
+}
 int main()
 {
+  ll u;
+  cin >> u;
+  vector<string> ans(u);
+  rep(T, u)
+  {
+    ll n;
+    cin >> n;
+    vll l(n), r(n);
+    vll t(0);
+    vll k(0);
+    vector<pll> p(n);
+    rep(i, n)
+    {
+      cin >> l[i] >> r[i];
+      r[i]++;
+      t.pb(l[i]);
+      t.pb(r[i]);
+      p[i] = {r[i], l[i]};
+    }
+    sort(all(p));
+    sort(all(t));
+    t.erase(unique(t.begin(), t.end()), t.end());
+    map<ll, ll> m;
+    vector<S> ini(t.size() - 1);
+    rep(i, t.size())
+    {
+      m[t[i]] = i;
+    }
+    rep(i, t.size() - 1)
+    {
+      ini[i] = {t[i + 1] - t[i], t[i + 1] - t[i], i};
+    }
+    segtree<S, op, e> seg(ini);
+    string res = "Yes";
+    rep(i, n)
+    {
+      auto [r, l] = p[i];
+      S a = seg.prod(m[l], m[r]);
+      if (a.rest == 0)
+      {
+        res = "No";
+        break;
+      }
+      seg.set(a.iter, {a.v, a.rest - 1, a.iter});
+    }
+    ans[T] = res;
+  }
+  rep(i, u)
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

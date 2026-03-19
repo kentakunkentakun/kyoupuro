@@ -28,6 +28,7 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -64,6 +65,123 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll h, w;
+  cin >> h >> w;
+  vll r(h), c(w);
+  rep(i, h) cin >> r[i];
+  rep(i, w) cin >> c[i];
+  vector<string> a(h);
+  rep(i, h)
+  {
+    cin >> a[i];
+  }
+  vvvll dp(h, vvll(w, vll(4, INF)));
+  dp[0][0][0] = 0;
+  dp[0][0][1] = r[0];
+  dp[0][0][2] = c[0];
+  dp[0][0][3] = c[0] + r[0];
+  rep(i, h)
+  {
+    rep(j, w)
+    {
+      rep(z, 4)
+      {
+        if (dp[i][j][z] != INF)
+        {
+          // 下
+          if (i + 1 < h)
+          {
+            if (a[i][j] == a[i + 1][j])
+            {
+              if (z == 0)
+              {
+                chmin(dp[i + 1][j][z], dp[i][j][z]);
+              }
+              else if (z == 1)
+              {
+                chmin(dp[i + 1][j][z], dp[i][j][z] + r[i + 1]);
+              }
+              else if (z == 2)
+              {
+                chmin(dp[i + 1][j][z], dp[i][j][z]);
+              }
+              else if (z == 3)
+              {
+                chmin(dp[i + 1][j][z], dp[i][j][z] + r[i + 1]);
+              }
+            }
+            else
+            {
+              if (z == 0)
+              {
+                chmin(dp[i + 1][j][1], dp[i][j][z] + r[i + 1]);
+              }
+              else if (z == 1)
+              {
+                chmin(dp[i + 1][j][0], dp[i][j][z]);
+              }
+              else if (z == 2)
+              {
+                chmin(dp[i + 1][j][3], dp[i][j][z] + r[i + 1]);
+              }
+              else
+              {
+                chmin(dp[i + 1][j][2], dp[i][j][z]);
+              }
+            }
+          }
+          // 左
+          if (j + 1 < w)
+          {
+            if (a[i][j] == a[i][j + 1])
+            {
+              if (z == 0)
+              {
+                chmin(dp[i][j + 1][z], dp[i][j][z]);
+              }
+              else if (z == 1)
+              {
+                chmin(dp[i][j + 1][z], dp[i][j][z]);
+              }
+              else if (z == 2)
+              {
+                chmin(dp[i][j + 1][z], dp[i][j][z] + c[j + 1]);
+              }
+              else
+              {
+                chmin(dp[i][j + 1][z], dp[i][j][z] + c[j + 1]);
+              }
+            }
+            else
+            {
+              if (z == 0)
+              {
+                chmin(dp[i][j + 1][2], dp[i][j][z] + c[j + 1]);
+              }
+              else if (z == 1)
+              {
+                chmin(dp[i][j + 1][3], dp[i][j][z] + c[j + 1]);
+              }
+              else if (z == 2)
+              {
+                chmin(dp[i][j + 1][0], dp[i][j][z]);
+              }
+              else
+              {
+                chmin(dp[i][j + 1][1], dp[i][j][z]);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  ll ans = INF;
+  rep(i, 4)
+  {
+    chmin(ans, dp[h - 1][w - 1][i]);
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

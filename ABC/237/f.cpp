@@ -2,6 +2,7 @@
 
 using namespace std;
 #define ll long long
+#define ld long double
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
 #define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
@@ -22,15 +23,21 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+// const ll MOD = 1e9+7LL;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -62,13 +69,78 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vector<vvvll> dp(n + 1, vvvll(m + 1, vvll(m + 1, vll(m + 1, 0))));
+  dp[0][m][m][m] = 1;
+  rep(i, n)
+  {
+    rep(j, m + 1)
+    {
+      rep(k, m + 1)
+      {
+        rep(l, m + 1)
+        {
+          rep(nx, m)
+          {
+            if (l < nx)
+              continue;
+            ll nj, nk, nl;
+            nj = j;
+            nk = k;
+            nl = l;
+            chmin(nj, nx);
+            if (j < nx)
+            {
+              chmin(nk, nx);
+            }
+            if (k < nx)
+            {
+              chmin(nl, nx);
+            }
+            dp[i + 1][nj][nk][nl] += dp[i][j][k][l];
+            dp[i + 1][nj][nk][nl] %= MOD;
+          }
+        }
+      }
+    }
+  }
+  ll ans = 0;
+  rep(i, m)
+  {
+    rep(j, m)
+    {
+      rep(z, m)
+      {
+        ans += dp[n][i][j][z];
+        ans %= MOD;
+      }
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
+__int128
 
-__builtin_popcount(i)*/
+//ソート済み
+v.erase(unique(v.begin(), v.end()), v.end());
+__builtin_popcountll(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

@@ -73,6 +73,7 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   return false;
 }
 
+
 // a^n mod を計算する
 
 long long modpow(long long a, long long n, long long mod)
@@ -92,7 +93,15 @@ int main()
 {
   ll n, k, m;
   cin >> n >> k >> m;
-  
+  if (m % MOD == 0)
+  {
+    cout << 0 << endl;
+  }
+  else
+  {
+    ll rui = modpow(k, n, MOD - 1);
+    cout << modpow(m, rui, MOD) << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

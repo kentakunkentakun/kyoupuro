@@ -78,40 +78,82 @@ int main()
     t[u].pb(v);
     t[v].pb(u);
   }
-  vll ans(n, -INF);
-  ans[0] = 0;
-  queue<pll> que;
-  vll ch(n, false);
+  vll dist(n, INF);
+  dist[0] = 0;
+  PQR(pll)
+  que;
   que.push({0, 0});
   while (que.size())
   {
-    auto [now, v] = que.front();
+    auto [cost, now] = que.top();
     que.pop();
-    if (v < ans[now])
+    if (cost > dist[now])
       continue;
-    ch[now] = true;
-    for (auto p : t[now])
+    for (auto nx : t[now])
     {
-      if (ch[p])
-        continue;
-      ll nextV = ans[now];
-      if (h[now] > h[p])
+      if (h[nx] <= h[now])
       {
-        nextV += h[now] - h[p];
+        if (chmin(dist[nx], dist[now]))
+          que.push({dist[nx], nx});
       }
       else
       {
-        nextV -= 2 * (h[p] - h[now]);
-      }
-      if (chmax(ans[p], nextV))
-      {
-        que.push({p, nextV});
+        if (chmin(dist[nx], dist[now] + (h[nx] - h[now])))
+          que.push({dist[nx], nx});
       }
     }
   }
-  ll res = -INF;
-  rep(i, n) chmax(res, ans[i]);
-  cout << res << endl;
+  ll ans = -INF;
+  rep(i, n)
+  {
+    chmax(ans, h[0] - h[i] - dist[i]);
+  }
+  cout << ans << endl;
+  // queue<ll> que;
+  // que.push(0);
+  // priority_queue<tuple<ll, ll, ll>> q;
+  // vll d(n, -INF);
+  // d[0] = 0;
+  // do
+  // {
+  //   while (q.size())
+  //   {
+  //     auto [cost, from, to] = q.top();
+  //     q.pop();
+  //     if (d[to] == -INF)
+  //     {
+  //       d[to] = d[from] + cost;
+  //       que.push(to);
+  //       break;
+  //     }
+  //   }
+  //   while (que.size())
+  //   {
+  //     auto now = que.front();
+  //     que.pop();
+  //     for (auto nx : t[now])
+  //     {
+  //       if (d[nx] != -INF)
+  //         continue;
+  //       if (h[now] < h[nx])
+  //       {
+  //         q.push({-2 * (h[nx] - h[now]), now, nx});
+  //       }
+  //       else
+  //       {
+  //         d[nx] = d[now] + h[now] - h[nx];
+  //         que.push(nx);
+  //       }
+  //     }
+  //   }
+
+  // } while (q.size());
+  // ll ans = 0;
+  // rep(i, n)
+  // {
+  //   chmax(ans, d[i]);
+  // }
+  // cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

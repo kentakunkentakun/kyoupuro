@@ -72,8 +72,69 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+const int MAX = 2000000;
+long long fac[MAX], finv[MAX], inv[MAX];
+
+// テーブルを作る前処理
+void COMinit()
+{
+  fac[0] = fac[1] = 1;
+  finv[0] = finv[1] = 1;
+  inv[1] = 1;
+  for (int i = 2; i < MAX; i++)
+  {
+    fac[i] = fac[i - 1] * i % MOD;
+    inv[i] = MOD - inv[MOD % i] * (MOD / i) % MOD;
+    finv[i] = finv[i - 1] * inv[i] % MOD;
+  }
+}
+
+// 二項係数計算
+long long COM(int n, int k)
+{
+  if (n < k)
+    return 0;
+  if (n < 0 || k < 0)
+    return 0;
+  return fac[n] * (finv[k] * finv[n - k] % MOD) % MOD;
+}
 int main()
 {
+  COMinit();
+  string s;
+  cin >> s;
+  ll n = s.size();
+  vvll d(n + 1, vll(11));
+  vvll b(n + 1, vll(11));
+  rep(i, n)
+  {
+    d[i + 1][s[i] - '0'] += 1;
+    rep(j, 10)
+    {
+      d[i + 1][j] += d[i][j];
+    }
+  }
+  repR(i, n)
+  {
+    b[i][s[i] - '0'] += 1;
+    rep(j, 10)
+    {
+      b[i][j] += b[i + 1][j];
+    }
+  }
+  ll ans = 0;
+  rep(i, n)
+  {
+    ll num = s[i] - '0';
+    if (num < 9)
+    {
+      ll cnt = d[i + 1][num] - 1;
+      ll cnt2 = b[i + 1][num + 1];
+      ans += COM(cnt + cnt2, cnt + 1);
+      ans %= MOD;
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

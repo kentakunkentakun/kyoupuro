@@ -64,6 +64,136 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vvll t(n, vll(0));
+  rep(i, n - 1)
+  {
+    ll a, b;
+    cin >> a >> b;
+    a--;
+    b--;
+    t[a].pb(b);
+    t[b].pb(a);
+  }
+  ll q;
+  cin >> q;
+  vector<vector<pll>> query(n, vector<pll>(0));
+  rep(i, q)
+  {
+    ll u, k;
+    cin >> u >> k;
+    u--;
+    query[u].pb({k, i});
+  }
+  vll dist(n, 0);
+
+  auto dfs = [&](auto dfs, ll now, ll par) -> void
+  {
+    for (auto nx : t[now])
+    {
+      if (par == nx)
+        continue;
+      dist[nx] = dist[now] + 1;
+      dfs(dfs, nx, now);
+    }
+  };
+  dfs(dfs, 0, -1);
+  ll s = -1;
+  ll ma = 0;
+  rep(i, n)
+  {
+    if (chmax(ma, dist[i]))
+    {
+      s = i;
+    }
+  }
+  rep(i, n) dist[i] = 0;
+  dfs(dfs, s, -1);
+  ll e = -1;
+  ma = 0;
+  rep(i, n)
+  {
+    if (chmax(ma, dist[i]))
+    {
+      e = i;
+    }
+  }
+  vll right(0);
+  auto dfs2 = [&](auto dfs2, ll now, ll par) -> bool
+  {
+    if (now == e)
+    {
+      right.pb(now);
+      return true;
+    }
+    for (auto nx : t[now])
+    {
+      if (nx == par)
+        continue;
+      if (dfs2(dfs2, nx, now))
+      {
+        right.pb(now);
+        return true;
+      }
+    }
+    return false;
+  };
+  dfs2(dfs2, s, -1);
+  vll ch(n, -1);
+
+  rep(i, right.size())
+  {
+    ch[right[i]] = 1;
+  }
+  vll left(0);
+  vll ans(q, -1);
+  auto dfs3 = [&](auto dfs3, ll now, ll par) -> void
+  {
+    if (ch[now] == 1)
+      right.pop_back();
+    for (auto [k, it] : query[now])
+    {
+      if (left.size() >= k)
+      {
+        ans[it] = left[left.size() - k];
+      }
+      if (right.size() >= k)
+      {
+        ans[it] = right[right.size() - k];
+      }
+    }
+    left.pb(now);
+    right.pb(now);
+    for (auto nx : t[now])
+    {
+      if (nx == par)
+        continue;
+      if (ch[nx] == 1)
+      {
+        right.pop_back();
+        dfs3(dfs3, nx, now);
+        right.push_back(now);
+      }
+      else
+      {
+        dfs3(dfs3, nx, now);
+      }
+    }
+    left.pop_back();
+    right.pop_back();
+    if (ch[now] == 1)
+    {
+      right.push_back(now);
+    }
+  };
+  dfs3(dfs3, s, -1);
+  rep(i, q)
+  {
+    if (ans[i] != -1)
+      ans[i]++;
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

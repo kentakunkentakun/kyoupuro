@@ -31,6 +31,8 @@ using vvll = vector<vll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+using i128 = __int128_t;
+
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -66,80 +68,35 @@ int main()
 {
   ll n, k;
   cin >> n >> k;
-  vvll t(3, vll(n));
-  rep(i, 3)
+  vll a(n), b(n), c(n);
+  rep(i, n) cin >> a[i];
+  rep(i, n) cin >> b[i];
+  rep(i, n) cin >> c[i];
+  sort(all(a));
+  sort(all(b));
+  sort(all(c));
+  set<tuple<i128, ll, ll, ll>> s;
+  s.insert({(i128)a[n - 1] * (b[n - 1] + c[n - 1]) + (i128)b[n - 1] * c[n - 1], n - 1, n - 1, n - 1});
+  ll ans = 0;
+  rep(i, k)
   {
-    rep(j, n) cin >> t[i][j];
-    sort(all(t[i]));
-  }
-  multiset<tuple<ll, ll, ll, ll>> s;
-  auto culc = [&](ll x, ll y, ll z) -> ll
-  {
-    return x * y + x * z + y * z;
-  };
-  vvll ano(3, vll(2));
-  ano[0][0] = 1;
-  ano[0][1] = 2;
-  ano[1][0] = 0;
-  ano[1][1] = 2;
-  ano[2][0] = 0;
-  ano[2][1] = 1;
-  vvll its(3, vll(3, n - 1));
-  auto mi = [&](vll &tmp, ll now) -> pll
-  {
-    ll res = -1;
-    ll iter = -1;
-    ll a0 = ano[now][0];
-    ll a1 = ano[now][1];
-    if (tmp[now] > 0)
-      if (chmax(res, culc(t[now][tmp[now] - 1], t[a0][tmp[a0]], t[a1][tmp[a1]])))
-      {
-        iter = now;
-      }
-    if (tmp[a0] > 0 && tmp[now] < tmp[a0])
+    auto [sum, ai, bi, ci] = *s.rbegin();
+    s.erase({sum, ai, bi, ci});
+    if (ai > 0)
     {
-      if (chmax(res, culc(t[now][tmp[now]], t[a0][tmp[a0] - 1], t[a1][tmp[a1]])))
-      {
-        iter = a0;
-      }
+      s.insert({sum - (i128)a[ai] * (b[bi] + c[ci]) + (i128)a[ai - 1] * (b[bi] + c[ci]), ai - 1, bi, ci});
     }
-    if (tmp[a1] > 0 && tmp[now] < tmp[a1])
+    if (bi > 0)
     {
-      if (chmax(res, culc(t[now][tmp[now]], t[a0][tmp[a0]], t[a1][tmp[a1] - 1])))
-      {
-        iter = a1;
-      }
+      s.insert({sum - (i128)b[bi] * (a[ai] + c[ci]) + (i128)b[bi - 1] * (a[ai] + c[ci]), ai, bi - 1, ci});
     }
-    return {res, iter};
-  };
-  s.insert({culc(t[0][n - 1], t[1][n - 1], t[2][n - 1]), n - 1, n - 1, n - 1});
-  while ((ll)s.size() < k)
-  {
-    rep(i, 3)
+    if (ci > 0)
     {
-      ll a0 = ano[i][0];
-      ll a1 = ano[i][1];
-      if (mi(its[i], i).F >= mi(its[a0], a0).F && mi(its[i], i).F >= mi(its[a1], a1).F)
-      {
-        auto [res, iter] = mi(its[i], i);
-        its[i][iter]--;
-        cout << res << " " << its[i][0] << " " << its[i][1] << " " << its[i][2] << endl;
-
-        s.insert({res, its[i][0], its[i][1], its[i][2]});
-        break;
-      }
+      s.insert({sum - (i128)c[ci] * (a[ai] + b[bi]) + (i128)c[ci - 1] * (a[ai] + b[bi]), ai, bi, ci - 1});
     }
+    ans = sum;
   }
-  for (auto [res, x, y, z] : s)
-  {
-    // cout << res << " " << x << " " << y << " " << z << endl;
-  }
-  while (s.size() > k)
-  {
-    s.erase(s.begin());
-  }
-  auto [res, x, y, z] = *s.begin();
-  cout << res << endl;
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -64,6 +64,95 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  // ave
+  {
+    auto judge = [&](double wj) -> bool
+    {
+      vector<vector<double>> dp(n + 1, vector<double>(2, -INF));
+      dp[0][0] = 0;
+      rep(i, n)
+      {
+        chmax(dp[i + 1][0], dp[i][0] + a[i] - wj);
+        chmax(dp[i + 1][0], dp[i][1] + a[i] - wj);
+        chmax(dp[i + 1][1], dp[i][0]);
+      }
+      if (dp[n][0] >= 0 || dp[n][1] >= 0)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    };
+    double ac = 0, wa = INF;
+    rep(T, 75)
+    {
+      double mid = (ac + wa) / 2;
+      if (judge(mid))
+      {
+        ac = mid;
+      }
+      else
+      {
+        wa = mid;
+      }
+    }
+    cout << fixed << setprecision(10);
+
+    cout << ac << endl;
+  }
+  // mid
+  {
+    auto judge = [&](ll wj) -> bool
+    {
+      ll up = 0, down = 0;
+      bool skip = false;
+      rep(i, n)
+      {
+        if (a[i] >= wj)
+        {
+          skip = false;
+          up++;
+        }
+        else if (skip)
+        {
+          skip = false;
+          down++;
+        }
+        else
+        {
+          skip = true;
+        }
+      }
+      if (up > down)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    };
+    ll ac = 0, wa = INF;
+    while (ac + 1 < wa)
+    {
+      ll mid = (ac + wa) / 2;
+      if (judge(mid))
+      {
+        ac = mid;
+      }
+      else
+      {
+        wa = mid;
+      }
+    }
+    cout << ac << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

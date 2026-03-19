@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -22,15 +23,21 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+// const ll MOD = 1e9+7LL;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -62,89 +69,148 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
-template <typename T>
-struct SegmentTree
+bool isIn(ll nx, ll ny, ll h, ll w)
 {
-  typedef function<T(T, T)> F;
-  int n; // 要素数
-  F f;   // 2項演算
-  T e;   // 単位元
-  vector<T> dat;
-  SegmentTree(int n_, F f, T e) : f(f), e(e)
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
   {
-    init(n_);
-    build();
+    return true;
   }
-  SegmentTree(int n_, F f, T e, vector<T> &v) : f(f), e(e)
-  {
-    init(n_);
-    build(n_, v);
-  }
-  void init(int n_)
-  {
-    n = 1;
-    while (n < n_)
-      n <<= 1;
-    dat.clear();
-    dat.resize(n << 1, e);
-  }
-  void build(int n_, const vector<T> &v)
-  {
-    for (int i = 0; i < n_; ++i)
-      dat[n + i] = v[i];
-    build();
-  }
-  void build()
-  {
-    for (int i = n - 1; i >= 1; --i)
-    {
-      dat[i] = f(dat[i << 1], dat[i << 1 | 1]);
-    }
-  }
-  void update(int k, const T &x)
-  {
-    dat[k += n] = x;
-    while (k >>= 1)
-    {
-      dat[k] = f(dat[k << 1], dat[k << 1 | 1]);
-    }
-  }
-  T query(int a, int b)
-  {
-    T l = e, r = e;
-    for (a += n, b += n; a < b; a >>= 1, b >>= 1)
-    {
-      if (a & 1)
-        l = f(l, dat[a++]);
-      if (b & 1)
-        r = f(dat[--b], r);
-    }
-    return f(l, r);
-  }
+  return false;
+}
+struct S
+{
+  ll it, v;
+  bool empty;
 };
+S op(S a, S b)
+{
+  if (a.empty)
+  {
+    return b;
+  }
+  else if (b.empty)
+  {
+    return a;
+  }
+  if (a.v < b.v)
+  {
+    return a;
+  }
+  else
+  {
+    return b;
+  }
+}
+S e()
+{
+  return {-1, INF, true};
+}
 int main()
 {
-  cout << fixed << setprecision(10);
+  ll n, l, k;
+  cin >> n >> l >> k;
+  vll a(n), c(n);
 
-  double n, m, d;
-  cin >> n >> m >> d;
-  double ans = 0;
-  double a = max(0.0, n - 2 * d);
-  double b = n - a;
-  if (d == 0)
+  rep(i, n)
   {
-    a = 0;
-    b = n;
+    cin >> a[i] >> c[i];
+  }
+  rep(i, n)
+  {
+    if (i != 0)
+    {
+      if (a[i] - a[i - 1] > k)
+      {
+        cout << -1 << endl;
+        return 0;
+      }
+    }
+  }
+  if (l - a[n - 1] > k || a[0] > k)
+  {
+    cout << -1 << endl;
+    return 0;
+  }
+  a.pb(l);
+  c.pb(0);
+  vector<S> ini(n + 1);
+  rep(i, n + 1)
+  {
+    ini[i] = {i, c[i], false};
+  }
+  segtree<S, op, e> seg(ini);
+
+  vector<pll> d(0);
+  d.pb({-1, 0});
+  PQR(pll)
+  que;
+  ll now = 0;
+  ll it = -1;
+  while (now != l)
+  {
+    ll iter = upper_bound(all(a), now + k) - a.begin();
+    auto nx = seg.prod(it + 1, iter);
+    que.push({nx.v, d.size() - 1});
+    d.pb({nx.it, a[nx.it]});
+    now = a[nx.it];
+
+    it = nx.it;
+  }
+  vll h(d.size(), INF);
+  h[0] = k;
+  while (que.size())
+  {
+    auto [cost, it] = que.top();
+    it++;
+    que.pop();
+    auto [_, u] = d[it];
+    if (u == l)
+    {
+      h[it] = 0;
+    }
+    else
+    {
+      if (h[it + 1] == INF)
+      {
+        h[it] = k;
+      }
+      else
+      {
+        h[it] = d[it + 1].S - d[it].S;
+      }
+    }
   }
 
-  ans = (a * 2 + b) * (m - 1) / (n * n); // 2 * (n - d) * (m - 1) / (n * n);
-  cout
-      << ans << endl;
+  ll ans = 0;
+  ll tmp = k;
+  now = 0;
+  rep(i, h.size())
+  {
+    if (h[i] > tmp)
+    {
+      ans += c[d[i].F] * (h[i] - tmp);
+      tmp = h[i];
+    }
+    ans += max(0LL, h[i] - tmp) * c[d[i].F];
+    if (i != h.size() - 1)
+    {
+      tmp -= d[i + 1].S - d[i].S;
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
+__int128
 
-__builtin_popcount(i)*/
+//ソート済み
+v.erase(unique(v.begin(), v.end()), v.end());
+__builtin_popcountll(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

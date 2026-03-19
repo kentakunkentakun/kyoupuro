@@ -74,6 +74,24 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll h, w, k;
+  cin >> h >> w >> k;
+  vvc c(h, vc(w));
+  rep(i, h)
+  {
+    rep(j, w)
+    {
+      cin >> c[i][j];
+    }
+  }
+  for (int bit = 0; bit < (1LL << h); bit++)
+  {
+    ll res = 0;
+    rep(i, h)
+    {
+      
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -64,6 +64,37 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  string t;
+  cin >> t;
+  vll dp(1LL << 22, -1);
+  auto dfs = [&](auto dfs, ll now) -> ll
+  {
+    if (now == 0)
+    {
+      return dp[now] = 1;
+    }
+    if (dp[now] != -1)
+    {
+      return dp[now];
+    }
+    ll res = 0;
+    char c = '$';
+    rep(j, n)
+    {
+      if ((now >> j) & 1)
+      {
+        if (j > 0 && t[j] == c)
+          continue;
+        res += dfs(dfs, now ^ (1LL << j));
+        res %= MOD;
+        c = t[j];
+      }
+    }
+    return dp[now] = res;
+  };
+  cout << dfs(dfs, (1LL << n) - 1) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

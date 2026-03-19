@@ -69,6 +69,54 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, x;
+  cin >> n >> x;
+  vll u(n), d(n);
+  rep(i, n)
+  {
+    cin >> u[i] >> d[i];
+  }
+  ll ac = 0, wa = INF;
+  auto judge = [&](ll wj) -> bool
+  {
+    ll mi = -1, ma = INF;
+    rep(i, n)
+    {
+      if (u[i] + d[i] < wj)
+      {
+        return false;
+      }
+      ll u_mi = max(0LL, wj - d[i]);
+      ll u_ma = min(u[i], wj);
+      if (ma < u_mi || mi > u_ma)
+      {
+        return false;
+      }
+      chmax(mi, u_mi);
+      chmin(ma, u_ma);
+      mi -= x;
+      ma += x;
+    }
+    return true;
+  };
+  while (ac+1<wa)
+  {
+    ll mid = (wa + ac) / 2;
+    if (judge(mid))
+    {
+      ac = mid;
+    }
+    else
+    {
+      wa = mid;
+    }
+  }
+  ll ans = 0;
+  rep(i, n)
+  {
+    ans += (u[i] + d[i]) - ac;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -72,64 +72,76 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
-ll calc(ll a, ll ma)
-{
-  ll ac = 0, wa = INF;
-  while (ac + 1 < wa)
-  {
-    ll wj = (ac + wa) / 2;
-    if ((__int128)ma < (__int128)wj * (__int128)wj || (__int128)ma < (__int128)a * (__int128)wj * (__int128)wj)
-    {
-      wa = wj;
-    }
-    else
-    {
-      ac = wj;
-    }
-  }
-  return ac;
-}
+
 int main()
 {
   ll n, m;
   cin >> n >> m;
   vll p(n);
   rep(i, n) cin >> p[i];
+  ll ac = 1, wa = m + 1;
   auto judge = [&](ll wj) -> bool
   {
-    ll money = 0;
+    ll pay = 0;
     rep(i, n)
     {
-      ll res = calc(p[i], wj);
-      money += res * res * p[i];
-    }
-    if (money > m)
-    {
-      return false;
+      ll k = (wj - 1) / p[i] - 1;
+      if (k <= 0)
+        continue;
+      k /= 2;
+      k++;
+      if (m / k / k / p[i] == 0)
+        return false;
+      pay += k * k * p[i];
+      if (pay > m)
+      {
+        return false;
+      }
     }
     return true;
   };
-
-  ll ac = 0, wa = INF;
   while (ac + 1 < wa)
   {
-    ll ju = (ac + wa) / 2;
-    if (judge(ju))
+    ll mid = (ac + wa) / 2;
+    if (judge(mid))
     {
-      ac = ju;
+      ac = mid;
     }
     else
     {
-      wa = ju;
+      wa = mid;
     }
   }
-  ll cnt = 0;
+  ll ans = 0;
+  ll pay = 0;
+  PQR(ll)
+  que;
   rep(i, n)
   {
-    ll res = calc(p[i], ac);
-    cnt += res;
+    ll k = (ac - 1) / p[i] - 1;
+    if (k <= 0)
+      continue;
+    k /= 2;
+    k++;
+    ans += k;
+    pay += k * k * p[i];
+    que.push((2 * k + 1) * p[i]);
   }
-  cout << cnt << endl;
+  while (que.size())
+  {
+    ll top = que.top();
+    que.pop();
+    if (pay + top <= m)
+    {
+      ans++;
+      pay += top;
+    }
+    else
+    {
+      break;
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

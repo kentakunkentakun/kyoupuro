@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/fenwicktree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,47 +63,54 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+
 int main()
 {
   ll h, w, m;
   cin >> h >> w >> m;
-  vll h_min(h, w), w_min(w, h);
-  ll ans = 0;
-  ll h_last = h;
-  ll w_last = w;
+  vll x(m), y(m);
   rep(i, m)
   {
-    ll x, y;
-    cin >> x >> y;
-    x--;
-    y--;
-    chmin(h_min[x], y);
-    chmin(w_min[y], x);
-    if (y == 0)
-    {
-      chmin(h_last, x);
-    }
-    if (x == 0)
-    {
-      chmin(w_last, y);
-    }
+    cin >> x[i] >> y[i];
+    x[i]--;
+    y[i]--;
   }
-  vll t(0);
-  rep(i, w)
+  vll y_min(w, INF);
+  vll x_min(h, INF);
+  vvll t(h, vll(0));
+  rep(i, m)
   {
-    if (i == 0)
-      continue;
-    t.pb(w_min[i]);
+    t[x[i]].pb(y[i]);
   }
-  sort(all(t));
-  ll dupl = 0;
-  rep(i, h_last)
+  rep(i, m)
   {
-    if (i == 0)
-      continue;
-    ans += h_min[i];
-    dupl += lower_bound(all(t),);
+    chmin(y_min[y[i]], x[i]);
+    chmin(x_min[x[i]], y[i]);
   }
+  ll ans = h * min(x_min[0], w);
+  rep(i, min(x_min[0], w))
+  {
+    if (y_min[i] != INF)
+    {
+      ans -= h - y_min[i];
+    }
+  }
+  fenwick_tree<ll> bit(w);
+  for (int i = min(w, x_min[0]); i < w; i++)
+  {
+    bit.add(i, 1);
+  }
+  rep(i, min(h, y_min[0]))
+  {
+    ll ma = min(x_min[i], w);
+    ans += bit.sum(0, ma);
+    for (auto p : t[i])
+    {
+      if (bit.sum(p, p + 1) == 0)
+        bit.add(p, 1);
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

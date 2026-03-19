@@ -67,8 +67,135 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+ll calc(vvll &t, vll &d)
+{
+  ll n = t.size();
+  vll dd(n, INF);
+  dd[0] = 0;
+  ll u = 0;
+  ll s = 0;
+  queue<ll> que;
+  que.push(0);
+  while (que.size())
+  {
+    ll now = que.front();
+    que.pop();
+
+    for (auto nx : t[now])
+    {
+      if (dd[nx] == INF)
+      {
+        dd[nx] = dd[now] + 1;
+        if (chmax(u, dd[nx]))
+        {
+          s = nx;
+        }
+        que.push(nx);
+      }
+    }
+  }
+
+  vll dist(n, INF);
+  que.push(s);
+  vb used(n);
+  used[s] = true;
+  dist[s] = 0;
+  ll e = 0;
+  ll mad = 0;
+  while (que.size())
+  {
+    ll now = que.front();
+    que.pop();
+    for (auto nx : t[now])
+    {
+      if (!used[nx])
+      {
+        used[nx] = true;
+        dist[nx] = dist[now] + 1;
+        if (chmax(mad, dist[nx]))
+        {
+          e = nx;
+        }
+        que.push(nx);
+      }
+    }
+  }
+  que.push(e);
+  rep(i, n) used[i] = false;
+  used[e] = true;
+  vll dist2(n, 0);
+  while (que.size())
+  {
+    ll now = que.front();
+    que.pop();
+    for (auto nx : t[now])
+    {
+      if (!used[nx])
+      {
+        used[nx] = true;
+        dist2[nx] = dist2[now] + 1;
+        que.push(nx);
+      }
+    }
+  }
+  rep(i, n)
+  {
+    d[i] = max(dist[i], dist2[i]);
+  }
+  return mad;
+}
+
 int main()
 {
+  ll n;
+  cin >> n;
+  vvll t(n, vll(0));
+  rep(i, n - 1)
+  {
+    ll u, v;
+    cin >> u >> v;
+    u--;
+    v--;
+    t[u].pb(v);
+    t[v].pb(u);
+  }
+  ll m;
+  cin >> m;
+  vvll t1(m, vll(0));
+  rep(i, m - 1)
+  {
+    ll u, v;
+    cin >> u >> v;
+    u--;
+    v--;
+    t1[u].pb(v);
+    t1[v].pb(u);
+  }
+  vll d(n);
+  vll d1(m);
+  ll k = calc(t, d);
+  ll k1 = calc(t1, d1);
+  ll mak = max(k, k1);
+  vll cnt(max(n, m) + 1);
+  vll dd(max(n, m) + 1);
+  rep(i, n)
+  {
+    dd[d[i]] += d[i];
+    cnt[d[i]]++;
+  }
+  rep(i, max(n, m))
+
+  {
+    dd[i + 1] += dd[i];
+    cnt[i + 1] += cnt[i];
+  }
+  ll ans = 0;
+  rep(i, m)
+  {
+    ans += cnt[max(mak - d1[i] - 1, 0LL)] * mak;
+    ans += (cnt[max(n, m)] - cnt[max(mak - d1[i] - 1, 0LL)]) * (d1[i] + 1) + dd[max(n, m)] - dd[max(mak - d1[i] - 1, 0LL)];
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

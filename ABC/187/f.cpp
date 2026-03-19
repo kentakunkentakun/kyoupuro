@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
@@ -64,6 +63,36 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vvll t(n, vll(n));
+  rep(i, m)
+  {
+    ll u, v;
+    cin >> u >> v;
+    u--;
+    v--;
+    t[u][v] = 1;
+    t[v][u] = 1;
+  }
+  vvll group(0);
+  rep(i, n)
+  {
+    rep(j, group.size())
+    {
+      bool ok = true;
+      for (ll v : group[j])
+      {
+        if (!t[i][v])
+          ok = false;
+      }
+      if (ok)
+      {
+        group[j].pb(i);
+        break;
+      }
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -7,6 +7,7 @@
 #include <string>
 #include <cmath>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (b); i++)
@@ -68,8 +69,66 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vll a(m), b(m);
+  vector<tuple<ll, ll, ll>> p(m);
+  rep(i, m)
+  {
+    cin >> a[i] >> b[i];
+    p[i] = {a[i], b[i], -1};
+  }
+  ll q;
+  cin >> q;
+  rep(i, q)
+  {
+    ll c, d;
+    cin >> c >> d;
+    p.pb({c, d, i});
+  }
+  fenwick_tree<ll> bit(2 * n + 5);
+  sort(all(p));
+  vll ans(q);
+  rep(i, m + q)
+  {
+    auto [x, y, it] = p[i];
+    // cout << x << " " << y << " " << it << endl;
+    if (it != -1)
+    {
+      ans[it] = bit.sum(x, y + 1);
+    }
+    else
+    {
+      bit.add(y, 1);
+    }
+  }
+  rep(i, m + q)
+  {
+    auto [x, y, it] = p[i];
+    p[i] = {y, x, it};
+  }
+
+  sort(rall(p));
+  fenwick_tree<ll> rbit(2 * n + 5);
+  rep(i, m + q)
+  {
+    auto [x, y, it] = p[i];
+    if (it != -1)
+    {
+      ans[it] += rbit.sum(y, x + 1);
+    }
+    else
+    {
+      rbit.add(y, 1);
+    }
+  }
+  rep(i, q)
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+using namespace atcoder;
 using namespace std;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (n); i++)
@@ -73,42 +74,108 @@ long long modpow(long long a, long long n, long long mod)
   }
   return res;
 }
+struct S
+{
+  ll l, r, sum;
+  bool empty;
+};
+S op(S a, S b)
+{
+  if (a.empty)
+  {
+    return b;
+  }
+  if (b.empty)
+  {
+    return a;
+  }
+  return {
+      a.l, b.r, a.sum + b.sum, false};
+};
+S e()
+{
+  return {-1, -1, -1, true};
+}
+ll r_k;
+bool right_f(S a)
+{
+  if (a.empty)
+  {
+    return true;
+  }
+  return a.sum <= r_k;
+}
+ll l_k;
+bool left_f(S a)
+{
+  if (a.empty)
+  {
+    return true;
+  }
+  return a.sum <= l_k;
+}
 int main()
 {
-  ll l;
-  cin >> l;
-  ll n = 0;
-  ll l2 = l;
-  ll tmp = l;
-  while (tmp)
-  {
-    tmp /= 2;
-    n++;
-  }
-  vector<tuple<ll, ll, ll>> ans(0);
-  ll k = 0;
-  ll rui = 1;
+  ll n;
+  cin >> n;
+  vll a(n);
+  vector<S> init(n);
+  fenwick_tree<ll> bit(n);
   rep(i, n)
   {
-    if ((i != n - 1) && (l2 % 2))
-    {
-      l -= modpow(2, i, MOD);
-      ans.pb({i + 1, n, l});
-    }
-    if (i < n - 1)
-    {
-      ans.pb({i + 1, i + 2, 0});
-      ans.pb({i + 1, i + 2, rui});
-      rui *= 2;
-    }
-    l2 /= 2;
+    cin >> a[i];
+    bit.add(i, a[i]);
+    init[i].l = i;
+    init[i].r = i + 1;
+    init[i].sum = a[i];
+    init[i].empty = false;
   }
-  cout << n << " " << ans.size() << endl;
-  rep(i, ans.size())
+  segtree<S, op, e> seg(init);
+  ll ans = INF;
+  for (int i = 1; i < n - 2; i++)
   {
-    auto [u, v, w] = ans[i];
-    cout << u << " " << v << " " << w << endl;
+    ll left_sum = seg.prod(0, i + 1).sum;
+    ll right_sum = seg.prod(i + 1, n).sum;
+    l_k = left_sum / 2;
+    r_k = right_sum / 2;
+    ll left_it = seg.min_left<left_f>(i + 1);
+    ll right_it = seg.max_right<right_f>(i + 1);
+    ll l_ma = -1;
+    ll l_mi = INF;
+    ll l_0 = bit.sum(0, left_it);
+    ll l_1 = bit.sum(left_it, i + 1);
+    ll l_2 = bit.sum(0, left_it - 1);
+    ll l_3 = bit.sum(left_it - 1, i + 1);
+    if (abs(l_0 - l_1) > abs(l_2 - l_3))
+    {
+      chmax(l_ma, max(l_2, l_3));
+      chmin(l_mi, min(l_2, l_3));
+    }
+    else
+    {
+      chmax(l_ma, max(l_0, l_1));
+      chmin(l_mi, min(l_0, l_1));
+    }
+    ll r_ma = -1;
+    ll r_mi = INF;
+    ll r_0 = bit.sum(i + 1, right_it);
+    ll r_1 = bit.sum(right_it, n);
+    ll r_2 = bit.sum(i + 1, right_it + 1);
+    ll r_3 = bit.sum(right_it + 1, n);
+    if (abs(r_0 - r_1) > abs(r_2 - r_3))
+    {
+      chmax(r_ma, max(r_2, r_3));
+      chmin(r_mi, min(r_2, r_3));
+    }
+    else
+    {
+      chmax(r_ma, max(r_0, r_1));
+      chmin(r_mi, min(r_0, r_1));
+    }
+    chmin(ans, max(r_ma, l_ma) - min(r_mi, l_mi));
+    // cout << i << " " << ans << " " << l_mi << " " << l_ma << " " << r_mi << " " << r_ma << endl;
   }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

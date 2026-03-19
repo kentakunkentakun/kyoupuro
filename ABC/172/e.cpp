@@ -134,65 +134,29 @@ int main()
   COMinit();
   ll n, m;
   cin >> n >> m;
-  vll dp(n + 1, 0);
-  dp[0] = 1;
-  dp[1] = 1;
-  dp[2] = 1;
-  for (int i = 3; i <= n; i++)
-  {
-    dp[i] = (i * dp[i - 1]) % MOD * modinv((i - 1), MOD);
-    dp[i] %= MOD;
-    cout << i << " " << dp[i] << endl;
-  }
-  vll k(m + 1, 0);
-  k[0] = 1;
-  k[1] = 1;
-  rep(i, m + 1)
-  {
-    if (i < 2)
-      continue;
-    k[i] = i * k[i - 1];
-    k[i] %= MOD;
-  }
-  ll ans = k[m];
-  cout << "ans " << ans << endl;
-  ll res = 0;
-  for (int i = 0; i <= min(m - n, n); i++)
-  {
-    res += (((dp[n - i] * COM(m - n, i)) % MOD * COM(n, i)) % MOD * k[i]) % MOD;
-    res %= MOD;
-    cout << res << " " << i << " " << COM(m - n, i) << " " << COM(n, i) << " " << (((dp[n - i] * COM(m - n, i)) % MOD * COM(n, i)) % MOD * k[i]) % MOD << " " << dp[n - i] * COM(m - n, i) * COM(n, i) * k[i] << endl;
-  }
-  ans *= res;
-  ans %= MOD;
-  cout << ans << endl;
-  ll tmp = 0;
-  vll t(n, 0);
+  ll ans = 0;
+  vll d(n + 1, 0);
+  d[0] = 1;
   rep(i, n)
   {
-    t[i] = i + 1;
+    d[i + 1] = d[i] * (i + 1) % MOD;
   }
-  do
-  {
-    vll t2(n);
-    rep(i, n)
-    {
-      t2[i] = i + 1;
-    }
-    do
-    {
-      bool ok = true;
-      rep(i, n)
-      {
-        if (t[i] == t2[i])
-          ok = false;
-      }
-      if (ok)
-        tmp++;
-    } while (next_permutation(all(t2)));
 
-  } while (next_permutation(all(t)));
-  cout << tmp << endl;
+  ll r = 1;
+  ll res = 0;
+  repR(i, n + 1)
+  {
+    res = COM(n, i) * r - res + MOD;
+    res %= MOD;
+    r *= (m - i + 1);
+    r %= MOD;
+  }
+  for (int i = m; i > m - n; i--)
+  {
+    res *= i;
+    res %= MOD;
+  }
+  cout << (res + MOD) % MOD << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

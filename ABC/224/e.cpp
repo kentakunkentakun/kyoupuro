@@ -76,18 +76,36 @@ int main()
   ll h, w, n;
   cin >> h >> w >> n;
   vector<tuple<ll, ll, ll>> p(n);
+  map<ll, vector<tuple<ll, ll, ll>>> m;
   rep(i, n)
   {
     ll r, c, a;
     cin >> r >> c >> a;
-    p[i] = {a, r, c};
+    r--;
+    c--;
+    p[i] = {-1 * a, r, c};
+    m[-1 * a].pb({r, c, i});
   }
   sort(all(p));
-  map<ll, vll> x;
-  map<ll, vll> y;
-  rep(i,n){
-    auto [a,r,c] = p[i];
-    
+  vll x(h), y(w);
+  vll ans(n);
+  for (auto [a, v] : m)
+  {
+    rep(i, v.size())
+    {
+      auto [r, c, iter] = v[i];
+      ans[iter] = max(x[r], y[c]);
+    }
+    rep(i, v.size())
+    {
+      auto [r, c, iter] = v[i];
+      chmax(x[r], ans[iter] + 1);
+      chmax(y[c], ans[iter] + 1);
+    }
+  }
+  rep(i, n)
+  {
+    cout << ans[i] << endl;
   }
 }
 /*cin.tie(0);

@@ -73,6 +73,43 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n, p;
+  cin >> n >> p;
+  vvvll dp(n + 1, vvll(n + 1, vll(2)));
+  dp[0][n - 1][0] = 1;
+  dp[0][n][1] = 1;
+  rep(i, n - 1)
+  {
+    rep(j, n + 1)
+    {
+      // 非連結
+      if (j - 1 >= 0)
+      {
+        dp[i + 1][j - 1][0] += dp[i][j][0];
+        dp[i + 1][j - 1][0] %= p;
+      }
+      if (j - 2 >= 0)
+      {
+        dp[i + 1][j - 2][0] += dp[i][j][1] * 2;
+        dp[i + 1][j - 2][0] %= p;
+      }
+      if (j >= 0)
+      {
+        dp[i + 1][j][1] += dp[i][j][0] + dp[i][j][1];
+        dp[i + 1][j][1] %= p;
+      }
+      if (j - 1 >= 0)
+      {
+        dp[i + 1][j - 1][1] += dp[i][j][1] * 3;
+        dp[i + 1][j - 1][1] %= p;
+      }
+    }
+  }
+  for (int i = n - 1; i >= 1; i--)
+  {
+    cout << dp[n-1][i][1] << " ";
+  }
+  cout << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -64,6 +64,38 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll x, y;
+  cin >> x >> y;
+  if (x > y)
+  {
+    cout << x - y << endl;
+  }
+  else
+  {
+    ll kx = 0, ky = 0;
+    ll tmp_x = x;
+    ll tmp_y = y;
+    while (tmp_x)
+    {
+      kx++;
+      tmp_x /= 2;
+    }
+    while (tmp_y)
+    {
+      ky++;
+      tmp_y /= 2;
+    }
+    tmp_y = y;
+    ll ans = 0;
+    rep(i, (ky - kx))
+    {
+      if (tmp_y % 2)
+        ans++;
+      tmp_y /= 2;
+    }
+    ans += abs(tmp_y - x) + ky - kx;
+    cout << ans << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

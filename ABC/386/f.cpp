@@ -64,6 +64,55 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll k;
+  cin >> k;
+  string s, t;
+  cin >> s >> t;
+  ll n = s.size();
+  ll m = t.size();
+  if (abs(n - m) > k)
+  {
+    cout << "No" << endl;
+    return 0;
+  }
+  vvll dp(n + 1, vll(2 * k + 1, INF));
+  // k が 0とする
+  dp[0][k] = 0;
+  for (int i = k + 1; i <= min(2 * k, k + m); i++)
+  {
+    dp[0][i] = i - k;
+  }
+  for (int i = 1; i <= min(k, n); i++)
+  {
+    ll j = k - i;
+    dp[i][j] = i;
+  }
+  for (ll i = 1; i <= n; i++)
+  {
+    for (ll z = -k; z <= k; z++)
+    {
+      ll j = i + z;
+      if (j <= 0 || j > m)
+        continue;
+      chmin(dp[i][z + k], dp[i - 1][z + k + 1] + 1);
+      chmin(dp[i][z + k], dp[i][z + k - 1] + 1);
+      chmin(dp[i][z + k], dp[i - 1][z + k] + 1);
+      if (s[i - 1] == t[j - 1])
+      {
+        chmin(dp[i][z + k], dp[i - 1][z + k]);
+      }
+      // cout << i << " " << j << " " << z << " " << z + k << " " << dp[i][z+k]<<" "<<dp[i - 1][z + k] << endl;
+    }
+  }
+
+  if (dp[n][m - n + k] <= k)
+  {
+    cout << "Yes" << endl;
+  }
+  else
+  {
+    cout << "No" << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

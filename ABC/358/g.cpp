@@ -28,6 +28,7 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -60,10 +61,76 @@ inline bool chmin(T &a, T b)
   }
   return false;
 }
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll h, w, k;
+  cin >> h >> w >> k;
+  ll sx, sy;
+  cin >> sx >> sy;
+  sx--;
+  sy--;
+  vvll a(h, vll(w));
+  rep(i, h)
+  {
+    rep(j, w)
+    {
+      cin >> a[i][j];
+    }
+  }
+  ll m = h * w + 5;
+  vvvll dp(h, vvll(w, vll(m, -INF)));
+  dp[sx][sy][0] = 0;
+  queue<tuple<ll, ll, ll, ll>> que;
+  que.push({sx, sy, 0, 0});
+  while (que.size())
+  {
+    auto [x, y, u, v] = que.front();
+    que.pop();
+    if (u > h * w)
+    {
+      break;
+    }
+    if (dp[x][y][u] > v)
+      continue;
+    rep(i, 4)
+    {
+      ll nx = dx[i] + x;
+      ll ny = dy[i] + y;
+      if (isIn(nx, ny, h, w))
+      {
+        if (chmax(dp[nx][ny][u + 1], dp[x][y][u] + a[nx][ny]))
+        {
+          que.push({nx, ny, u + 1, dp[nx][ny][u + 1]});
+        }
+      }
+    }
+    if (chmax(dp[x][y][u + 1], dp[x][y][u] + a[x][y]))
+    {
+      que.push({x, y, u + 1, dp[x][y][u + 1]});
+    }
+  }
+  ll ans = 0;
+  rep(i, h)
+  {
+    rep(j, w)
+    {
+      rep(z, min(k + 1, h * w + 1))
+      {
+        chmax(ans, dp[i][j][z] + (k - z) * a[i][j]);
+      }
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

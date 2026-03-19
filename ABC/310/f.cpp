@@ -22,12 +22,13 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
+const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -62,13 +63,61 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+long long modpow(long long a, long long n, long long mod)
+{
+  a %= mod;
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
+
+// a^{-1} mod を計算する
+
+long long modinv(long long a, long long mod)
+{
+  return modpow(a, mod - 2, mod);
+}
+////////////////
 int main()
 {
+  ll n;
+  cin >> n;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  vvll dp(n + 1, vll(11));
+  dp[0][0] = 1;
+  rep(i, n)
+  {
+    rep(j, 11)
+    {
+      dp[i + 1][j] += dp[i][j] * a[i];
+      for (int k = j + 1; k <= min(10LL, j + a[i]); k++)
+      {
+        dp[i + 1][k] += dp[i][j];
+        dp[i + 1][k] %= MOD;
+      }
+    }
+    cout << i + 1 << " " << dp[i + 1][10] << endl;
+  }
+  cout << dp[n][10] << endl;
+  ll ans = dp[n][10];
+  rep(i, n)
+  {
+    ans *= modinv(a[i], MOD);
+    ans %= MOD;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
-
+__int128
 __builtin_popcount(i)*/

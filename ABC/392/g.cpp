@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/convolution>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -64,6 +65,27 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll s(n);
+  rep(i, n) cin >> s[i];
+  set<ll> S;
+  rep(i, n) S.insert(s[i]);
+  vll d(1e6 + 1);
+  rep(i, n)
+  {
+    d[s[i]]++;
+  }
+  vll res = convolution(d, d);
+  ll ans = 0;
+  rep(i, res.size())
+  {
+    if (res[i] > 1 && S.count(i / 2) && i % 2 == 0)
+    {
+      ans += (res[i] - 1) / 2;
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

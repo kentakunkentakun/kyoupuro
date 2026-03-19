@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
+using namespace atcoder;
 using namespace std;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
@@ -71,8 +72,115 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+struct S
+{
+  vll v;
+  ll s, e;
+  bool k, empty;
+};
+S op(S a, S b)
+{
+  if (a.empty)
+  {
+    return b;
+  }
+  else if (b.empty)
+  {
+    return a;
+  }
+  vll tmp(26, 0);
+  rep(i, 26)
+  {
+    tmp[i] = a.v[i] + b.v[i];
+  }
+  bool k = a.k && b.k;
+  if (k)
+  {
+    if (a.e > b.s)
+    {
+      k = false;
+    }
+  }
+  return {tmp, a.s, b.e, k, false};
+}
+S e()
+{
+  vll v(26, 0);
+  return {v, -1, -1, true, true};
+}
 int main()
 {
+  ll n;
+  cin >> n;
+  string s;
+  cin >> s;
+  ll q;
+  cin >> q;
+  vll k(26, 0);
+  rep(i, n)
+  {
+    k[s[i] - 'a']++;
+  }
+  vector<S> ini(n);
+  rep(i, n)
+  {
+    vll tmp(26, 0);
+    tmp[s[i] - 'a']++;
+    ini[i] = {tmp, (s[i] - 'a'), (s[i] - 'a'), true, false};
+  }
+  vector<string> ans(0);
+  segtree<S, op, e> seg(ini);
+  rep(Q, q)
+  {
+    ll t;
+    cin >> t;
+    if (t == 1)
+    {
+      ll x;
+      cin >> x;
+      char c;
+      cin >> c;
+      x--;
+      k[s[x] - 'a']--;
+      k[c - 'a']++;
+      vll tmp(26, 0);
+      tmp[c - 'a']++;
+      seg.set(x, {tmp, (c - 'a'), (c - 'a'), true, false});
+      s[x] = c;
+    }
+    else
+    {
+      ll l, r;
+      cin >> l >> r;
+      l--;
+      auto [res, s, e, u, _] = seg.prod(l, r);
+      if (!u)
+      {
+        ans.pb("No");
+        continue;
+      }
+      bool ok = true;
+      for (int i = s + 1; i < e; i++)
+      {
+        if (res[i] != k[i])
+        {
+          ok = false;
+        }
+      }
+      if (ok)
+      {
+        ans.pb("Yes");
+      }
+      else
+      {
+        ans.pb("No");
+      }
+    }
+  }
+  rep(i, ans.size())
+  {
+    cout << ans[i] << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

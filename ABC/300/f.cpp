@@ -64,6 +64,71 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, m, k;
+  cin >> n >> m >> k;
+  string s;
+  cin >> s;
+  ll sum = 0;
+  vll d(n), remain(n + 1, n);
+  remain[0] = 0;
+  ll cnt = 0;
+  repR(i, n)
+  {
+    if (s[i] == 'x')
+    {
+      cnt++;
+    }
+    d[i] = cnt;
+  }
+  ll ans = 0;
+  sum = cnt;
+  cnt = 0;
+  rep(i, n)
+  {
+    if (s[i] == 'x')
+    {
+      cnt++;
+    }
+    remain[cnt] = i + 1;
+  }
+  if (sum > k)
+  {
+    ll in = 0;
+    ll j = 0;
+    rep(i, n)
+    {
+      while (j < n && in + (s[j] == 'x') <= k)
+      {
+        if (s[j] == 'x')
+          in++;
+        j++;
+      }
+      chmax(ans, j - i);
+      if (s[i] == 'x')
+        in--;
+    }
+  }
+  rep(i, n)
+  {
+    ll cost = 0;
+    if (d[i] > k)
+      continue;
+    // 最初
+    ll rem = k - d[i];
+    cost += n - i;
+    // 中間
+    ll c = min(m - 2, rem / sum);
+    cost += c * n;
+    rem -= c * sum;
+    // 最後
+    if (rem >= n)
+    {
+      rem = n;
+    }
+    cost += remain[rem];
+    chmax(ans, cost);
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

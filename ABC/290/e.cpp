@@ -76,63 +76,56 @@ int main()
   ll n;
   cin >> n;
   vll a(n);
-  rep(i, n) cin >> a[i];
-  vvll iter(n + 1, vll(0));
   rep(i, n)
   {
-    iter[a[i]].pb(i);
+    cin >> a[i];
+    a[i]--;
   }
-  vvll d(n + 1, vll(1, 0));
-  rep(i, n + 1)
-  {
-    rep(j, iter[i].size())
-    {
-      d[i].pb(d[i].back() + iter[i][j] + 1);
-    }
-  }
-
+  vll l(n);
+  vll r(n);
   ll ans = 0;
+  ll it = n / 2;
+  bool ok = false;
+  if (n % 2 == 1)
+  {
+    ok = true;
+  }else{
+    it--;
+  }
   rep(i, n)
   {
-
-    if (i <= n / 2)
+    ll right = n - i;
+    ll left = i;
+    if (left >= right)
     {
-      ll cnt = (i + 1) * (i + 2) / 2;
-      auto it = lower_bound(all(iter[a[i]]), i) - iter[a[i]].begin();
-      if ((it == 0 && (iter[a[i]][0] == i)) || it != 0)
+      if (ok)
       {
-        cnt -= d[a[i]][it + 1];
+        l[a[it]] -= (it + 1);
+        r[a[it]]++;
+        it--;
+        ok = false;
       }
+    }
+    ll mi = min(right, left);
+    ll s = 0;
+    if (2 * right < n)
+    {
+      s = n - 2 * right;
+    }
+    ans += mi * (mi + 1) / 2 - l[a[i]] + (s - r[a[i]]) * right;
+    // cout << i << " " << mi * (mi + 1) / 2 - l[a[i]] + (s - r[a[i]]) * right << " " << l[a[i]] << " " << endl;
 
-      ans += cnt;
+    if (left >= right)
+    {
+      l[a[it]] -= (it + 1);
+      r[a[it]]++;
+      it--;
+      r[a[i]]++;
     }
     else
     {
-      ll remain = n - i;
-      ll cnt = (remain + 1) * remain / 2;
-      // 階段のi
-      auto it = lower_bound(all(iter[a[i]]), remain - 1) - iter[a[i]].begin();
-      if ((it == 0 && (iter[a[i]][0] == remain - 1)) || it != 0)
-      {
-        cnt -= d[a[i]][it + 1];
-        it++;
-      }
-      // cout << i << " " << it << " " << cnt << " " << d[a[i]][it + 1] << endl;
-
-      // 平らなi
-      cnt += (i - remain) * remain;
-      // if (i == 3)
-      //   cout << i << " " << it << " " << cnt << " " << remain << endl;
-      // cout << i << " " << it << " " << cnt << " " << remain << endl;
-
-      it = lower_bound(all(iter[a[i]]), i) - iter[a[i]].begin() - (it);
-
-      // cout << i << " " << it << " " << cnt << endl;
-      cnt -= it * remain;
-      // cout << i << " " << it << " " << cnt << endl;
-      ans += cnt;
+      l[a[i]] += i + 1;
     }
-    //cout << i << " ans " << ans << endl;
   }
   cout << ans << endl;
 }

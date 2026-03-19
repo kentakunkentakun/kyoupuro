@@ -64,6 +64,35 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  vvll t(2, vll(n));
+  rep(k, 2)
+  {
+    ll now = 0;
+    rep(i, n)
+    {
+      if (now < a[i])
+      {
+        now++;
+      }
+      else
+      {
+        now = a[i];
+      }
+      t[k][i] = now;
+    }
+    reverse(all(a));
+  }
+  reverse(all(t[1]));
+  ll ans = 0;
+  rep(i, n)
+  {
+    chmax(ans, min(t[0][i], t[1][i]));
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

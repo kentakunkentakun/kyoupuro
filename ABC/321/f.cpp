@@ -74,6 +74,46 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll q, k;
+  cin >> q >> k;
+  vll dp(k + 1);
+  dp[0] = 1;
+  rep(i, q)
+  {
+    char c;
+    cin >> c;
+    ll x;
+    cin >> x;
+    vll tmp(k + 1);
+    if (c == '+')
+    {
+      swap(dp, tmp);
+      rep(i, k + 1)
+      {
+        if (i + x <= k)
+        {
+          dp[i + x] += tmp[i];
+          dp[i + x] %= MOD;
+        }
+        dp[i] += tmp[i];
+        dp[i] %= MOD;
+      }
+      cout << dp[k] << endl;
+    }
+    else
+    {
+      rep(i, k + 1)
+      {
+        if (i + x <= k)
+        {
+          dp[i + x] -= dp[i];
+          dp[i + x] += MOD;
+          dp[i + x] %= MOD;
+        }
+      }
+      cout << dp[k] << endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

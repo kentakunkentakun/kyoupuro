@@ -62,8 +62,78 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct edge
+{
+  ll to, cost;
+};
+struct path
+{
+  ll bit, cost;
+};
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vector<vector<edge>> t(n, vector<edge>(0));
+  vector<vector<ll>> d(n, vector<ll>(n, INF));
+
+  rep(i, m)
+  {
+    ll u, v, w;
+    cin >> u >> v >> w;
+    u--;
+    v--;
+    d[u][v] = w;
+    t[u].pb({v, w});
+  }
+  rep(i, n) d[i][i] = 0;
+  rep(k, n)
+  {
+    rep(i, n)
+    {
+      rep(j, n)
+      {
+        if (d[i][k] == INF || d[k][j] == INF)
+          continue;
+
+        chmin(d[i][j], d[i][k] + d[k][j]);
+      }
+    }
+  }
+  vvll dp(1 << n, vll(n, INF));
+  auto dfs = [&](auto dfs, ll now, ll bit) -> ll
+  {
+    if (dp[bit][now] != INF)
+    {
+      return dp[bit][now];
+    }
+    if (bit == (1 << n) - 1)
+    {
+      return dp[(1 << n) - 1][now] = 0;
+    }
+    ll res = INF;
+    rep(i, n)
+    {
+      if (!(bit >> i & 1) && d[now][i] != INF)
+      {
+        ll cost = dfs(dfs, i, bit | (1 << i));
+        if (cost != INF)
+          chmin(res, cost + d[now][i]);
+      }
+    }
+    return dp[bit][now] = res;
+  };
+  ll ans = INF;
+  rep(i, n)
+  {
+    chmin(ans, dfs(dfs, i, 1 << i));
+  }
+  if (ans == INF)
+  {
+    cout << "No" << endl;
+  }
+  else
+    cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

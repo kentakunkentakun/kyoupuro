@@ -28,6 +28,7 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -64,6 +65,56 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll a(n), b(n);
+  ll sum = 0;
+  rep(i, n)
+  {
+    cin >> a[i];
+    sum += a[i];
+  }
+  rep(i, n)
+  {
+    cin >> b[i];
+    sum += b[i];
+  }
+  vvvll dp(n + 1, vvll(2, vll(2, -INF)));
+  dp[0][0][0] = 0;
+  dp[0][1][1] = 0;
+  rep(i, n - 1)
+  {
+    rep(j, 2)
+    {
+      rep(z, 2)
+      {
+        // つなげる
+        ll p = 0;
+        if (z == i % 2)
+          p = a[i];
+        chmax(dp[i + 1][j][z], dp[i][j][z] + p + b[i]);
+        // つなげない
+        chmax(dp[i + 1][j][0], dp[i][j][z] + p);
+        chmax(dp[i + 1][j][1], dp[i][j][z] + p);
+      }
+    }
+  }
+  ll ans = -INF;
+  if ((n - 1) % 2)
+  {
+    chmax(ans, dp[n - 1][0][0] + b[n - 1]);
+    chmax(ans, dp[n - 1][0][1] + a[n - 1]);
+    chmax(ans, dp[n - 1][1][0]);
+    chmax(ans, dp[n - 1][1][1] + a[n - 1] + b[n - 1]);
+  }
+  else
+  {
+    chmax(ans, dp[n - 1][0][0] + a[n - 1]);
+    chmax(ans, dp[n - 1][1][0] + b[n - 1] + a[n - 1]);
+    chmax(ans, dp[n - 1][0][1] + b[n - 1]);
+    chmax(ans, dp[n - 1][1][1]);
+  }
+  cout << sum - ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +63,46 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+ll op(ll a, ll b)
+{
+  return max(a, b);
+}
+ll e()
+{
+  return -INF;
+}
 int main()
 {
+  ll n, c;
+  cin >> n >> c;
+  segtree<ll, op, e> seg_plus(n);
+  segtree<ll, op, e> seg_minus(n);
+  seg_plus.set(0, 0);
+  seg_minus.set(0, 0);
+  vll d(n, -INF);
+  d[0] = 0;
+  ll m;
+  cin >> m;
+  rep(i, m)
+  {
+    ll t, p;
+    cin >> t >> p;
+    t--;
+    ll ma = d[t] + p;
+    if (t >= 1)
+      chmax(ma, seg_plus.prod(0, t) + p - c * t);
+    if (t < n - 1)
+      chmax(ma, seg_minus.prod(t + 1, n) + p + c * t);
+    d[t] = ma;
+    seg_plus.set(t, ma + t * c);
+    seg_minus.set(t, ma - t * c);
+  }
+  ll ans = -INF;
+  rep(i, n)
+  {
+    chmax(ans, d[i]);
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -64,6 +64,101 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vector<string> s(n);
+  map<string, ll> m;
+  rep(i, n)
+  {
+    cin >> s[i];
+  }
+  auto comp = [&](string a, string b) -> bool
+  {
+    if (a.size() < b.size())
+    {
+      return true;
+    }
+    if (b.size() < a.size())
+    {
+      return false;
+    }
+    rep(i, a.size())
+    {
+      if (a[i] < b[i])
+      {
+        return true;
+      }
+      else if (a[i] > b[i])
+      {
+        return false;
+      }
+    }
+    return false;
+  };
+  sort(all(s), comp);
+  rep(i, n)
+  {
+    reverse(all(s[i]));
+    m[s[i]]++;
+  }
+  vector<tuple<string, ll, ll>> p(0);
+  auto add = [&](string s, string f) -> string
+  {
+    ll tmp = 0;
+    if (s.size() > f.size())
+    {
+      swap(s, f);
+    }
+    string ans = "";
+    rep(i, f.size())
+    {
+      if (i < s.size())
+      {
+        tmp += (f[i] - '0') + (s[i] - '0');
+      }
+      else
+      {
+        tmp += (f[i] - '0');
+      }
+      ans += (char)('0' + tmp % 10);
+      tmp /= 10;
+    }
+    while (tmp)
+    {
+      ans += (char)('0' + tmp % 10);
+      tmp /= 10;
+    }
+    return ans;
+  };
+  auto multi = [&](string s, string f) -> string
+  {
+    if (s.size() > f.size())
+    {
+      swap(s, f);
+    }
+    string res = "0";
+    string ini = "";
+    rep(i, s.size())
+    {
+      string res = ini;
+      ll tmp = 0;
+      rep(j, f.size())
+      {
+        tmp += (s[i] - '0') * (f[i] - '0');
+        res += (char)('0' + tmp % 10);
+        tmp /= 10;
+      }
+      ini += "0";
+    }
+  };
+
+  // s > f;
+  auto sub = [&](string s, string f) -> string {
+
+  };
+  rep(i, n)
+  {
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
