@@ -79,6 +79,73 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n, k;
+  cin >> n >> k;
+  n++;
+  vll t(n), y(n);
+  vll s(0);
+  rep(i, n)
+  {
+    if (i == n - 1)
+      break;
+    cin >> t[i + 1] >> y[i + 1];
+  }
+  t[0] = 1;
+  y[0] = 0;
+  repR(i, n)
+  {
+    if (t[i] == 1)
+    {
+      s.pb(i);
+    }
+    if (s.size() == k + 1)
+      break;
+  }
+  reverse(all(s));
+  set<pll> se;
+  ll sum = 0;
+  repR(i, n)
+  {
+    if (t[i] == 2)
+    {
+      sum += y[i];
+      se.insert({y[i], i});
+    }
+    if (i == s[0])
+      break;
+  }
+  ll ans = -INF;
+  ll p = k - s.size() + 1;
+  rep(i, s.size())
+  {
+    while (p)
+    {
+      pll it = *se.begin();
+      if (it.F > 0)
+        break;
+      sum -= it.first;
+      se.erase(it);
+      p--;
+    }
+    chmax(ans, y[s[i]] + sum);
+    p++;
+    if (i < s.size() - 1)
+    {
+      for (int j = s[i] + 1; j < s[i + 1]; j++)
+      {
+        if (t[j] == 2 && !se.count({y[j], j}))
+        {
+          p++;
+        }
+        if (t[j] == 2 && se.count({y[j], j}))
+        {
+          sum -= y[j];
+          se.erase({y[j], j});
+        }
+      }
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
