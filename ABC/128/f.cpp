@@ -1,7 +1,9 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/lazysegtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
+#define ld long double
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
 #define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
@@ -22,8 +24,9 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
@@ -32,6 +35,10 @@ using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+// const ll MOD = 1e9+7LL;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -63,8 +70,76 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
+ll op(ll a, ll b)
+{
+  return min(a, b);
+}
+ll e()
+{
+  return INF;
+}
+ll mapping(ll f, ll a)
+{
+  return min(f, a);
+}
+ll composition(ll g, ll f)
+{
+  return min(g, f);
+}
+ll id()
+{
+  return INF;
+}
 int main()
 {
+  ll n, q;
+  cin >> n >> q;
+  vector<tuple<ll, ll, ll>> que(n);
+  rep(i, n)
+  {
+    ll s, t, x;
+    cin >> s >> t >> x;
+    que[i] = {s, t, x};
+  }
+  vll d(q);
+  rep(i, q)
+  {
+    cin >> d[i];
+  }
+  vll ans(n);
+  sort(all(que));
+  lazy_segtree<ll, op, e, ll, mapping, composition, id> seg(q);
+  rep(i, n)
+  {
+    auto [s, t, x] = que[i];
+    ll l = max(0LL, s - x);
+    ll r = max(-1LL, t - x);
+    if (l == r)
+      continue;
+    auto lit = lower_bound(all(d), l) - d.begin();
+    auto rit = lower_bound(all(d), r) - d.begin();
+    seg.apply(lit, rit, x);
+  }
+  rep(i, q)
+  {
+    ll k = seg.get(i);
+    if (k == INF)
+    {
+      cout << -1 << endl;
+    }
+    else
+    {
+      cout << k << endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
@@ -75,4 +150,9 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)*/
+__builtin_popcountll(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

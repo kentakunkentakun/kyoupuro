@@ -85,32 +85,28 @@ long long modpow(long long a, long long n, long long mod)
   }
   return res;
 }
-
 int main()
 {
   ll n;
   cin >> n;
   vll c(n);
-  rep(i, n) cin >> c[i];
-  sort(all(c));
-  ll ans = 0;
-  ll comb = 1;
-  ll t = 1;
-  repR(i, n)
+  rep(i, n)
   {
-    ll res = c[i] * comb;
-    res %= MOD;
-    ans += res + ans;
-    ans %= MOD;
-    comb *= 2;
-    comb += t;
-    comb %= MOD;
-    t *= 2;
-    t %= MOD;
+    cin >> c[i];
   }
-  ans *= modpow(2, n, MOD);
-  ans %= MOD;
-  cout << ans << endl;
+  sort(rall(c));
+  ll k = 0;
+  ll u = 0;
+  rep(i, n)
+  {
+    u *= 2;
+    u += modpow(2, i - 1, MOD);
+    u %= MOD;
+    k += ((c[i] * u) % MOD) * modpow(2, n - i - 1, MOD) % MOD;
+    k %= MOD;
+  }
+  k *= modpow(2, n, MOD);
+  cout << k % MOD << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

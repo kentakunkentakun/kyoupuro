@@ -2,6 +2,7 @@
 
 using namespace std;
 #define ll long long
+#define ld long double
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
 #define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
@@ -22,8 +23,9 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
@@ -32,6 +34,10 @@ using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+// const ll MOD = 1e9+7LL;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -73,84 +79,91 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 struct edge
 {
-  ll to, cost;
+  ll to, c;
 };
 int main()
 {
   ll n, m, l;
   cin >> n >> m >> l;
-  vector<vector<edge>> t(n, vector<edge>(0));
+  vvll dp(n, vll(n, INF));
+
   rep(i, m)
   {
     ll a, b, c;
+
     cin >> a >> b >> c;
+    if (c > l)
+      continue;
     a--;
     b--;
-    if (c <= l)
-    {
-      t[a].pb({b, c});
-      t[b].pb({a, c});
-    }
+    dp[a][b] = c;
+    dp[b][a] = c;
   }
-  vvvll dist(n, vvll(n, vll(n + 1, -1)));
-  rep(i, n)
+  rep(i, n) dp[i][i] = 0;
+  rep(k, n)
   {
-    vb used(n, false);
-    dist[i][i][0] = l;
-    // now,給油回数,残リット
-    priority_queue<tuple<ll, ll, ll>, vector<tuple<ll, ll, ll>>, greater<tuple<ll, ll, ll>>> que;
-    que.push({0, -l, i});
-    while (que.size())
+    rep(i, n)
     {
-      auto [cnt, li, now] = que.top();
-      que.pop();
-      li *= -1;
-      if (used[now])
-        continue;
-      if (dist[i][now][cnt] > li)
-        continue;
-      used[now] = true;
-      for (auto [to, cost] : t[now])
+      rep(j, n)
       {
-        if (!used[to])
-        {
-          ll next_l = li - cost;
-          ll next_k = cnt;
-          if (next_l < 0)
-          {
-            next_l = l - cost;
-            next_k++;
-          }
-          if (chmax(dist[i][to][next_k], next_l))
-          {
-            que.push({next_k, -1 * next_l, to});
-          }
-        }
+        chmin(dp[i][j], dp[i][k] + dp[k][j]);
       }
     }
   }
-  ll q;
-  cin >> q;
-  vll ans(q, INF);
-  rep(i, q)
+  vvll t(n, vll(0));
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      if (i != j && dp[i][j] <= l)
+      {
+        t[i].pb(j);
+      }
+    }
+  }
+  ll Q;
+  cin >> Q;
+  vector<vector<pll>> q(n, vector<pll>(0));
+  rep(i, Q)
   {
     ll s, t;
     cin >> s >> t;
     s--;
     t--;
-    rep(u, n + 1)
+    q[s].pb({t, i});
+  }
+  vll ans(Q);
+  rep(i, n)
+  {
+    if (q[i].size())
     {
-      if (dist[s][t][u] != -1)
+      vll dist(n, INF);
+      dist[i] = -1;
+      queue<ll> que;
+      que.push(i);
+      while (que.size())
       {
-        chmin(ans[i], u);
+        ll now = que.front();
+        que.pop();
+        for (auto nx : t[now])
+        {
+          if (chmin(dist[nx], dist[now] + 1))
+          {
+            que.push(nx);
+          }
+        }
+      }
+      rep(j, q[i].size())
+      {
+        auto [to, it] = q[i][j];
+        ans[it] = dist[to];
       }
     }
+  }
+  rep(i, Q)
+  {
     if (ans[i] == INF)
       ans[i] = -1;
-  }
-
-  rep(i, q)
-  {
     cout << ans[i] << endl;
   }
 }
@@ -163,7 +176,7 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)
+__builtin_popcountll(i)
 
 // maskからnowのビットだけ削除
 mask & ~(1 << now)

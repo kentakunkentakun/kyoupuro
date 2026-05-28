@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/lazysegtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -63,8 +64,67 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct S
+{
+  ll sum, cnt;
+};
+S op(S a, S b)
+{
+  return {
+      a.sum + b.sum,
+      a.cnt + b.cnt};
+}
+S e()
+{
+  return {
+      0, 1};
+}
+S mapping(ll f, S a)
+{
+  return {
+      a.sum + f * a.cnt, a.cnt};
+}
+ll composition(ll f, ll g)
+{
+  return f + g;
+}
+ll id()
+{
+  return 0;
+}
 int main()
 {
+  ll n;
+  cin >> n;
+  vvll t(n, vll(0));
+  rep(i, n - 1)
+  {
+    ll u, v;
+    cin >> u >> v;
+    u--;
+    v--;
+    t[max(u, v)].pb(min(u, v));
+  }
+  rep(i, n)
+  {
+    t[i].pb(-1);
+    sort(rall(t[i]));
+  }
+  ll ans = 0;
+  lazy_segtree<S, op, e, ll, mapping, composition, id> seg(n);
+  for (int i = 0; i < n; i++)
+  {
+    ll r = i + 1;
+    ll v = 1;
+    rep(j, t[i].size())
+    {
+      seg.apply(t[i][j] + 1, r, v);
+      v--;
+      r = t[i][j] + 1;
+    }
+    ans += seg.prod(0, n).sum;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

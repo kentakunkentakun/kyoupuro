@@ -62,8 +62,63 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct edge
+{
+  ll to, c, t;
+};
 int main()
 {
+  ll n, m, s;
+  cin >> n >> m >> s;
+  chmin(s, 2500LL);
+  vector<vector<edge>> t(n, vector<edge>(0));
+  rep(i, m)
+  {
+    ll u, v, a, b;
+    cin >> u >> v >> a >> b;
+    u--;
+    v--;
+    t[u].pb({v, a, b});
+    t[v].pb({u, a, b});
+  }
+  vll c(n), d(n);
+  rep(i, n)
+  {
+    cin >> c[i] >> d[i];
+  }
+  vvll dist(n, vll(2505, INF));
+  dist[0][s] = 0;
+  priority_queue<tuple<ll, ll, ll>, vector<tuple<ll, ll, ll>>, greater<tuple<ll, ll, ll>>> que;
+  que.push({0, 0, s});
+  while (que.size())
+  {
+    auto [v, now, m] = que.top();
+    que.pop();
+    if (dist[now][m] < v)
+      continue;
+    if (m + c[now] <= 2500 && chmin(dist[now][m + c[now]], v + d[now]))
+    {
+      que.push({dist[now][m + c[now]], now, m + c[now]});
+    }
+    for (auto e : t[now])
+    {
+      if (e.c <= m && chmin(dist[e.to][m - e.c], v + e.t))
+      {
+        que.push({dist[e.to][m - e.c], e.to, m - e.c});
+      }
+    }
+  }
+  rep(i, n)
+  {
+    if (i == 0)
+      continue;
+    ll res = INF;
+    rep(j, 2505)
+    {
+      chmin(res, dist[i][j]);
+    }
+    cout << res << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

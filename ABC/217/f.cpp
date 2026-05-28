@@ -71,8 +71,88 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+// 二項係数 nCr
+const int MAX = 2000000;
+long long fac[MAX], finv[MAX], inv[MAX];
+
+// テーブルを作る前処理
+void COMinit()
+{
+  fac[0] = fac[1] = 1;
+  finv[0] = finv[1] = 1;
+  inv[1] = 1;
+  for (int i = 2; i < MAX; i++)
+  {
+    fac[i] = fac[i - 1] * i % MOD;
+    inv[i] = MOD - inv[MOD % i] * (MOD / i) % MOD;
+    finv[i] = finv[i - 1] * inv[i] % MOD;
+  }
+}
+
+// 二項係数計算
+long long COM(int n, int k)
+{
+  if (n < k)
+    return 0;
+  if (n < 0 || k < 0)
+    return 0;
+  return fac[n] * (finv[k] * finv[n - k] % MOD) % MOD;
+}
+//////////////////////////////////////
+
 int main()
 {
+  COMinit();
+  ll n, m;
+  cin >> n >> m;
+  vvll t(2 * n, vll(0));
+  rep(i, m)
+  {
+    ll a, b;
+    cin >> a >> b;
+    a--;
+    b--;
+    t[a].pb(b);
+    t[b].pb(a);
+  }
+  vvll dp(2 * n + 1, vll(2 * n + 1, -1));
+  auto dfs = [&](auto dfs, ll l, ll r) -> ll
+  {
+    if (dp[l][r] != -1)
+    {
+      return dp[l][r];
+    }
+    if (l + 1 == r)
+    {
+      return dp[l][r];
+    }
+    if (l == r)
+    {
+      return dp[l][r] = 1;
+    }
+    ll ans = 0;
+    for (auto nr : t[l])
+    {
+      if (l < nr && nr < r)
+      {
+        ll res = -1;
+        res = dfs(dfs, l + 1, nr);
+        ll res2 = -1;
+        res2 = dfs(dfs, nr + 1, r);
+        if (res == -1 || res2 == -1)
+        {
+          continue;
+        }
+        ll l_cnt = (nr + 1 - l) / 2;
+
+        ll r_cnt = (r - (nr + 1)) / 2;
+        ans += ((res * res2) % MOD) * COM(l_cnt + r_cnt, l_cnt) % MOD;
+        ans %= MOD;
+      }
+    }
+    return dp[l][r] = ans;
+  };
+  cout << dfs(dfs, 0, 2 * n) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

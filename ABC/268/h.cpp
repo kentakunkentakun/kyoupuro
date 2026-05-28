@@ -60,10 +60,87 @@ inline bool chmin(T &a, T b)
   }
   return false;
 }
+struct Aho
+{
+  using MP = unordered_map<char, ll>;
+  vector<MP> to;
+  vector<ll> fail, bad;
+  Aho() : to(1), bad(1) {}
+  ll add(const string &s, ll i)
+  {
+    ll v = 0;
+    for (char c : s)
+    {
+      if (!to[v].count(c))
+      {
+        to[v][c] = to.size();
+        to.push_back(MP());
+        bad.pb(0);
+      }
+      v = to[v][c];
+    }
+    bad[v] = 1;
+    return v;
+  }
+  void init()
+  {
+    fail = vector<ll>(to.size(), -1);
+    queue<ll> q;
+    q.push(0);
+    while (!q.empty())
+    {
+      ll v = q.front();
+      q.pop();
+      for (auto [c, u] : to[v])
+      {
+        fail[u] = (*this)(fail[v], c);
+        bad[u] |= bad[fail[u]];
+        q.push(u);
+      }
+    }
+  }
+  ll operator()(ll v, char c) const
+  {
+    while (v != -1)
+    {
+      auto it = to[v].find(c);
+      if (it != to[v].end())
+        return it->second;
+      v = fail[v];
+    }
+    return 0;
+  }
+  ll operator[](ll v) const { return bad[v]; }
+};
+
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  string s;
+  cin >> s;
+  ll n;
+  cin >> n;
+  Aho aho;
+  rep(i, n)
+  {
+    string t;
+    cin >> t;
+    aho.add(t, i);
+  }
+  aho.init();
+  ll v = 0;
+  ll ans = 0;
+  rep(i, s.size())
+  {
+    v = aho(v, s[i]);
+    if (aho[v])
+    {
+      ans++;
+      v = 0;
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

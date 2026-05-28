@@ -77,28 +77,31 @@ int main()
     t[a].pb(b);
     t[b].pb(a);
   }
-  vll dp(n, 0);
-  auto dfs = [&](auto dfs, ll now, ll par) -> void
+  vll dp(n);
+  dp[0] = k;
+  ll res = 1;
+  auto dfs = [&](auto dfs, ll now, ll par, ll cnt = 1) -> void
   {
-    ll c = par == -1 ? k - 1 : k - 2;
+    res *= dp[now];
+    res %= MOD;
+    ll remain = k - 1 - cnt;
     for (auto nx : t[now])
     {
       if (nx == par)
         continue;
-      dp[nx] = c;
-      c--;
+      dp[nx] = remain;
+
+      if (remain <= 0)
+      {
+        res = 0;
+        return;
+      }
+      remain--;
       dfs(dfs, nx, now);
     }
   };
-  dfs(dfs, 0, -1);
-  dp[0] = k;
-  ll ans = 1;
-  rep(i, n)
-  {
-    ans *= dp[i];
-    ans %= MOD;
-  }
-  cout << ans << endl;
+  dfs(dfs, 0, -1, 0);
+  cout << res << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

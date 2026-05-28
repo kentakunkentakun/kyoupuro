@@ -65,34 +65,20 @@ int main()
 {
   ll n, m;
   cin >> n >> m;
-  vvll t(n, vll(n));
+  vll t(n);
   rep(i, m)
   {
-    ll u, v;
-    cin >> u >> v;
-    u--;
-    v--;
-    t[u][v] = 1;
-    t[v][u] = 1;
+    ll a, b;
+    cin >> a >> b;
+    a--;
+    b--;
+    t[a] |= (1 << b);
+    t[b] |= (1 << a);
   }
-  vvll group(0);
-  rep(i, n)
-  {
-    rep(j, group.size())
-    {
-      bool ok = true;
-      for (ll v : group[j])
-      {
-        if (!t[i][v])
-          ok = false;
-      }
-      if (ok)
-      {
-        group[j].pb(i);
-        break;
-      }
-    }
-  }
+  vvll dp(n + 1, vll(1 << n, INF));
+  dp[0][0] = 0;
+  
+  cout << dp[n][(1 << n) - 1] << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

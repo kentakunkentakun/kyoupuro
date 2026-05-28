@@ -66,69 +66,51 @@ int main()
 {
   ll n;
   cin >> n;
-  vector<queue<ll>> que(n);
+  vvll a(n, vll(n - 1));
   rep(i, n)
   {
     rep(j, n - 1)
     {
-      ll a;
-      cin >> a;
-      a--;
-      que[i].push(a);
+      cin >> a[i][j];
+      a[i][j]--;
     }
   }
-  set<pll> dup;
-  map<pll, ll> cnt;
-  rep(i, n)
+  vll it(n, 0);
+  ll res = 0;
+  while (1)
   {
-    pll p = pll(min(i, que[i].front()), max(i, que[i].front()));
-    if (cnt.count(p))
+    set<ll> s;
+    bool match = false;
+    rep(i, n)
     {
-      dup.insert(p);
+      if (it[i] == n - 1)
+        continue;
+      ll nx = a[i][it[i]];
+      if (i == a[nx][it[nx]] && !s.count(i) && !s.count(nx))
+      {
+        match = true;
+        s.insert(i);
+        s.insert(nx);
+        it[i]++;
+        it[nx]++;
+      }
     }
-    cnt[p]++;
-  }
-  ll ans = 0;
-  while (dup.size())
-  {
 
-    set<pll> dup2;
-    for (auto [i, j] : dup)
+    if (!match)
     {
-      que[i].pop();
-      que[j].pop();
-      if (que[i].size())
-      {
-        pll pi = pll(min(i, que[i].front()), max(i, que[i].front()));
-        if (cnt.count(pi))
-        {
-          dup2.insert(pi);
-        }
-        cnt[pi]++;
-      }
-      if (que[j].size())
-      {
-        pll pj = pll(min(j, que[j].front()), max(j, que[j].front()));
-        if (cnt.count(pj))
-        {
-          dup2.insert(pj);
-        }
-        cnt[pj]++;
-      }
+      break;
     }
-    swap(dup, dup2);
-    ans++;
+    res++;
   }
-  bool ch = true;
   rep(i, n)
   {
-    if (que[i].size())
-      ch = false;
+    if (it[i] != n - 1)
+    {
+      cout << -1 << endl;
+      return 0;
+    }
   }
-  if (ch)
-    cout << ans << endl;
-  else
-    cout << -1 << endl;
+  cout << res << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

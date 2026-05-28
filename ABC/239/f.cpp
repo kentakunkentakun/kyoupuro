@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/dsu>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -64,6 +65,118 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vll d(n);
+  rep(i, n) cin >> d[i];
+  dsu uf(n);
+
+  bool ok = true;
+  rep(i, m)
+  {
+    ll a, b;
+    cin >> a >> b;
+    a--;
+    b--;
+    if (uf.same(a, b))
+    {
+      ok = false;
+    }
+    d[a]--;
+    d[b]--;
+    uf.merge(a, b);
+  }
+  vector<vector<pll>> t(n, vector<pll>(0));
+
+  rep(i, n)
+  {
+    if (d[i] < 0)
+    {
+      ok = false;
+      break;
+    }
+  }
+  if (!ok)
+  {
+    cout << -1 << endl;
+    return 0;
+  }
+  ll cnt = 0;
+  set<ll> s;
+  rep(i, n)
+  {
+    s.insert(uf.leader(i));
+    if (d[i] > 0)
+    {
+      t[uf.leader(i)].pb({d[i], i});
+      cnt += d[i];
+    }
+  }
+  if ((s.size() - 1) * 2 != cnt)
+  {
+    cout << -1 << endl;
+    return 0;
+  }
+  priority_queue<pll> que;
+  rep(i, n)
+  {
+    ll cn = 0;
+    for (auto [dd, it] : t[i])
+    {
+      cn += dd;
+    }
+    if (cn > 0)
+    {
+      que.push({cn, i});
+    }
+    if (s.count(i) && cn == 0)
+    {
+      cout << -1 << endl;
+      return 0;
+    }
+  }
+  vector<pll> ans(0);
+  while (que.size())
+  {
+    auto [fcn, fit] = que.top();
+    que.pop();
+    auto [scn, sit] = que.top();
+    que.pop();
+    auto [fc, fi] = t[fit].back();
+    t[fit].pop_back();
+    auto [sc, si] = t[sit].back();
+    t[sit].pop_back();
+    ans.pb({fi, si});
+    fcn--;
+    scn--;
+    fc--;
+    sc--;
+    if (fc > 0)
+    {
+      t[fit].pb({fc, fi});
+    }
+    if (sc > 0)
+    {
+      t[sit].pb({sc, si});
+    }
+    if (t[fit].size() < t[sit].size())
+    {
+      swap(fit, sit);
+    }
+    for (auto [C, I] : t[sit])
+    {
+      t[fit].pb({C, I});
+    }
+    fcn += scn;
+    if (fcn > 0)
+    {
+      que.push({fcn, fit});
+    }
+  }
+  rep(i, ans.size())
+  {
+    cout << ans[i].F + 1 << " " << ans[i].S + 1 << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -78,57 +78,59 @@ int main()
   cin >> n >> m;
   vll a(n);
   rep(i, n) cin >> a[i];
+  ll wa = -1, ac = INF;
   sort(all(a));
-  auto count = [&](ll k) -> ll
+  auto count = [&](ll v) -> ll
   {
     ll cnt = 0;
-    repR(i, n)
+    rep(i, n)
     {
-      ll c = k - a[i];
-      cnt += a.end() - lower_bound(all(a), c);
+      auto it = lower_bound(all(a), v - a[i]);
+      cnt += a.end() - it;
     }
     return cnt;
   };
   auto judge = [&](ll wj) -> bool
   {
-    ll cnt = count(wj);
-    if (cnt >= m)
-    {
-      return true;
-    }
-    else
+    ll res = count(wj);
+    if (res > m)
     {
       return false;
     }
-  };
-  ll ac = 0, wa = INF;
-  while (ac + 1 < wa)
-  {
-    ll wj = (ac + wa) / 2;
-    if (judge(wj))
+    else
     {
-      ac = wj;
+      return true;
+    }
+  };
+  while (wa + 1 < ac)
+  {
+    ll mid = (wa + ac) / 2;
+    if (judge(mid))
+    {
+      ac = mid;
     }
     else
     {
-      wa = wj;
+      wa = mid;
     }
   }
-  ll cnt = count(ac + 1);
-  ll remain = m - cnt;
-  vll d(n + 1, 0);
+  ll ans = 0;
+  vll d(n + 1);
   rep(i, n)
   {
-    d[i + 1] += d[i] + a[n - 1 - i];
+    d[i + 1] += d[i] + a[i];
   }
-  ll ans = 0;
-  ans += ac * remain;
-  repR(i, n)
+  rep(i, n)
   {
-    ll c = ac + 1 - a[i];
-    ll s = a.end() - lower_bound(all(a), c);
-    ans += a[i] * s + d[s];
+    auto it = lower_bound(all(a), ac - a[i]);
+    if (it != a.end())
+    {
+      ll k = it - a.begin();
+      ans += (a.end() - it) * a[i] + d[n] - d[k];
+    }
   }
+  ll cnt = count(ac);
+  ans += (m - cnt) * (ac - 1);
   cout << ans << endl;
 }
 /*cin.tie(0);

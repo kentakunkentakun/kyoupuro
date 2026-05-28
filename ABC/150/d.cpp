@@ -71,9 +71,45 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+// gcd lcm
+ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a; }
+ll lcm(ll a, ll b) { return a / gcd(a, b) * b; }
+
 int main()
 {
-  
+  ll n, m;
+  cin >> n >> m;
+  vll a(n);
+  ll l = 1;
+  ll k = 0;
+  rep(i, n) cin >> a[i];
+
+  ll tmp = a[0] / 2;
+  while (tmp > 0 && tmp % 2 == 0)
+  {
+    tmp /= 2;
+    k++;
+  }
+  rep(i, n)
+  {
+    a[i] /= 2;
+    ll tmp = a[i];
+    ll kk = 0;
+    while (tmp > 0 && tmp % 2 == 0)
+    {
+      tmp /= 2;
+      kk++;
+    }
+    if (k != kk)
+    {
+      cout << 0 << endl;
+      return 0;
+    }
+    l = lcm(l, a[i]);
+  }
+
+  ll cnt = m / l;
+  cout << (cnt + 1) / 2 << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

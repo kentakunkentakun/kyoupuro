@@ -63,8 +63,78 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+struct edge
+{
+  ll from, to, c;
+};
+struct BellmanFordMax
+{
+  BellmanFordMax() {}
+  BellmanFordMax(ll n) { init(n); }
+  vector<vector<pair<ll, ll>>> E;
+  ll N;
+  void init(ll n)
+  {
+    N = n;
+    E.resize(0);
+    E.clear();
+    E.resize(n);
+  }
+  void add(ll a, ll b, ll c) { E[a].push_back({b, c}); }
+  vector<ll> solve(ll s)
+  {
+    vector<ll> res(N, -INF);
+    res[s] = 0;
+
+    rep(i, N - 1)
+    {
+      rep(cu, N) if (-INF < res[cu]) for (auto p : E[cu])
+      {
+        chmax(res[p.first], res[cu] + p.second);
+      }
+    }
+
+    vector<bool> pos(N);
+    rep(i, N)
+    {
+      rep(cu, N) if (-INF < res[cu]) for (auto p : E[cu])
+      {
+        if (chmax(res[p.first], res[cu] + p.second))
+        {
+          pos[p.first] = true;
+        }
+        if (pos[cu])
+          pos[p.first] = true;
+      }
+    }
+
+    rep(cu, N) if (pos[cu]) res[cu] = INF;
+
+    return res;
+  }
+};
 int main()
 {
+  ll n, m, p;
+  cin >> n >> m >> p;
+  BellmanFordMax bell(n);
+  rep(i, m)
+  {
+    ll a, b, c;
+    cin >> a >> b >> c;
+    a--;
+    b--;
+    bell.add(a, b, c - p);
+  }
+  vll res = bell.solve(0);
+  if (res[n - 1] == INF)
+  {
+    cout << -1 << endl;
+  }
+  else
+  {
+    cout << max(0LL, res[n - 1]) << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

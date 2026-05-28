@@ -2,6 +2,7 @@
 
 using namespace std;
 #define ll long long
+#define ld long double
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
 #define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
@@ -22,15 +23,21 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+// const ll MOD = 1e9+7LL;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -62,13 +69,87 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
+struct point
+{
+  ll x, y;
+};
+
+long long cross(const point &a, const point &b)
+{
+  return (long long)a.x * b.y - (long long)a.y * b.x;
+}
+
+bool cmp(const point &a, const point &b)
+{
+  ll ah = (a.y < 0 or (a.y == 0 and a.x < 0));
+  ll bh = (b.y < 0 or (b.y == 0 and b.x < 0));
+  if (ah != bh)
+    return ah < bh;
+  return cross(a, b) > 0;
+}
+
+void argument_sort(vector<point> &points)
+{
+  sort(points.begin(), points.end(), cmp);
+}
+
 int main()
 {
+  ll n;
+  cin >> n;
+  vector<point> p(n);
+  rep(i, n)
+  {
+    ll x, y;
+    cin >> x >> y;
+    p[i].x = x;
+    p[i].y = y;
+  }
+  argument_sort(p);
+  vector<point> p2 = p;
+  rep(i, n)
+  {
+    p.pb(p2[i]);
+  }
+  double ans = 0;
+
+  rep(i, n)
+  {
+    ll it = i;
+    double nowx = 0;
+    double nowy = 0;
+    rep(j, n)
+    {
+      nowx += p[it].x;
+      nowy += p[it].y;
+      chmax(ans, sqrt(nowx * nowx + nowy * nowy));
+      it++;
+    }
+  }
+  cout << fixed << setprecision(12);
+
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
 next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
+__int128
 
-__builtin_popcount(i)*/
+//ソート済み
+v.erase(unique(v.begin(), v.end()), v.end());
+__builtin_popcountll(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

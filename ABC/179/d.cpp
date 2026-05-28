@@ -74,6 +74,49 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n, k;
+  cin >> n >> k;
+  vector<pll> p(k);
+  rep(i, k)
+  {
+    ll l, r;
+    cin >> l >> r;
+    r++;
+    p[i] = {l, r};
+  }
+  vll dp(n, 0);
+  ll res = 1;
+  vll d(n + 1, 0);
+  rep(i, n)
+  {
+    if (i == 0)
+    {
+      res = 1;
+    }
+    else
+      res = d[i];
+    rep(j, k)
+    {
+      auto [l, r] = p[j];
+      if (i + l <= n)
+      {
+        d[i + l] += res;
+        d[i + l] %= MOD;
+      }
+      if (i + r <= n)
+      {
+        d[i + r] -= res;
+        d[i + r] += MOD;
+        d[i + r] %= MOD;
+      }
+    }
+    if (i < n - 1)
+    {
+      d[i + 1] += d[i];
+      d[i + 1] %= MOD;
+    }
+  }
+  cout << d[n - 1] << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

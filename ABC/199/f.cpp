@@ -22,7 +22,8 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 998244353LL;
+// const ll MOD = 998244353LL;
+const ll MOD = 1e9 + 7;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
@@ -71,8 +72,117 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+
+// a^n mod を計算する
+
+long long modpow(long long a, long long n, long long mod)
+{
+  a %= mod;
+  long long res = 1;
+  while (n > 0)
+  {
+    if (n & 1)
+      res = res * a % mod;
+    a = a * a % mod;
+    n >>= 1;
+  }
+  return res;
+}
+
+// a^{-1} mod を計算する
+
+long long modinv(long long a, long long mod)
+{
+  return modpow(a, mod - 2, mod);
+}
+
+typedef vector<ll> vec;
+typedef vector<vec> mat;
+
+// A*Bの計算
+mat mul(mat &A, mat &B, ll inv)
+{
+  mat c(A.size(), vec(B[0].size()));
+  for (int i = 0; i < A.size(); i++)
+  {
+    for (int k = 0; k < B.size(); k++)
+    {
+      for (int j = 0; j < B[0].size(); j++)
+      {
+        c[i][j] = (c[i][j] + (A[i][k] * B[k][j]) % MOD * inv % MOD) % MOD;
+      }
+    }
+  }
+  return c;
+}
+
+// A^nの計算
+mat pow(mat A, ll n, ll m, ll inv)
+{
+  mat B(A.size(), vec(A.size()));
+  for (int i = 0; i < A.size(); i++)
+  {
+    B[i][i] = 2 * m;
+  }
+  while (n > 0)
+  {
+    if (n & 1)
+      B = mul(B, A, inv);
+    A = mul(A, A, inv);
+    n >>= 1;
+  }
+  return B;
+}
+
 int main()
 {
+  ll n, m, k;
+  cin >> n >> m >> k;
+  vec a(n);
+  rep(i, n) cin >> a[i];
+  mat t(n, vec(n));
+  rep(i, m)
+  {
+    ll x, y;
+    cin >> x >> y;
+    x--;
+    y--;
+    t[x][y] = 1;
+    t[y][x] = 1;
+  }
+  ll inv = modinv(2 * m, MOD);
+  rep(i, n)
+  {
+    ll cnt = 0;
+    rep(j, n)
+    {
+      if (t[i][j])
+      {
+        cnt++;
+      }
+    }
+    t[i][i] = cnt + (m - cnt) * 2;
+  }
+
+  mat res = pow(t, k, m, inv);
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      cout << res[i][j] << " ";
+    }
+    cout << endl;
+  }
+  rep(i, n)
+  {
+    ll ans = 0;
+    rep(j, n)
+    {
+      ans += (res[i][j] * a[j]) % MOD * inv % MOD;
+      ans %= MOD;
+    }
+    cout << ans << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

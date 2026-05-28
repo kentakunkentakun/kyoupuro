@@ -73,6 +73,51 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n;
+  cin >> n;
+  set<ll> ans;
+  auto solve = [&](ll N) -> void
+  {
+    vll k(0);
+
+    for (int i = 1; i <= sqrt(N) + 1; i++)
+    {
+      if (N % i == 0)
+      {
+        k.pb(i);
+      }
+    }
+    rep(i, k.size())
+    {
+      ll a = N / k[i];
+      ll mi = min(k[i], a);
+      ll ma = max(k[i], a);
+      while (ma % mi == 0 && mi != 1)
+        ma /= mi;
+
+      if (ma % mi == 1)
+      {
+        ans.insert(mi);
+      }
+      mi = min(k[i], a);
+      ma = max(k[i], a);
+      if (mi % ma == 1)
+      {
+        ans.insert(ma);
+      }
+    }
+  };
+  solve(n);
+  for (int i = 1; i <= sqrt(n - 1) + 1; i++)
+  {
+    if ((n - 1) % i == 0)
+    {
+      ans.insert(i);
+      ans.insert((n - 1) / i);
+    }
+  }
+  ans.erase(1);
+  cout << ans.size() << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

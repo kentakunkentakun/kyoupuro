@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -71,66 +72,15 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
-template <typename T>
-struct SegmentTree
+bitset<26> op(bitset<26> a, bitset<26> b)
 {
-  typedef function<T(T, T)> F;
-  int n; // 要素数
-  F f;   // 2項演算
-  T e;   // 単位元
-  vector<T> dat;
-  SegmentTree(int n_, F f, T e) : f(f), e(e)
-  {
-    init(n_);
-    build();
-  }
-  SegmentTree(int n_, F f, T e, vector<T> &v) : f(f), e(e)
-  {
-    init(n_);
-    build(n_, v);
-  }
-  void init(int n_)
-  {
-    n = 1;
-    while (n < n_)
-      n <<= 1;
-    dat.clear();
-    dat.resize(n << 1, e);
-  }
-  void build(int n_, const vector<T> &v)
-  {
-    for (int i = 0; i < n_; ++i)
-      dat[n + i] = v[i];
-    build();
-  }
-  void build()
-  {
-    for (int i = n - 1; i >= 1; --i)
-    {
-      dat[i] = f(dat[i << 1], dat[i << 1 | 1]);
-    }
-  }
-  void update(int k, const T &x)
-  {
-    dat[k += n] = x;
-    while (k >>= 1)
-    {
-      dat[k] = f(dat[k << 1], dat[k << 1 | 1]);
-    }
-  }
-  T query(int a, int b)
-  {
-    T l = e, r = e;
-    for (a += n, b += n; a < b; a >>= 1, b >>= 1)
-    {
-      if (a & 1)
-        l = f(l, dat[a++]);
-      if (b & 1)
-        r = f(dat[--b], r);
-    }
-    return f(l, r);
-  }
-};
+  return a | b;
+}
+bitset<26> e()
+{
+  bitset<26> res;
+  return res;
+}
 int main()
 {
   ll n;
@@ -139,42 +89,35 @@ int main()
   cin >> s;
   ll q;
   cin >> q;
-  set<ll> e;
-  vector<set<ll>> ini(n);
+  vector<bitset<26>> ini(n);
   rep(i, n)
   {
-    ini[i].insert(s[i]);
+    bitset<26> a;
+    a.set(s[i] - 'a', 1);
+    ini[i] = a;
   }
-  SegmentTree<set<ll>>
-      seg(n, [](set<ll> a, set<ll> b)
-          {
-    set<ll> tmp;
-    for(auto p:a){
-      tmp.insert(p);
-    } 
-    for(auto k:b){
-      tmp.insert(k);
-    }
-  return tmp; }, e, ini);
+  segtree<bitset<26>, op, e> seg(ini);
   rep(i, q)
   {
-    ll t;
-    cin >> t;
-    if (t == 1)
+    ll o;
+    cin >> o;
+    if (o == 1)
     {
-      char b;
-      ll a;
-      cin >> a >> b;
-      set<ll> ne;
-      ne.insert(b);
-      seg.update(a - 1, ne);
+      ll it;
+      char c;
+      cin >> it >> c;
+      it--;
+      bitset<26> k;
+      k.set(c - 'a', 1);
+      seg.set(it, k);
     }
     else
     {
-      ll a, b;
-      cin >> a >> b;
-      set<ll> res = seg.query(a - 1, b);
-      cout << res.size() << endl;
+      ll l, r;
+      cin >> l >> r;
+      l--;
+      auto res = seg.prod(l, r);
+      cout << res.count() << endl;
     }
   }
 }

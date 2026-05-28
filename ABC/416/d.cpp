@@ -69,6 +69,46 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll t;
+  cin >> t;
+  rep(T, t)
+  {
+    ll n, m;
+    cin >> n >> m;
+    vll a(n), b(n);
+    rep(i, n) cin >> a[i];
+    rep(i, n) cin >> b[i];
+    vll am(n), bm(n);
+    rep(i, n) am[i] = a[i] % m;
+    rep(i, n) bm[i] = b[i] % m;
+    sort(rall(am));
+    sort(all(bm));
+    ll bit = 0;
+    ll res = 0;
+    rep(i, n)
+    {
+      while (bit < n)
+      {
+        if (bm[bit] + am[i] >= m)
+        {
+          res++;
+          bit++;
+          break;
+        }
+        bit++;
+      }
+    }
+    ll amo = 0;
+    ll bmo = 0;
+    rep(i, n) amo += a[i] / m;
+    rep(i, n) bmo += b[i] / m;
+    ll sum = 0;
+    rep(i, n)
+    {
+      sum += a[i] + b[i];
+    }
+    cout << sum - (amo + bmo + res) * m << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

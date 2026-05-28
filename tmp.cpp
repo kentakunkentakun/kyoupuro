@@ -1,8 +1,8 @@
 #include <bits/stdc++.h>
-#include <atcoder/segtree>
+
 using namespace std;
-using namespace atcoder;
 #define ll long long
+#define ld long double
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
 #define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
@@ -77,127 +77,62 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
-struct S
-{
-  ll it, v;
-  bool empty;
-};
-S op(S a, S b)
-{
-  if (a.empty)
-  {
-    return b;
-  }
-  else if (b.empty)
-  {
-    return a;
-  }
-  if (a.v < b.v)
-  {
-    return a;
-  }
-  else
-  {
-    return b;
-  }
-}
-S e()
-{
-  return {-1, INF, true};
-}
 int main()
 {
-  ll n, l, k;
-  cin >> n >> l >> k;
-  vll a(n), c(n);
-
-  rep(i, n)
+  ll n;
+  cin >> n;
+  vector<pair<double, ll>> d(0);
+  rep(i, 9) d.pb({1, i + 1});
+  vll u(17);
+  vll q(17);
+  ll now = 1;
+  rep(i, 17)
   {
-    cin >> a[i] >> c[i];
+    u[i] = now;
+    now *= 10;
   }
-  rep(i, n)
+  ll nine = 0;
+  rep(i, 17)
   {
-    if (i != 0)
+    q[i] = nine;
+    nine *= 10;
+    nine += 9;
+  }
+  for (int i = 2; i <= 15; i++)
+  {
+    ll g = 1;
+    ll s = 1;
+    ll ma = i / 2;
+    s = u[ma - 1];
+    g = s * 10;
+    ll bai = u[i - (ma)];
+    // ll sum = 9 * (i - (ma));
+    for (int j = s; j < g; j++)
     {
-      if (a[i] - a[i - 1] > k)
+      ll t = bai * j + q[i - (ma)];
+      ll tmp = t;
+      ll sum = 0;
+      while (tmp)
       {
-        cout << -1 << endl;
-        return 0;
+        sum += tmp % 10;
+        tmp /= 10;
       }
+      d.pb({(double)(t) / (double)(sum), t});
     }
   }
-  if (l - a[n - 1] > k || a[0] > k)
+  sort(all(d));
+  ll ma = 0;
+  ll cnt = 0;
+  ll i = 0;
+  while (cnt < n)
   {
-    cout << -1 << endl;
-    return 0;
-  }
-  a.pb(l);
-  c.pb(0);
-  vector<S> ini(n + 1);
-  rep(i, n + 1)
-  {
-    ini[i] = {i, c[i], false};
-  }
-  segtree<S, op, e> seg(ini);
-
-  vector<pll> d(0);
-  d.pb({-1, 0});
-  PQR(pll)
-  que;
-  ll now = 0;
-  ll it = -1;
-  while (now != l)
-  {
-    ll iter = upper_bound(all(a), now + k) - a.begin();
-    auto nx = seg.prod(it + 1, iter);
-    que.push({nx.v, d.size() - 1});
-    d.pb({nx.it, a[nx.it]});
-    now = a[nx.it];
-
-    it = nx.it;
-  }
-  vll h(d.size(), INF);
-  h[0] = k;
-  while (que.size())
-  {
-    auto [cost, it] = que.top();
-    it++;
-    que.pop();
-    auto [_, u] = d[it];
-    if (u == l)
+    if (chmax(ma, d[i].S))
     {
-      h[it] = 0;
+      cout << d[i].S << endl;
+      cnt++;
     }
-    else
-    {
-      if (h[it + 1] == INF)
-      {
-        h[it] = k;
-      }
-      else
-      {
-        h[it] = d[it + 1].S - d[it].S;
-      }
-    }
+    i++;
   }
-
-  ll ans = 0;
-  ll tmp = k;
-  now = 0;
-  rep(i, h.size())
-  {
-    if (h[i] > tmp)
-    {
-      ans += c[d[i].F] * (h[i] - tmp);
-      tmp = h[i];
-    }
-    ans += max(0LL, h[i] - tmp) * c[d[i].F];
-    if (i != h.size() - 1)
-    {
-      tmp -= d[i + 1].S - d[i].S;
-    }
-  }
-  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

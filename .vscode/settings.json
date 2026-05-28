@@ -3,5 +3,6 @@
     "*.cpp": "cpp"
   },
   "C_Cpp.default.configurationName": "Mac",
-  "C_Cpp.default.compilerPath": "/usr/bin/gcc"
+  "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+  "cmake.sourceDirectory": "/home/kenta2/atcoder/ac-library/test/benchmark"
 }

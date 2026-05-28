@@ -124,86 +124,72 @@ int main()
     cout << "No" << endl;
     return 0;
   }
-  vector<pll> p(0);
+  vector<pll> l(0);
+  vector<pll> r(0);
   rep(i, n)
   {
     ll tmp = 0;
     ll saitei = INF;
-    ll tmp2 = 0;
     rep(j, s[i].size())
     {
       if (s[i][j] == ')')
       {
-        tmp2--;
         tmp--;
       }
       else
       {
-        tmp2++;
         tmp++;
       }
       chmin(saitei, tmp);
     }
-    p.pb({tmp2, saitei});
-  }
-  vector<S> ini(1000005);
-
-  PQ(pll)
-  que;
-  vector<priority_queue<ll>> wait(1000005);
-  rep(i, p.size())
-  {
-    if (p[i].S >= 0)
+    if (tmp >= 0)
     {
-      que.push(p[i]);
+      l.pb({saitei, tmp});
     }
     else
     {
-      wait[p[i].S * -1].push(p[i].F);
-    }
-  }
-  rep(i, 1000005)
-  {
-    if (wait[i].size() == 0)
-      ini[i] = e();
-    else
-    {
-      ini[i] = {wait[i].top(), i, false};
-    }
-  }
-  que.push({-INF, 0});
-  segtree<S, op, e> seg(ini);
-  ll now = 0;
-  rep(i, n)
-  {
-    S ma = seg.prod(0, now + 1);
-    pll tp = que.top();
-    if (ma.v >= tp.F && !ma.empty)
-    {
-      now += ma.v;
-      wait[ma.minus].pop();
-      if (wait[ma.minus].size())
+      saitei = INF;
+      tmp = 0;
+      repR(j, s[i].size())
       {
-        ll nx = wait[ma.minus].top();
-        seg.set(ma.minus, {nx, ma.minus, false});
+        if (s[i][j] == '(')
+        {
+          tmp--;
+        }
+        else
+        {
+          tmp++;
+        }
+        chmin(saitei, tmp);
       }
-      else
-      {
-        seg.set(ma.minus, e());
-      }
-    }
-    else
-    {
-      now += tp.F;
-      que.pop();
-    }
-    if (now < 0)
-    {
-      cout << "No" << endl;
-      return 0;
+      r.pb({saitei, tmp});
     }
   }
-  cout << "Yes" << endl;
+  sort(rall(l));
+  sort(rall(r));
+  auto f = [&](vector<pll> &v) -> bool
+  {
+    ll n = v.size();
+    ll tmp = 0;
+    rep(i, n)
+    {
+      auto [saitei, k] = v[i];
+      if (saitei < 0 && tmp < -1 * saitei)
+      {
+        return false;
+      }
+      tmp += k;
+    }
+    return true;
+  };
+  if (f(l) && f(r))
+  {
+    cout << "Yes" << endl;
+  }
+  else
+  {
+    cout << "No" << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -22,12 +22,13 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
+const ll MOD = 998244353;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -64,6 +65,44 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  string s;
+  cin >> s;
+  ll n = s.size();
+  vvll dp(n + 1, vll(n + 1));
+  dp[0][0] = 1;
+  rep(i, n)
+  {
+    rep(j, n + 1)
+    {
+      if (dp[i][j] != 0)
+      {
+        if (s[i] == ')' && j - 1 >= 0)
+        {
+          dp[i + 1][j - 1] += dp[i][j];
+          dp[i + 1][j - 1] %= MOD;
+        }
+        else if (s[i] == '(' && j + 1 <= n)
+        {
+          dp[i + 1][j + 1] += dp[i][j];
+          dp[i + 1][j + 1] %= MOD;
+        }
+        else if(s[i] =='?')
+        {
+          if (j - 1 >= 0)
+          {
+            dp[i + 1][j - 1] += dp[i][j];
+            dp[i + 1][j - 1] %= MOD;
+          }
+          if (j + 1 <= n)
+          {
+            dp[i + 1][j + 1] += dp[i][j];
+            dp[i + 1][j + 1] %= MOD;
+          }
+        }
+      }
+    }
+  }
+  cout << dp[n][0] << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
