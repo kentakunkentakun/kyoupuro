@@ -64,6 +64,25 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, l, r;
+  cin >> n >> l >> r;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  ll res = 0;
+  rep(i, n)
+  {
+    a[i] %= (l + r);
+    a[i] /= l;
+    res ^= a[i];
+  }
+  if (res == 0)
+  {
+    cout << "Second" << endl;
+  }
+  else
+  {
+    cout << "First" << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

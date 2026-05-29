@@ -22,15 +22,20 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -62,104 +67,95 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
-  ll n;
-  cin >> n;
-  map<pll, ll> m;
-  ll it = 1;
+  string x;
+  string y;
+  cin >> x >> y;
+  ll sx = x.size();
+  ll sy = y.size();
+  vll x_cnt(26, 0);
+  vll y_cnt(26, 0);
+  vvll x_d(sx + 1, vll(26));
+  vvll y_d(sy + 1, vll(26));
+  rep(i, sx)
+  {
+    x_cnt[x[i] - 'a']++;
+    x_d[i + 1][x[i] - 'a']++;
+    rep(j, 26)
+    {
+      x_d[i + 1][j] += x_d[i][j];
+    }
+  }
+  rep(i, sy)
+  {
+    y_cnt[y[i] - 'a']++;
+    y_d[i + 1][y[i] - 'a']++;
+    rep(j, 26)
+    {
+      y_d[i + 1][j] += y_d[i][j];
+    }
+  }
+
   vector<pll> p(0);
-  if (n == 1)
+  p.pb({0, 1});
+  p.pb({1, 1});
+  ll ps = 2;
+  while (1)
   {
-    cout << 1 << endl;
-    cout << 1 << " " << 1 << endl;
-    ll q;
-    cin >> q;
-    rep(i, q)
+    pll k;
+    k.F = p[ps - 1].F + p[ps - 2].F;
+    k.S = p[ps - 1].S + p[ps - 2].S;
+    if (p[ps - 1].F * sx + p[ps - 1].S * sy > 1e18)
     {
-      ll a, b;
-      cin >> a >> b;
-      cout << 1 << " " << 1 << endl;
+      break;
     }
-    return 0;
+    p.pb(k);
+    ps++;
   }
-  auto dfs = [&](auto dfs, ll now, ll l, ll r) -> void
+  auto f = [&](ll k, char c) -> ll
   {
-    ll mid = (l + r) / 2;
-    ll a, b, c, d;
-    a = l;
-    d = r;
-    b = mid;
-    c = mid;
-    if ((l + r) % 2)
+    ll res = 0;
+    ll C = c - 'a';
+    ll remain = 0;
+    repR(i, p.size())
     {
-      c++;
+      ll len = p[i].F * sx + p[i].S * sy;
+      if (len <= k)
+      {
+        res += p[i].F * x_cnt[C] + p[i].S * y_cnt[C];
+        k -= len;
+      }
+      else if (i == 0 && k > 0)
+      {
+        res += y_d[k][C];
+        k = 0;
+      }
+      if (i==0 && k > 0)
+      {
+        res += x_d[k][C];
+      }
     }
-    for (int i = a; i <= b; i++)
-    {
-      p.pb({i, b});
-      m[{i, b}] = it;
-      it++;
-    }
-    for (int i = c; i <= d; i++)
-    {
-      p.pb({c, i});
-      m[{c, i}] = it;
-      it++;
-    }
-    if (l + 1 == r)
-    {
-      return;
-    }
-    dfs(dfs, now + 1, a, b);
-    dfs(dfs, now + 1, c, d);
-    return;
+    return res;
   };
-  dfs(dfs, 0, 1, n);
-  cout << p.size() << endl;
-  rep(i, p.size())
-  {
-    cout << p[i].F << " " << p[i].S << endl;
-  }
   ll q;
   cin >> q;
-  auto dfs2 = [&](auto dfs2, ll now, ll l, ll r, ll ql, ll qr) -> void
-  {
-    ll mid = (l + r) / 2;
-    ll a, b, c, d;
-    a = l;
-    d = r;
-    b = mid;
-    c = mid;
-    if ((l + r) % 2)
-    {
-      c++;
-    }
-    if (qr < b)
-    {
-      dfs2(dfs2, now + 1, a, b, ql, qr);
-      return;
-    }
-    else if (c < ql)
-    {
-      dfs2(dfs2, now + 1, c, d, ql, qr);
-      return;
-    }
-    if (qr == b || ql == c)
-    {
-      cout << m[{ql, qr}] << " " << m[{ql, qr}] << endl;
-    }
-    else
-    {
-      cout << m[{ql, b}] << " " << m[{c, qr}] << endl;
-    }
-    return;
-  };
   rep(i, q)
   {
     ll a, b;
+    char c;
     cin >> a >> b;
-    dfs2(dfs2, 0, 1, n, a, b);
+    cin >> c;
+    a--;
+    cout << f(b, c) - f(a, c) << endl;
   }
 }
 /*cin.tie(0);
@@ -168,4 +164,12 @@ next_permutation(v.begin(), v.end())
 
 cout << fixed << setprecision(10);
 __int128
-__builtin_popcount(i)*/
+
+//ソート済み
+v.erase(unique(v.begin(), v.end()), v.end());
+__builtin_popcountll(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/
