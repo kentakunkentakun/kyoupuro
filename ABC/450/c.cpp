@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/dsu>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -22,15 +23,20 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -62,34 +68,63 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
-  ll n;
-  cin >> n;
-  vector<pll> p(1 << n);
-  rep(i, (1 << n) - 1)
+  ll h, w;
+  cin >> h >> w;
+  vector<vector<char>> s(h, vector<char>(w));
+  rep(i, h)
   {
-    ll a;
-    cin >> a;
-    p[i] = {a, i + 1};
-  }
-  sort(all(p));
-  vll k(1 << n);
-  ll ans = 0;
-  rep(i, 1 << n)
-  {
-    auto [cost, u] = p[i];
-    if (k[u] == 0)
+    rep(j, w)
     {
-      k[u] = 1;
-      rep(j, 1 << n)
+      cin >> s[i][j];
+    }
+  }
+  ll ans = 0;
+  vector<vector<bool>> used(h, vector<bool>(w, false));
+  queue<pll> que;
+  rep(i, h)
+  {
+    rep(j, w)
+    {
+      if (s[i][j] == '.' && !used[i][j])
       {
-        if (k[j])
+        used[i][j] = true;
+        bool ok = true;
+        que.push({i, j});
+        while (que.size())
         {
-          k[j ^ u] = 1;
+          auto [x, y] = que.front();
+          que.pop();
+          rep(z, 4)
+          {
+            ll nx = dx[z] + x;
+            ll ny = dy[z] + y;
+            if (isIn(nx, ny, h, w))
+            {
+              if (s[nx][ny] == '.' && !used[nx][ny])
+              {
+                used[nx][ny] = true;
+                que.push({nx, ny});
+              }
+            }
+            else
+            {
+              ok = false;
+            }
+          }
         }
+        if (ok)
+          ans++;
       }
-      ans += cost;
     }
   }
   cout << ans << endl;
@@ -103,4 +138,9 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)*/
+__builtin_popcountll(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

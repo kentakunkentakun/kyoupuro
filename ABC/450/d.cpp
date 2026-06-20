@@ -22,15 +22,20 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+using u64 = unsigned long long;
+using vii = vector<int>;
+using vvii = vector<vii>;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+const ll MOD = 998244353LL;
+const ll INF = 1LL << 60;
+const double INF_D = numeric_limits<double>::infinity();
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -62,36 +67,31 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
-  ll n;
-  cin >> n;
-  vector<pll> p(1 << n);
-  rep(i, (1 << n) - 1)
+  ll n, k;
+  cin >> n >> k;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  rep(i, n)
   {
-    ll a;
-    cin >> a;
-    p[i] = {a, i + 1};
+    a[i] %= k;
   }
-  sort(all(p));
-  vll k(1 << n);
-  ll ans = 0;
-  rep(i, 1 << n)
+  sort(all(a));
+  ll ans = INF;
+  rep(i, n - 1)
   {
-    auto [cost, u] = p[i];
-    if (k[u] == 0)
-    {
-      k[u] = 1;
-      rep(j, 1 << n)
-      {
-        if (k[j])
-        {
-          k[j ^ u] = 1;
-        }
-      }
-      ans += cost;
-    }
+    chmin(ans, a[i] + k - a[i + 1]);
   }
+  chmin(ans, (a[n - 1] - a[0]) % k);
   cout << ans << endl;
 }
 /*cin.tie(0);
@@ -103,4 +103,9 @@ __int128
 
 //ソート済み
 v.erase(unique(v.begin(), v.end()), v.end());
-__builtin_popcount(i)*/
+__builtin_popcountll(i)
+
+// maskからnowのビットだけ削除
+mask & ~(1 << now)
+
+*/

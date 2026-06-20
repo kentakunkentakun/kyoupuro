@@ -69,15 +69,19 @@ int main()
   cin >> n >> m;
   vll d(n);
   rep(i, n) cin >> d[i];
+<<<<<<< Updated upstream
   dsu uf(n);
 
   bool ok = true;
+=======
+>>>>>>> Stashed changes
   rep(i, m)
   {
     ll a, b;
     cin >> a >> b;
     a--;
     b--;
+<<<<<<< Updated upstream
     if (uf.same(a, b))
     {
       ok = false;
@@ -88,10 +92,18 @@ int main()
   }
   vector<vector<pll>> t(n, vector<pll>(0));
 
+=======
+    d[a]--;
+    d[b]--;
+  }
+  queue<ll> q;
+  priority_queue<pll, vector<pll>, greater<pll>> que;
+>>>>>>> Stashed changes
   rep(i, n)
   {
     if (d[i] < 0)
     {
+<<<<<<< Updated upstream
       ok = false;
       break;
     }
@@ -176,6 +188,66 @@ int main()
   rep(i, ans.size())
   {
     cout << ans[i].F + 1 << " " << ans[i].S + 1 << endl;
+=======
+      cout << -1 << endl;
+      return 0;
+    }
+    if (d[i] == 1)
+    {
+      q.push(i);
+    }
+    else if (d[i] > 1)
+    {
+      que.push({d[i], i});
+    }
+  }
+  vector<pll> ans(0);
+  while (q.size())
+  {
+    ll i = q.front();
+    q.pop();
+    if (que.size())
+    {
+      auto [cnt, it] = que.top();
+      que.pop();
+      cnt--;
+      ans.pb({i, it});
+      if (cnt == 1)
+      {
+        q.push(it);
+      }
+      else
+      {
+        que.push({cnt, it});
+      }
+    }
+    else
+    {
+      if (q.size() == 1)
+      {
+        ll ni = q.front();
+        q.pop();
+        ans.pb({i, ni});
+        break;
+      }
+      else
+      {
+        cout << -1 << endl;
+        return 0;
+      }
+    }
+  }
+  if (que.size() > 0)
+  {
+    cout << -1 << endl;
+  }
+  else
+  {
+    rep(i, ans.size())
+    {
+      cout << ans[i].F + 1 << " " << ans[i].S + 1 << endl;
+    }
+>>>>>>> Stashed changes
   }
 }
 /*cin.tie(0);
