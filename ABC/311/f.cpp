@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/fenwicktree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -22,7 +23,7 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
+const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
@@ -62,8 +63,102 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+bool isIn(ll nx, ll ny, ll h, ll w)
+{
+  if (nx >= 0 && nx < h && ny >= 0 && ny < w)
+  {
+    return true;
+  }
+  return false;
+}
 int main()
 {
+  ll n, m;
+  cin >> n >> m;
+  vector<string> s(n);
+  rep(i, n) cin >> s[i];
+  ll ans = 1;
+  vvll dp(n, vll(m));
+  fenwick_tree<ll> bit(m + 1);
+  vvll c(n, vll(m));
+  vector<vector<bool>> ch(n, vector<bool>(m, true));
+  rep(i, n)
+  {
+    rep(j, m)
+    {
+      if (ch[i][j] && s[i][j] == '#')
+      {
+        queue<pll> que;
+        que.push({i, j});
+        ch[i][j] = false;
+        while (que.size())
+        {
+          auto [ni, nj] = que.front();
+          que.pop();
+          ch[ni][nj] = false;
+          ll a = ni + 1;
+          ll b = nj;
+          if (isIn(a, b, n, m) && ch[a][b])
+          {
+            ch[a][b] = false;
+            que.push({a, b});
+          }
+          b++;
+          if (isIn(a, b, n, m) && ch[a][b])
+          {
+            ch[a][b] = false;
+            que.push({a, b});
+          }
+        }
+      }
+    }
+  }
+  bit.add(0, 1);
+  ll cnt = 0;
+  rep(s, n + m - 1)
+  {
+    ll j = s;
+    if (j >= m)
+    {
+      j = m - 1;
+    }
+    ll i = s - j;
+    while (isIn(i, j, n, m))
+    {
+      cnt++;
+      ll ni = n - 1 - i;
+      if (ch[ni][j])
+      {
+        dp[ni][j] = bit.sum(0, j + 1);
+        dp[ni][j] %= MOD;
+        c[ni][j] = s;
+        ans += dp[ni][j];
+        ans %= MOD;
+      }
+      i++;
+      j--;
+    }
+    j = s;
+    if (j >= m)
+      j = m - 1;
+    i = s - j;
+    while (isIn(i, j, n, m))
+    {
+
+      ll ni = n - 1 - i;
+      if (ch[ni][j])
+      {
+        ll now = bit.sum(j + 1, j + 2);
+        bit.add(j + 1, -now);
+        now += dp[ni][j];
+        now %= MOD;
+        bit.add(j + 1, now);
+      }
+      i++;
+      j--;
+    }
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

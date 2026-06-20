@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,16 +63,51 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+double op(double a, double b)
+{
+  return min(a, b);
+}
+double e()
+{
+  return (double)(1LL << 60);
+}
 int main()
 {
-  ll n, m, k;
-  cin >> n >> m >> k;
-  vector<string> s(n);
-  rep(i, n) cin >> s[i];
+  ll n, k;
+  cin >> n >> k;
+  double sx, sy;
+  cin >> sx >> sy;
+  double ans = 0.0;
+  vector<double> x(n), y(n);
+  double nowx = sx;
+  double nowy = sy;
   rep(i, n)
   {
-    
+    cin >> x[i] >> y[i];
+    ans += hypot(nowx - x[i], nowy - y[i]);
+    nowx = x[i];
+    nowy = y[i];
   }
+  ans += hypot(nowx - sx, nowy - sy);
+  segtree<double, op, e> seg(n);
+  seg.set(0, 0.0);
+  vector<double> d(n - 1);
+  rep(i, n - 1)
+  {
+    d[i] = hypot(x[i] - sx, y[i] - sy) + hypot(x[i + 1] - sx, y[i + 1] - sy) - hypot(x[i] - x[i + 1], y[i] - y[i + 1]);
+  }
+  rep(i, n)
+  {
+    if (i == 0)
+      continue;
+    ll mi = max(0LL, i - k);
+    double res = seg.prod(mi, i);
+    seg.set(i, res + d[i - 1]);
+  }
+  cout << fixed << setprecision(10);
+
+  ll mi = max(0LL, n - k);
+  cout << seg.prod(mi, n) + ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

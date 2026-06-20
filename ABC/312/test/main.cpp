@@ -64,14 +64,81 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
-  ll n, m, k;
-  cin >> n >> m >> k;
-  vector<string> s(n);
-  rep(i, n) cin >> s[i];
+  ll n;
+  cin >> n;
+  vvll t(n, vll(0));
+  rep(i, n - 1)
+  {
+    ll a, b;
+    cin >> a >> b;
+    a--;
+    b--;
+    t[a].pb(b);
+    t[b].pb(a);
+  }
+  ll s = 0;
   rep(i, n)
   {
-    
+    if (t[i].size() == 1)
+    {
+      s = i;
+      break;
+    }
   }
+  vll d(n);
+  {
+    auto dfs = [&](auto dfs, ll now, ll par) -> ll
+    {
+      ll cnt = 1;
+      for (auto p : t[now])
+      {
+        if (p == par)
+          continue;
+        cnt += dfs(dfs, p, now);
+      }
+      return d[now] = cnt;
+    };
+    dfs(dfs, s, -1);
+  }
+  ll ans = 0;
+  {
+    auto dfs = [&](auto dfs, ll now, ll pcnt, ll par) -> void
+    {
+      ll all = 0;
+      ll mi = 0;
+      vll m(0), c(0);
+      for (auto p : t[now])
+      {
+        if (p != par)
+        {
+          all += d[p];
+          c.pb(d[p]);
+          m.pb(d[p] * (d[p] - 1) / 2);
+          mi += d[p] * (d[p] - 1) / 2;
+        }
+      }
+      ans += (all * (all - 1) / 2 - mi) * pcnt;
+      ll a = all;
+      for (auto p : t[now])
+      {
+        if (p != par)
+        {
+          all -= d[p];
+          mi -= d[p] * (d[p] - 1) / 2;
+          ans += d[p] * (all * (all - 1) / 2 - mi);
+        }
+      }
+      for (auto p : t[now])
+      {
+        if (p != par)
+        {
+          dfs(dfs, p, pcnt + a - d[p] + 1, now);
+        }
+      }
+    };
+    dfs(dfs, s, 0, -1);
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

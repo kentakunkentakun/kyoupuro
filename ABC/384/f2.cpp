@@ -1,17 +1,11 @@
 #include <bits/stdc++.h>
-#include <atcoder/all>
-#include <unordered_set>
-#include <unordered_map>
-#include <algorithm>
-#include <iostream>
-#include <string>
-#include <cmath>
+
 using namespace std;
 #define ll long long
-#define rep(i, n) for (ll i = 0; i < (n); i++)
-#define FOR(i, a, b) for (ll i = (a); i < (b); i++)
-#define FORR(i, a, b) for (ll i = (a); i <= (b); i++)
-#define repR(i, n) for (ll i = n; i >= 0; i--)
+#define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
+#define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
+#define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
+#define repR(i, n) for (ll i = n - 1; i >= 0LL; i--)
 #define all(v) (v).begin(), (v).end()
 #define rall(v) (v).rbegin(), (v).rend()
 #define F first
@@ -28,16 +22,24 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
+const ll MOD = 998244353LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
-using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+template <class T>
+constexpr void printArray(const vector<T> &vec, char split = ' ')
+{
+  rep(i, vec.size())
+  {
+    cout << vec[i];
+    cout << (i == (int)vec.size() - 1 ? '\n' : split);
+  }
+}
 template <class T>
 inline bool chmax(T &a, T b)
 {
@@ -62,23 +64,38 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
-  ll n, k;
-  cin >> n >> k;
-  vvvll d(2 * k, vvll(2 * k, vll(2)));
-  rep(i, n)
+  ll n;
+  cin >> n;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  ll m = 25;
+  ll ans = 0;
+  vector<pll> t(n);
+  rep(i, m)
   {
-    ll x, y;
-    cin >> x >> y;
-    char c;
-    cin >> c;
-    ll q = 0;
-    if (c == 'B')
-      q++;
-    x %= 2 * k;
-    y %= 2 * k;
-    d[x][y][q]++;
+    vll cnt(1 << i), sum(1 << i);
+    rep(j, n)
+    {
+      cnt[a[j] % (1 << i)]++;
+      sum[a[j] % (1 << i)] += a[j];
+      ll c = cnt[((1 << i) - a[j] % (1 << i)) % (1 << i)];
+      ll s = sum[((1 << i) - a[j] % (1 << i)) % (1 << i)];
+      if (i == 0)
+      {
+        t[j] = {c, s};
+      }
+      else
+      {
+        auto [tc, ts] = t[j];
+        if (tc > c)
+        {
+          ans += ((tc - c) * a[j] + (ts - s)) / (1 << (i - 1));
+          t[j] = {c, s};
+        }
+      }
+    }
   }
-  
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

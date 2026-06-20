@@ -78,42 +78,105 @@ long long modpow(long long a, long long n, long long mod)
   }
   return res;
 }
+struct PairHash
+{
+  size_t operator()(const pll &p) const
+  {
+    return hash<ll>()(p.first) ^ (hash<ll>()(p.second) << 1);
+  }
+};
 int main()
 {
   ll n;
   cin >> n;
   vll a(n);
-  vector<pll> t(32, {0, 0});
-  ll ans = 0;
+  rep(i, n) cin >> a[i];
+  vector<pll> p(n);
   rep(i, n)
   {
-    ll po = 0;
-    ll tmp = a[i];
-    while (tmp % 2 == 0)
+    ll t = a[i];
+    ll cnt = 0;
+    while (t % 2 == 0)
     {
-      po++;
-      tmp /= 2;
+      t /= 2;
+      cnt++;
     }
-    rep(j, 32)
+    p[i] = {cnt, a[i]};
+  }
+  sort(all(p));
+
+  map<ll, vector<ll>> m;
+  rep(i, n)
+  {
+    auto [cnt, v] = p[i];
+    m[cnt].pb(v);
+  }
+  ll ans = 0;
+  ll sum = 0;
+  vector<ll> d(24);
+
+  for (auto [cnt, v] : m)
+  {
+    ans += sum * v.size();
+    for (auto p : v)
     {
-      auto [v, cnt] = t[j];
-      if (cnt > 0)
+      ll t = p;
+      rep(i, 24)
       {
-        if (j == po)
+        if (t % 2)
         {
-           
+          break;
         }
-        else if (j > po)
+        ans += d[i] * t;
+        t /= 2;
+      }
+      sum += t;
+    }
+    for (auto p : v)
+    {
+      ll t = p;
+      rep(i, 24)
+      {
+        if (t % 2)
         {
-          ans += v * modpow(2, j - po, INF) + cnt * tmp;
+          d[i]++;
+          break;
         }
-        else
+        t /= 2;
+      }
+    }
+
+    // 2のk,あまり -> cnt,sum
+    unordered_map<pll, pll, PairHash> m;
+    for (auto p : v)
+    {
+      ll t = 2;
+      rep(i, 24)
+      {
+        m[{t, p % t}].F++;
+        m[{t, p % t}].S += p;
+        t *= 2;
+      }
+      t = 2;
+
+      pll res = {m[{t, (t - p % t) % t}].F, m[{t, (t - p % t) % t}].S};
+      rep(i, 24)
+      {
+        t *= 2;
+        pll tmp = {m[{t, (t - p % t) % t}].F,
+                   m[{t, (t - p % t) % t}].S};
+
+        if (res.F > tmp.F)
         {
-          ans += v + cnt * (tmp * modpow(2, po - j, INF));
+          ans += ((res.F - tmp.F) * p + res.S - tmp.S) / (t / 2);
+          res = tmp;
         }
+        if (res.F == 0)
+          break;
       }
     }
   }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

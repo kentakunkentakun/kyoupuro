@@ -69,6 +69,95 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, q;
+  cin >> n >> q;
+  vector<tuple<ll, ll, ll>> t(q);
+  rep(i, q)
+  {
+    ll l, r, c;
+    cin >> l >> r >> c;
+    l--;
+    t[i] = {c, l, r};
+  }
+  sort(all(t));
+  set<pll> s;
+  ll ans = 0;
+  rep(i, q)
+  {
+    auto [c, l, r] = t[i];
+    pll k = {l, -1};
+    auto it = s.lower_bound(k);
+    if (s.size() == 0)
+    {
+      ans += (r - l) * c;
+      s.insert({l, r});
+      continue;
+    }
+    ll cnt = 0;
+    ll left = l;
+    ll right = r;
+    pll e;
+    if (it != s.begin())
+    {
+      it--;
+      e = *it;
+      if (e.S >= r)
+      {
+        ans += c;
+        continue;
+      }
+      // 交わらない
+      if (e.S <= l)
+      {
+        it++;
+      }
+      else
+      {
+        // 交わる
+        cnt++;
+        chmin(left, e.F);
+        l = e.S;
+        it = s.erase(it);
+      }
+    }
+
+    if (it != s.end())
+    {
+      e = *it;
+      while (1)
+      {
+        if (e.F >= r)
+        {
+          break;
+        }
+        else
+        {
+          cnt += e.F - l;
+          cnt++;
+          l = e.S;
+          chmax(right, e.S);
+          it = s.erase(it);
+          if (it == s.end())
+          {
+            break;
+          }
+          e = *it;
+        }
+      }
+    }
+    cnt += max(0LL, r - l);
+    ans += cnt * c;
+    s.insert({left, right});
+  }
+  auto u = *s.begin();
+  if (u.F == 0 && u.S == n)
+  {
+    cout << ans << endl;
+  }
+  else
+  {
+    cout << -1 << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -1,8 +1,9 @@
 #include <bits/stdc++.h>
-#include <atcoder/segtree>
+#include <atcoder/fenwicktree>
 using namespace std;
 using namespace atcoder;
 #define ll long long
+#define ld long double
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
 #define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
@@ -14,8 +15,6 @@ using namespace atcoder;
 #define pb push_back
 #define pu push
 #define COUT(x) cout << (x) << "\n"
-#define PQ(x) priority_queue<x>
-#define PQR(x) priority_queue<x, vector<x>, greater<x>>
 #define YES(n) cout << ((n) ? "YES\n" : "NO\n")
 #define Yes(n) cout << ((n) ? "Yes\n" : "No\n")
 #define mp make_pair
@@ -34,10 +33,18 @@ using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+
+template <class T>
+using PQ = priority_queue<T>;
+
+template <class T>
+using PQR = priority_queue<T, vector<T>, greater<T>>;
+
 // const ll MOD = 1e9+7LL;
 const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+const ll INF = 1LL << 62;
 const double INF_D = numeric_limits<double>::infinity();
+
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -77,63 +84,93 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
-ll op(ll a, ll b)
-{
-  return a + b;
-}
-ll e()
-{
-  return 0;
-}
 int main()
 {
   ll n, q;
   cin >> n >> q;
-  vll c(n);
-  vvll cnt(n + 1);
-  vll it(n + 1);
-  vll ini(n + 1);
-  rep(i, n)
+  vll r(q, -1);
+  vll c(q, -1);
+  rep(i, q)
   {
-    cin >> c[i];
-    c[i]--;
-    if (cnt[c[i]].size() == 0)
-      ini[i]++;
-    cnt[c[i]].pb(i);
+    ll op, t;
+    cin >> op >> t;
+    if (op == 1)
+    {
+      r[i] = t;
+    }
+    else
+    {
+      c[i] = t;
+    }
+  }
+  // rのコマンド集
+  vll rc(n + 1, 0);
+  vll cc(n + 1, 0);
+  vector<vector<pll>> rq(q);
+  vector<vector<pll>> cq(q);
+  vll ef(q);
+
+  rep(i, q)
+  {
+    if (r[i] != -1)
+    {
+      rq[i].pb({rc[r[i]], i});
+      rc[r[i]] = i + 1;
+    }
+    else
+    {
+      cq[i].pb({cc[c[i]], i});
+      cc[c[i]] = i + 1;
+    }
   }
 
-  segtree<ll, op, e> seg(ini);
-  vector<tuple<ll, ll, ll>> que(q);
-  map<ll, vector<pll>> m;
+  fenwick_tree<ll> bit(q + 1);
+  vll tmp(n + 1, 0);
+  bit.add(0, n);
   rep(i, q)
   {
-    ll l, r;
-    cin >> l >> r;
-    l--;
-    m[l].pb({r, i});
-  }
-  vll ans(q);
-  sort(all(que));
-  ll lit = 0;
-  for (auto [l, v] : m)
-  {
-    while (lit != l)
+    for (auto [l, it] : rq[i])
     {
-      it[c[lit]]++;
-      if (it[c[lit]] < cnt[c[lit]].size())
+      ef[i] = bit.sum(l, it + 1);
+    }
+    if (c[i] != -1)
+    {
+      bit.add(tmp[c[i]], -1);
+      bit.add(i + 1, 1);
+      tmp[c[i]] = i + 1;
+    }
+  }
+  fenwick_tree<ll> bit2(q + 1);
+
+  vll tmp2(n + 1, -1);
+  rep(i, q)
+  {
+    for (auto [l, it] : cq[i])
+    {
+      ef[i] = bit2.sum(l, it + 1);
+    }
+    if (r[i] != -1)
+    {
+      if (tmp2[r[i]] != -1)
       {
-        seg.set(cnt[c[lit]][it[c[lit]]], 1);
+        bit2.add(tmp2[r[i]], -1);
       }
-      lit++;
-    }
-    for (auto [r, i] : v)f
-    {
-      ans[i] = seg.prod(l, r);
+      bit2.add(i + 1, 1);
+      tmp2[r[i]] = i + 1;
     }
   }
+  ll now = 0;
   rep(i, q)
   {
-    cout << ans[i] << endl;
+    if (r[i] != -1)
+    {
+      now += ef[i];
+    }
+    else
+    {
+      now -= ef[i];
+    }
+    cout << now << endl;
   }
 }
 /*cin.tie(0);

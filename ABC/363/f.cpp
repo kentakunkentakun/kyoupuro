@@ -97,18 +97,22 @@ long long modpow(long long a, long long n, long long mod)
   }
   return res;
 }
+bool ch(string &s)
+{
+  rep(i, s.size())
+  {
+    if (s[i] == '0')
+    {
+      return false;
+    }
+  }
+  return true;
+}
 bool kai(string &t)
 {
   rep(i, t.size())
   {
     if (t[i] != t[t.size() - 1 - i])
-    {
-      return false;
-    }
-  }
-  rep(i, t.size())
-  {
-    if (t[i] == '0')
     {
       return false;
     }
@@ -119,6 +123,105 @@ int main()
 {
   ll n;
   cin >> n;
+  vll t(0);
+  set<ll> s;
+  set<ll> ka;
+  for (int i = 1; i <= sqrt(n); i++)
+  {
+    if (n % i == 0)
+    {
+      string S = to_string(i);
+      if (ch(S) && i != 1)
+      {
+        t.pb(i);
+        s.insert(i);
+        if (kai(S))
+        {
+          ka.insert(i);
+        }
+      }
+      if (i != n / i)
+      {
+        string SR = to_string(n / i);
+        if (ch(SR))
+        {
+          t.pb(n / i);
+          s.insert(n / i);
+          if (kai(SR))
+          {
+            ka.insert(n / i);
+          }
+        }
+      }
+    }
+  }
+  vll k(0);
+  rep(i, t.size())
+  {
+    string tmp = to_string(t[i]);
+    reverse(all(tmp));
+    ll rev = stoll(tmp);
+    if (s.count(rev))
+    {
+      k.pb(t[i]);
+    }
+  }
+  ka.insert(1);
+  vll res(0);
+  set<ll> bad;
+
+  auto dfs = [&](auto dfs, ll now) -> bool
+  {
+    if (ka.count(now))
+    {
+      return true;
+    }
+    if (bad.count(now))
+    {
+      return false;
+    }
+    rep(i, k.size())
+    {
+      string tmp = to_string(k[i]);
+      reverse(all(tmp));
+      ll rev = stoll(tmp);
+      if (now % (k[i] * rev) == 0)
+      {
+        res.pb(k[i]);
+        if (dfs(dfs, now / (k[i] * rev)))
+        {
+          return true;
+        }
+        res.pop_back();
+      }
+    }
+    bad.insert(now);
+    return false;
+  };
+  string ans = "";
+  if (dfs(dfs, n))
+  {
+    ll v = n;
+    rep(i, res.size())
+    {
+      v /= res[i];
+      string tmp = to_string(res[i]);
+      reverse(all(tmp));
+      ll rev = stoll(tmp);
+      v /= rev;
+      ans += to_string(res[i]);
+      ans += '*';
+    }
+    string rev = ans;
+    reverse(all(rev));
+    ans += to_string(v);
+    ans += rev;
+    cout << ans << endl;
+  }
+  else
+  {
+    cout << -1 << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -1,33 +1,33 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <atcoder/all>
-#include<unordered_set>
-#include<unordered_map>
-#include <algorithm> 
+#include <unordered_set>
+#include <unordered_map>
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <cmath>
 using namespace std;
 #define ll long long
-#define rep(i,n) for (ll i = 0; i < (n); i++)
-#define FOR(i,a,b) for(ll i=(a);i<(b);i++)
-#define FORR(i,a,b)for(ll i=(a);i<=(b);i++)
-#define repR(i,n) for(ll i=n;i>=0;i--)
-#define all(v)(v).begin(),(v).end()
-#define rall(v)(v).rbegin(),(v).rend()
+#define rep(i, n) for (ll i = 0; i < (n); i++)
+#define FOR(i, a, b) for (ll i = (a); i < (b); i++)
+#define FORR(i, a, b) for (ll i = (a); i <= (b); i++)
+#define repR(i, n) for (ll i = n; i >= 0; i--)
+#define all(v) (v).begin(), (v).end()
+#define rall(v) (v).rbegin(), (v).rend()
 #define F first
 #define S second
 #define pb push_back
 #define pu push
-#define COUT(x) cout<<(x)<<"\n"
+#define COUT(x) cout << (x) << "\n"
 #define PQ(x) priority_queue<x>
-#define PQR(x) priority_queue<x,vector<x>,greater<x>>
-#define YES(n) cout << ((n) ? "YES\n" : "NO\n"  )
-#define Yes(n) cout << ((n) ? "Yes\n" : "No\n"  )
+#define PQR(x) priority_queue<x, vector<x>, greater<x>>
+#define YES(n) cout << ((n) ? "YES\n" : "NO\n")
+#define Yes(n) cout << ((n) ? "Yes\n" : "No\n")
 #define mp make_pair
 #define sz(x) (ll)(x).size()
-typedef pair<int,int> pii;
-typedef pair<ll,ll> pll;
-typedef tuple<ll,ll,ll> tll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef tuple<ll, ll, ll> tll;
 const ll MOD = 1000000007LL;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
@@ -37,16 +37,96 @@ using vvll = vector<vll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
-template<class T> inline bool chmax(T& a, T b) { 
- if (a < b) { a = b; return true; } return false; 
+template <class T>
+inline bool chmax(T &a, T b)
+{
+  if (a < b)
+  {
+    a = b;
+    return true;
+  }
+  return false;
 }
-template<class T> inline bool chmin(T& a, T b) {
- if (a > b) { a = b; return true; } return false; 
+template <class T>
+inline bool chmin(T &a, T b)
+{
+  if (a > b)
+  {
+    a = b;
+    return true;
+  }
+  return false;
 }
-ll dx[4]={0,1,0,-1};
-ll dy[4]={1,0,-1,0};
-int main(){
-    
+ll dx[4] = {0, 1, 0, -1};
+ll dy[4] = {1, 0, -1, 0};
+struct edge
+{
+  ll to, cost;
+};
+int main()
+{
+  ll n;
+  cin >> n;
+  vll d(n);
+  vb use(n);
+  rep(i, n)
+  {
+    cin >> d[i];
+    use[i] = d[i] > 0;
+  }
+  vector<vector<edge>> t(n, vector<edge>(0));
+  rep(i, n - 1)
+  {
+    ll u, v, w;
+    cin >> u >> v >> w;
+    u--;
+    v--;
+    t[u].pb({v, w});
+    t[v].pb({u, w});
+  }
+  // first -> all, second -> all - 1;
+  auto dfs = [&](auto dfs, ll now, ll par) -> pll
+  {
+    vector<tuple<ll, ll, ll>> res(0);
+    for (auto [to, cost] : t[now])
+    {
+      if (to == par)
+        continue;
+      pll tmp = dfs(dfs, to, now);
+      if (use[to])
+      {
+        tmp.S += cost;
+      }
+      res.pb({tmp.S - tmp.F, tmp.F, tmp.S});
+    }
+    pll ans = {0, 0};
+    sort(rall(res));
+    for (int i = 0; i < res.size(); i++)
+    {
+      auto [a, b, c] = res[i];
+      if (a > 0 && d[now] > 0)
+      {
+        ans.F += c;
+        if (d[now] > 1)
+        {
+          ans.S += c;
+        }
+        else
+        {
+          ans.S += b;
+        }
+        d[now]--;
+      }
+      else
+      {
+        ans.F += b;
+        ans.S += b;
+      }
+    }
+    return ans;
+  };
+  auto ans = dfs(dfs, 0, -1);
+  cout << ans.F << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

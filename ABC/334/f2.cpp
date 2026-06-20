@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/lazysegtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,16 +63,68 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+double op(double a, double b)
+{
+  return min(a, b);
+}
+double e()
+{
+  return (double)(1LL << 60);
+}
+
+double mapping(double f, double a)
+{
+  return f + a;
+}
+double composition(double f, double g)
+{
+  return f + g;
+}
+double id()
+{
+  return 0;
+}
+
 int main()
 {
-  ll n, m, k;
-  cin >> n >> m >> k;
-  vector<string> s(n);
-  rep(i, n) cin >> s[i];
+  ll n, k;
+  cin >> n >> k;
+  double sx, sy;
+  cin >> sx >> sy;
+  vector<double> x(n), y(n);
   rep(i, n)
   {
-    
+    cin >> x[i] >> y[i];
   }
+  lazy_segtree<double, op, e, double, mapping, composition, id> seg(k);
+  ll nowx = sx;
+  ll nowy = sy;
+  ll it = k - 1;
+  double d = sqrt(abs(nowx - x[0]) * abs(nowx - x[0]) + abs(nowy - y[0]) * abs(nowy - y[0]));
+  seg.set(it, d);
+  nowx = x[0];
+  nowy = y[0];
+  rep(i, n)
+  {
+    if (i == 0)
+      continue;
+    double d = sqrt(abs(nowx - x[i]) * abs(nowx - x[i]) + abs(nowy - y[i]) * abs(nowy - y[i]));
+    double m = seg.all_prod();
+    // to s
+    m += sqrt(abs(nowx - sx) * abs(nowx - sx) + abs(nowy - sy) * abs(nowy - sy));
+    // to next
+    m += sqrt(abs(x[i] - sx) * abs(x[i] - sx) + abs(y[i] - sy) * abs(y[i] - sy));
+    seg.apply(0, k, d);
+    it++;
+    it %= k;
+    seg.set(it, m);
+    nowx = x[i];
+    nowy = y[i];
+  }
+  double m = seg.all_prod();
+  cout << fixed << setprecision(10);
+
+  cout << sqrt(abs(x[n - 1] - sx) * abs(x[n - 1] - sx) + abs(y[n - 1] - sy) * abs(y[n - 1] - sy)) + m << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

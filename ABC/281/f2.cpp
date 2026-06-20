@@ -34,7 +34,6 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
-using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -62,23 +61,50 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
-  ll n, k;
-  cin >> n >> k;
-  vvvll d(2 * k, vvll(2 * k, vll(2)));
-  rep(i, n)
+  ll n;
+  cin >> n;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  auto dfs = [&](auto dfs, ll i, vll &v) -> ll
   {
-    ll x, y;
-    cin >> x >> y;
-    char c;
-    cin >> c;
-    ll q = 0;
-    if (c == 'B')
-      q++;
-    x %= 2 * k;
-    y %= 2 * k;
-    d[x][y][q]++;
-  }
-  
+    if (i < 0)
+    {
+      return 0;
+    }
+    vll l(0), r(0);
+    rep(j, v.size())
+    {
+      if ((v[j] >> i) & 1)
+      {
+        r.pb(v[j]);
+      }
+      else
+      {
+        l.pb(v[j]);
+      }
+    }
+    ll res = 0;
+    if (l.size() == 0 && r.size() == 0)
+    {
+      return 0;
+    }
+    else if (l.size() == 0)
+    {
+      res += dfs(dfs, i - 1, r);
+    }
+    else if (r.size() == 0)
+    {
+      res += dfs(dfs, i - 1, l);
+    }
+    else
+    {
+      ll R = dfs(dfs, i - 1, r);
+      ll L = dfs(dfs, i - 1, l);
+      res += min(R, L) + (1 << i);
+    }
+    return res;
+  };
+  cout << dfs(dfs, 30, a) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

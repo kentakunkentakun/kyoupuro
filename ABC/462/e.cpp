@@ -1,8 +1,8 @@
 #include <bits/stdc++.h>
-#include <atcoder/segtree>
+
 using namespace std;
-using namespace atcoder;
 #define ll long long
+#define ld long double
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
 #define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
@@ -14,8 +14,6 @@ using namespace atcoder;
 #define pb push_back
 #define pu push
 #define COUT(x) cout << (x) << "\n"
-#define PQ(x) priority_queue<x>
-#define PQR(x) priority_queue<x, vector<x>, greater<x>>
 #define YES(n) cout << ((n) ? "YES\n" : "NO\n")
 #define Yes(n) cout << ((n) ? "Yes\n" : "No\n")
 #define mp make_pair
@@ -34,10 +32,18 @@ using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
+
+template <class T>
+using PQ = priority_queue<T>;
+
+template <class T>
+using PQR = priority_queue<T, vector<T>, greater<T>>;
+
 // const ll MOD = 1e9+7LL;
 const ll MOD = 998244353LL;
-const ll INF = 1LL << 60;
+const ll INF = 1LL << 62;
 const double INF_D = numeric_limits<double>::infinity();
+
 template <class T>
 constexpr void printArray(const vector<T> &vec, char split = ' ')
 {
@@ -77,63 +83,77 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
-ll op(ll a, ll b)
-{
-  return a + b;
-}
-ll e()
-{
-  return 0;
-}
 int main()
 {
-  ll n, q;
-  cin >> n >> q;
-  vll c(n);
-  vvll cnt(n + 1);
-  vll it(n + 1);
-  vll ini(n + 1);
-  rep(i, n)
+  ll t;
+  cin >> t;
+  vll res(t);
+  rep(T, t)
   {
-    cin >> c[i];
-    c[i]--;
-    if (cnt[c[i]].size() == 0)
-      ini[i]++;
-    cnt[c[i]].pb(i);
-  }
-
-  segtree<ll, op, e> seg(ini);
-  vector<tuple<ll, ll, ll>> que(q);
-  map<ll, vector<pll>> m;
-  rep(i, q)
-  {
-    ll l, r;
-    cin >> l >> r;
-    l--;
-    m[l].pb({r, i});
-  }
-  vll ans(q);
-  sort(all(que));
-  ll lit = 0;
-  for (auto [l, v] : m)
-  {
-    while (lit != l)
+    ll a, b, x, y;
+    cin >> a >> b >> x >> y;
+    ll ans = 0;
+    x = abs(x);
+    y = abs(y);
+    if (a == b)
     {
-      it[c[lit]]++;
-      if (it[c[lit]] < cnt[c[lit]].size())
+      ans = (x + y) * a;
+    }
+    else if (a < b)
+    {
+      if (x == y)
       {
-        seg.set(cnt[c[lit]][it[c[lit]]], 1);
+        ans = (x + y) * a;
       }
-      lit++;
+      else
+      {
+        ans += 2 * min(x, y) * a;
+        ll remain = x + y - 2 * min(x, y);
+        if (x > y)
+        {
+          remain--;
+          ans += a;
+        }
+        if (3 * a < b)
+        {
+          ans += (remain + (remain + 1) / 2 * 2) * a;
+        }
+        else
+        {
+          ans += (remain + 1) / 2 * b + remain / 2 * a;
+        }
+      }
     }
-    for (auto [r, i] : v)f
+    else
     {
-      ans[i] = seg.prod(l, r);
+      if (x == y)
+      {
+        ans = (x + y) * b;
+      }
+      else
+      {
+        ans += 2 * min(x, y) * b;
+        ll remain = x + y - 2 * min(x, y);
+        if (x < y)
+        {
+          remain--;
+          ans += b;
+        }
+        if (3 * b < a)
+        {
+          ans += (remain + (remain + 1) / 2 * 2) * b;
+        }
+        else
+        {
+          ans += (remain + 1) / 2 * a + remain / 2 * b;
+        }
+      }
     }
+    res[T] = ans;
   }
-  rep(i, q)
+  rep(i, t)
   {
-    cout << ans[i] << endl;
+    cout << res[i] << endl;
   }
 }
 /*cin.tie(0);
