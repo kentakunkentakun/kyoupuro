@@ -85,11 +85,112 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
-  ll t; 
+  ll t;
   cin >> t;
   rep(T, t)
   {
+    string s;
+    cin >> s;
+    ll k, n;
+    cin >> k;
+    n = s.size();
+    vvvll dp(n + 1, vvll(k + 1, vll(3, INF)));
+    dp[0][0][0] = 0;
+    vll no(n, 0);
+    rep(i, n - 2)
+    {
+      if (s[i] == 'A' && s[i + 1] == 'B' && s[i + 2] == 'C')
+      {
+        no[i] = 1;
+        no[i + 1] = 1;
+        no[i + 2] = 1;
+      }
+    }
+    ll ans = INF;
+    rep(i, n)
+    {
+      rep(j, k)
+      {
 
+        if (s[i] != 'A')
+        {
+          chmin(dp[i + 1][j][0], dp[i][j][0]);
+        }
+        if (s[i] != 'A')
+        {
+          chmin(dp[i + 1][j][1], dp[i][j][0] + 1);
+          chmin(dp[i + 1][j][1], dp[i][j][1] + 1);
+          chmin(dp[i + 1][j][1], dp[i][j][2] + 1);
+        }
+        else
+        {
+          chmin(dp[i + 1][j][1], dp[i][j][0]);
+          chmin(dp[i + 1][j][1], dp[i][j][1]);
+          chmin(dp[i + 1][j][1], dp[i][j][2]);
+        }
+        if (i >= 1)
+        {
+          if (s[i] != 'B')
+          {
+            chmin(dp[i + 1][j][2], dp[i][j][1] + 1);
+            chmin(dp[i + 1][j][0], dp[i][j][1]);
+          }
+          else
+          {
+            chmin(dp[i + 1][j][2], dp[i][j][1]);
+          }
+        }
+        if (i >= 2)
+        {
+          ll nk = j + 1;
+          if (no[i - 2] || no[i - 1] || no[i])
+          {
+            nk--;
+          }
+          if (nk == k)
+          {
+            if (s[i] != 'C')
+            {
+              chmin(ans, dp[i][j][2] + 1);
+              if (T == 2)
+              {
+                if (ans < INF)
+                {
+                  cout << i << " " << j << " " << ans << endl;
+                }
+              }
+              chmin(dp[i + 1][j][0], dp[i][j][2]);
+            }
+            else
+            {
+              chmin(ans, dp[i][j][2]);
+              if (T == 2)
+              {
+                if (ans < INF)
+                {
+                  cout << i << " " << j << " " << ans << endl;
+                }
+              }
+            }
+          }
+          else
+          {
+            if (s[i] != 'C')
+            {
+              chmin(dp[i + 1][nk][0], dp[i][j][2] + 1);
+              chmin(dp[i + 1][j][0], dp[i][j][2]);
+            }
+            else
+            {
+              chmin(dp[i + 1][nk][0], dp[i][j][2]);
+            }
+          }
+        }
+      }
+    }
+    if (ans == INF)
+      ans = -1;
+    cout << ans << endl;
   }
 }
 /*cin.tie(0);

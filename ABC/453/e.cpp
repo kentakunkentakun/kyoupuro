@@ -109,71 +109,92 @@ int main()
   COMinit();
   ll n;
   cin >> n;
-  vector<pll> p(n);
+  vll l(n), r(n);
+  vector<tuple<ll, ll, ll>> low, upp(0);
   rep(i, n)
   {
-    ll l, r;
-    cin >> l >> r;
-    p[i] = {l, r};
+    cin >> l[i] >> r[i];
+    low.pb({l[i], i, 0});
+    low.pb({r[i] + 1, i, 1});
+    upp.pb({r[i], i, 0});
+    upp.pb({l[i] - 1, i, 1});
   }
-  sort(all(p));
-  ll rit = 0;
-  vll l(0), r(0), m(0);
-  rep(i, n)
-  {
-    auto it = lower_bound(all(p), mp(p[i].S + 1, -1));
-    if (it != p.end())
-    {
-      chmax(rit, (ll)(p.end() - it));
-      l.pb(i);
-    }
-    else
-    {
-      m.pb(i);
-    }
-  }
-  ll now = n - 1;
-  while (rit)
-  {
-    rit--;
-    r.pb(now);
-  }
-  reverse(all(r));
-  ll rL = 0;
-  ll rR = INF;
-  rep(i, r.size())
-  {
-    chmin(rR, p[r[i]].S);
-    chmax(rL, p[r[i]].F);
-  }
-  rep(i, r.size())
-  {
-    if (rR < p[r[i]].F || rL > p[r[i]].S)
-    {
-      cout << 0 << endl;
-      return 0;
-    }
-  }
-  ll lL = 0;
-  ll lR = INF;
-  rep(i, l.size())
-  {
-    chmin(lR, p[l[i]].S);
-    chmax(lL, p[l[i]].F);
-
-    if (lR < p[l[i]].F || lL > p[l[i]].S)
-    {
-      cout << 0 << endl;
-      return 0;
-    }
-  }
-  ll nowl = l.size();
-  ll nowr = r.size();
+  sort(all(low));
+  sort(rall(upp));
+  ll low_it = 0, upp_it = 0;
+  set<ll> a, b, c;
   ll ans = 0;
-  for (ll i = max(0LL, lL - nowl); i + nowl <= lR; i++)
+  for (int i = 1; i < n; i++)
   {
-    ans += 
+    while (low_it < low.size())
+    {
+      auto [v, it, op] = low[low_it];
+      if (v != i)
+        break;
+      if (op == 0)
+      {
+        if (b.count(it))
+        {
+          b.erase(it);
+          c.insert(it);
+        }
+        else
+        {
+          a.insert(it);
+        }
+      }
+      else
+      {
+        if (c.count(it))
+        {
+          c.erase(it);
+          b.insert(it);
+        }
+        else
+        {
+          a.erase(it);
+        }
+      }
+      low_it++;
+    }
+    while (upp_it < upp.size())
+    {
+      auto [v, it, op] = upp[upp_it];
+      if (n - i != v)
+        break;
+      if (op == 0)
+      {
+        if (a.count(it))
+        {
+          a.erase(it);
+          c.insert(it);
+        }
+        else
+        {
+          b.insert(it);
+        }
+      }
+      else
+      {
+        if (c.count(it))
+        {
+          c.erase(it);
+          a.insert(it);
+        }
+        else
+        {
+          b.erase(it);
+        }
+      }
+      upp_it++;
+    }
+    if (a.size() + b.size() + c.size() == n && a.size() <= i && b.size() <= n - i)
+    {
+      ans += COM(c.size(), i - a.size());
+      ans %= MOD;
+    }
   }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

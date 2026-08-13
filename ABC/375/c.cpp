@@ -64,6 +64,71 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vvc a(n, vc(n));
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      cin >> a[i][j];
+    }
+  }
+  auto nx = [](ll x, ll y, ll ma, ll mi) -> pll
+  {
+    if (x == mi && y + 1 <= ma)
+    {
+      y++;
+    }
+    else if (y == ma && x + 1 <= ma)
+    {
+      x++;
+    }
+    else if (x == ma && y - 1 >= mi)
+    {
+      y--;
+    }
+    else
+    {
+      x--;
+    }
+    return {x, y};
+  };
+  vvc ans(n, vc(n, '-'));
+  rep(i, n / 2)
+  {
+    ll x = i, y = i;
+    ll sx = i, sy = i;
+    ll m = n - 1 - i;
+    if (i % 4 == 0)
+    {
+      sx = m, sy = i;
+    }
+    else if (i % 4 == 1)
+    {
+      sx = m, sy = m;
+    }
+    else if (i % 4 == 2)
+    {
+      sx = i, sy = m;
+    }
+    while (ans[x][y] == '-')
+    {
+      ans[x][y] = a[sx][sy];
+      pll r = nx(x, y, m, i);
+      x = r.F, y = r.S;
+      r = nx(sx, sy, m, i);
+      sx = r.F, sy = r.S;
+    }
+  }
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      cout << ans[i][j];
+    }
+    cout << endl;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

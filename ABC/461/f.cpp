@@ -85,6 +85,72 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n;
+  cin >> n;
+  vll t(0);
+  for (int i = 1; i <= sqrt(n); i++)
+  {
+    if (n % i == 0)
+    {
+      t.pb(i);
+      if (n / i != i)
+      {
+        t.pb(n / i);
+      }
+    }
+  }
+  ll ans = 0;
+  sort(all(t));
+  unordered_map<ll, ll> m;
+  rep(i, t.size())
+  {
+    m[t[i]] = i + 1;
+  }
+  ll N = t.size();
+  // 総積, 個数
+  vector<vector<pll>> dp(N + 1, vector<pll>(16));
+  // 総和, 通り数
+  dp[0][0] = {0, 1};
+  vll K(16);
+  K[0] = 1;
+  rep(i, 15)
+  {
+    K[i + 1] = K[i] * (i + 1);
+    K[i + 1] %= MOD;
+  }
+  // 次の数字
+  rep(i, N)
+  {
+    ll nx = t[i];
+    vector<vector<pll>> ndp = dp;
+
+    rep(k, 15)
+    {
+      rep(j, N + 1)
+      {
+        auto [sum, cnt] = dp[j][k];
+        if (cnt == 0)
+          continue;
+        ll it = max(0LL, j - 1);
+        ll num = t[it];
+        if (num*nx != 0 && n % (num * nx) == 0)
+        {
+          ll nxit = m[num * nx];
+          ndp[nxit][k + 1].F += sum + cnt * nx;
+          ndp[nxit][k + 1].F %= MOD;
+          ndp[nxit][k + 1].S += cnt;
+          ndp[nxit][k + 1].S %= MOD;
+        }
+      }
+    }
+    swap(ndp, dp);
+  }
+  rep(k, 15)
+  {
+    ans += dp[N][k].F * K[k];
+    ans %= MOD;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

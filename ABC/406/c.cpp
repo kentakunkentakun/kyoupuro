@@ -69,6 +69,40 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll p(n);
+  rep(i, n) cin >> p[i];
+  ll ans = 0;
+  ll k = -1;
+  vll tmp(0);
+  ll cnt = 0;
+  rep(i, n - 1)
+  {
+    if (p[i] < p[i + 1])
+    {
+      if (k == -1)
+      {
+        k = 1;
+      }
+      cnt++;
+    }
+    else
+    {
+      if (k == 1)
+      {
+        tmp.pb(cnt);
+        cnt = 0;
+        k = -1;
+      }
+    }
+  }
+  tmp.pb(cnt);
+  rep(i, tmp.size() - 1)
+  {
+    ans += tmp[i] * tmp[i + 1];
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

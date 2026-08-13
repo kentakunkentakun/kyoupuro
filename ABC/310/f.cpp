@@ -94,25 +94,22 @@ int main()
   dp[0][0] = 1;
   rep(i, n)
   {
+    ll inv = modinv(a[i], MOD);
     rep(j, 11)
     {
-      dp[i + 1][j] += dp[i][j] * a[i];
-      for (int k = j + 1; k <= min(10LL, j + a[i]); k++)
+      dp[i + 1][j] += dp[i][j];
+      dp[i + 1][j] %= MOD;
+      for (int z = 1; z <= min(10LL, a[i]); z++)
       {
-        dp[i + 1][k] += dp[i][j];
-        dp[i + 1][k] %= MOD;
+        if (j + z <= 10)
+        {
+          dp[i + 1][j + z] += dp[i][j] * inv;
+          dp[i + 1][j + z] %= MOD;
+        }
       }
     }
-    cout << i + 1 << " " << dp[i + 1][10] << endl;
   }
   cout << dp[n][10] << endl;
-  ll ans = dp[n][10];
-  rep(i, n)
-  {
-    ans *= modinv(a[i], MOD);
-    ans %= MOD;
-  }
-  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
