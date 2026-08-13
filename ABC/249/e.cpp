@@ -79,6 +79,97 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n, p;
+  cin >> n >> p;
+  vvll d(n + 2, vll(n + 1));
+  // i文字目まで決めて、RLEがjの長さの場合の数
+  vvll dp(n + 1, vll(n + 1));
+  dp[0][0] = 1;
+  rep(i, n + 1)
+  {
+
+    rep(j, n + 1)
+    {
+      if (i > 0)
+      {
+        d[i][j] += d[i - 1][j];
+        d[i][j] %= p;
+        d[i][j] += p;
+        d[i][j] %= p;
+      }
+      dp[i][j] += d[i][j];
+      // cout << i << " " << j << " " << d[i][j] << endl;
+      ll k = 25;
+      if (i == 0)
+        k = 26;
+      if (dp[i][j])
+      {
+        // 1桁
+        if (i + 1 <= n && j + 2 <= n)
+        {
+          ll nj = min(n, j + 2);
+          ll ni = min(n + 1, i + 10);
+          d[i + 1][nj] += k * dp[i][j];
+          d[i + 1][nj] %= p;
+          d[i + 1][nj] += p;
+          d[i + 1][nj] %= p;
+          d[ni][nj] -= k * dp[i][j];
+          d[ni][nj] %= p;
+          d[ni][nj] += p;
+          d[ni][nj] %= p;
+        }
+        // 2桁
+        if (i + 10 <= n && j + 3 <= n)
+        {
+          ll nj = j + 3;
+          ll ni = min(n + 1, i + 100);
+          d[i + 10][nj] += k * dp[i][j];
+          d[i + 10][nj] %= p;
+          d[i + 10][nj] += p;
+          d[i + 10][nj] %= p;
+          d[ni][nj] -= k * dp[i][j];
+          d[ni][nj] %= p;
+          d[ni][nj] += p;
+          d[ni][nj] %= p;
+        }
+        // 3桁
+        if (i + 100 <= n && j + 4 <= n)
+        {
+          ll nj = j + 4;
+          ll ni = min(n + 1, i + 1000);
+          d[i + 100][nj] += k * dp[i][j];
+          d[i + 100][nj] %= p;
+          d[i + 100][nj] += p;
+          d[i + 100][nj] %= p;
+          d[ni][nj] -= k * dp[i][j];
+          d[ni][nj] %= p;
+          d[ni][nj] += p;
+          d[ni][nj] %= p;
+        }
+        // 4桁
+        if (i + 1000 <= n && j + 5 <= n)
+        {
+          ll nj = j + 5;
+          ll ni = min(n + 1, i + 10000);
+          d[i + 1000][nj] += k * dp[i][j];
+          d[i + 1000][nj] %= p;
+          d[i + 1000][nj] += p;
+          d[i + 1000][nj] %= p;
+          d[ni][nj] -= k * dp[i][j];
+          d[ni][nj] %= p;
+          d[ni][nj] += p;
+          d[ni][nj] %= p;
+        }
+      }
+    }
+  }
+  ll ans = 0;
+  rep(i, n)
+  {
+    ans += dp[n][i];
+    ans %= p;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
