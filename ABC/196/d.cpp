@@ -74,6 +74,46 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll h, w, a, b;
+  cin >> h >> w >> a >> b;
+  vvvll dp(1 << (h * w), vvll(a + 1, vll(b + 1, -1)));
+  dp[(1 << (h * w)) - 1][0][0] = 1;
+  auto dfs = [&](auto dfs, ll bit, ll a, ll b) -> ll
+  {
+    if (dp[bit][a][b] != -1)
+    {
+      return dp[bit][a][b];
+    }
+    ll res = 0;
+    rep(i, h * w)
+    {
+      if (!((bit >> i) & 1))
+      {
+        // 1ます
+        if (b)
+        {
+          res += dfs(dfs, bit + (1 << i), a, b - 1);
+        }
+        // 2マス横
+        if (a)
+        {
+          // 2マス横
+          if (i % w != w - 1 && !((bit >> (i + 1)) & 1))
+          {
+            res += dfs(dfs, bit + (1 << i) + (1 << (i + 1)), a - 1, b);
+          }
+          // 2マス下
+          if (i / w != h - 1 && !((bit >> (i + w)) & 1))
+          {
+            res += dfs(dfs, bit + (1 << i) + (1 << (i + w)), a - 1, b);
+          }
+        }
+        break;
+      }
+    }
+    return dp[bit][a][b] = res;
+  };
+  cout << dfs(dfs, 0, a, b) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

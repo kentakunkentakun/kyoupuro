@@ -77,6 +77,16 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n;
+  cin >> n;
+  vll a(n);
+  rep(i, n) cin >> a[i];
+  map<ll, ll> dp;
+  vll d(n + 1);
+  rep(i, n)
+  {
+    d[i + 1] += d[i] + a[i];
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

@@ -74,6 +74,57 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll a, b;
+  cin >> a >> b;
+  vll d(b - a + 2);
+  for (int i = 2; i <= b - a + 1; i++)
+  {
+    for (ll l = a; l <= b; l++)
+    {
+      if (l % i == 0)
+      {
+        d[i]++;
+      }
+    }
+  }
+  __int128 cnt = 1;
+  ll n = b - a + 1;
+
+  rep(i, n)
+  {
+    cnt *= 2;
+  }
+  __int128 ans = cnt;
+  vector<__int128> t(b - a + 2);
+  repR(i, b - a + 2)
+  {
+    if (i == 1)
+      break;
+    if (d[i] > 1)
+    {
+      __int128 tmp = 1;
+      rep(j, d[i])
+      {
+        tmp *= 2;
+      }
+      tmp -= (d[i] + 1);
+      rep(j, n - d[i])
+      {
+        tmp *= 2;
+      }
+      tmp -= t[i];
+      for (int j = 2; j < i; j++)
+      {
+        if (i % j == 0)
+        {
+          t[j] += tmp;
+        }
+      }
+      ans -= tmp;
+    }
+  }
+  ll res = ans;
+  cout << res << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

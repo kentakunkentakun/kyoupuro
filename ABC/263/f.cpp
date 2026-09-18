@@ -64,6 +64,39 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vvll c(1 << n, vll(n));
+  rep(i, 1 << n)
+  {
+    rep(j, n)
+    {
+      cin >> c[i][j];
+    }
+  }
+  vector<map<pll, ll>> dp(n);
+  auto dfs = [&](auto dfs, ll l, ll r, ll k, ll u) -> ll
+  {
+    if (dp[k].count({l, r}))
+    {
+      return dp[k][{l, r}];
+    }
+    if (r - l == 2)
+    {
+      return dp[k][{l, r}] = max(c[l][k], c[l + 1][k]);
+    }
+    ll res = 0;
+    // 左が勝つ
+    {
+      chmax(res, dfs(dfs, l, (r + l) / 2, k, u - 1) + dfs(dfs, (r + l) / 2, r, u - 1, u - 1));
+    }
+    // 右が勝つ
+    {
+      chmax(res, dfs(dfs, l, (r + l) / 2, u - 1, u - 1) + dfs(dfs, (r + l) / 2, r, k, u - 1));
+    }
+    return dp[k][{l, r}] = res;
+  };
+  cout << dfs(dfs, 0, 1 << n, n - 1, n - 1) << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

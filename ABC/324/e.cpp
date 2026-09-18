@@ -74,6 +74,57 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n;
+  cin >> n;
+  string t;
+  cin >> t;
+  vector<string> s(n);
+  rep(i, n) cin >> s[i];
+  vll l(t.size() + 1), r(t.size() + 1);
+
+  rep(i, n)
+  {
+    ll cnt = 0;
+    ll it = 0;
+    rep(j, s[i].size())
+    {
+      if (t[it] == s[i][j])
+      {
+        cnt++;
+        it++;
+      }
+      if (t.size() == it)
+      {
+        break;
+      }
+    }
+    l[cnt]++;
+    cnt = 0;
+    it = t.size() - 1;
+    repR(j, s[i].size())
+    {
+      if (t[it] == s[i][j])
+      {
+        cnt++;
+        it--;
+      }
+      if (it == -1)
+      {
+        break;
+      }
+    }
+    r[cnt]++;
+  }
+  repR(i, t.size())
+  {
+    r[i] += r[i + 1];
+  }
+  ll ans = 0;
+  rep(i, t.size() + 1)
+  {
+    ans += r[max(0LL, (ll)t.size() - i)] * l[i];
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

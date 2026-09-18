@@ -79,6 +79,57 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ll n, K;
+  cin >> n >> K;
+  vll h(n);
+  rep(i, n) cin >> h[i];
+  map<pair<ll, ll>, ll> dp;
+  dp[{0, 0}] = 0;
+  rep(i, n)
+  {
+    map<pair<ll, ll>, ll> ndp;
+
+    for (auto [p, c] : dp)
+    {
+      auto [r, v] = p;
+      // どこまで再利用可能？
+      ll k = v;
+
+      // 最初に塗らなかった
+      if (!ndp.count({r, h[i]}))
+      {
+        ndp[{r, h[i]}] = c + max(h[i] - k, 0LL);
+        // cout << ndp[{r, h[i]}] << " " << r << " " << h[i] << " f" << endl;
+      }
+      else
+      {
+        chmin(ndp[{r, h[i]}], c + max(0LL, h[i] - k));
+        // cout << ndp[{r, h[i]}] << " " << r << " " << h[i] << " f" << endl;
+      }
+      // 塗る
+      if (r < K)
+      {
+        if (!ndp.count({r + 1, v}))
+        {
+          ndp[{r + 1, v}] = c;
+        }
+        else
+        {
+          chmin(ndp[{r + 1, v}], c);
+        }
+        // cout << ndp[{r + 1, v}] << " " << r + 1 << " " << v << " s" << endl;
+      }
+    }
+    swap(ndp, dp);
+  }
+  ll ans = INF;
+  for (auto [p, c] : dp)
+  {
+    // auto [r, v] = p;
+    // cout << r << " " << v << " " << c << endl;
+    chmin(ans, c);
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
