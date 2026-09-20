@@ -62,8 +62,41 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+using i128 = __int128_t;
+
+i128 extGCD(i128 a, i128 b, i128 &x, i128 &y)
+{
+  if (b == 0)
+  {
+    x = 1;
+    y = 0;
+    return a;
+  }
+
+  i128 d = extGCD(b, a % b, y, x);
+  y -= a / b * x;
+  return d;
+}
+
 int main()
 {
+  ll x, y;
+  cin >> x >> y;
+  i128 X, Y;
+  X = x;
+  Y = y;
+  i128 C = Y * Y;
+  i128 rx, ry;
+  i128 g = extGCD(2 * Y, -2 * X, rx, ry);
+  if (C % g != 0)
+  {
+    
+  }
+  else
+  {
+    rx *= C / g;
+    ry *= C / g;
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

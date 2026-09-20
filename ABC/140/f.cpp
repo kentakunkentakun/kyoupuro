@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define ld long double
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
@@ -77,8 +78,137 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+template <typename T = ll>
+struct CC
+{
+  bool initialized;
+  vector<T> xs;
+  unordered_map<T, ll> idx;
+
+  CC() : initialized(false) {}
+
+  void add(T x)
+  {
+    xs.push_back(x);
+  }
+
+  void init()
+  {
+    sort(xs.begin(), xs.end());
+    xs.erase(unique(xs.begin(), xs.end()), xs.end());
+
+    for (ll i = 0; i < (ll)xs.size(); i++)
+    {
+      idx[xs[i]] = i;
+    }
+
+    initialized = true;
+  }
+
+  // 元の値 -> 圧縮後index
+  ll index(T x)
+  {
+    if (!initialized)
+      init();
+
+    return idx.at(x);
+  }
+
+  // lower_bound
+  ll lb(T x)
+  {
+    if (!initialized)
+      init();
+
+    return lower_bound(xs.begin(), xs.end(), x) - xs.begin();
+  }
+
+  // 圧縮後index -> 元の値
+  T operator[](ll i)
+  {
+    if (!initialized)
+      init();
+
+    return xs[i];
+  }
+
+  bool contains(T x)
+  {
+    if (!initialized)
+      init();
+
+    return idx.contains(x);
+  }
+
+  ll size()
+  {
+    if (!initialized)
+      init();
+
+    return xs.size();
+  }
+};
+struct S
+{
+  ll it, v;
+};
+S op(S a, S b)
+{
+  if (b.v)
+  {
+    return b;
+  }
+  return a;
+}
+S e()
+{
+  return {0, 0};
+}
 int main()
 {
+  ll n;
+  cin >> n;
+  vll a(1 << n);
+  CC<ll> cc;
+  rep(i, 1 << n)
+  {
+    cin >> a[i];
+    cc.add(a[i]);
+  }
+  cc.init();
+  vector<S> ini(cc.size());
+  sort(rall(a));
+
+  rep(i, a.size())
+  {
+    if (i != 0)
+      ini[cc.index(a[i])].v++;
+    ini[cc.index(a[i])].it = cc.index(a[i]);
+  }
+  segtree<S, op, e> seg(ini);
+  vll t(0);
+  t.pb(a[0]);
+  rep(U, n)
+  {
+    vll tmp(0);
+    for (int i = 0; i < t.size(); i++)
+    {
+      ll k = cc.index(a[i]);
+      auto res = seg.prod(0, k);
+      if (res.v == 0)
+      {
+        cout << "No" << endl;
+        return 0;
+      }
+      tmp.pb(cc[res.it]);
+      seg.set(res.it, {res.it, res.v - 1});
+    }
+    rep(i, tmp.size())
+    {
+      t.pb(tmp[i]);
+    }
+  }
+  cout << "Yes" << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

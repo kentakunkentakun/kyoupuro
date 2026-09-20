@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/dsu>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
@@ -62,8 +63,96 @@ inline bool chmin(T &a, T b)
 }
 ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
+
+struct edge
+{
+  ll to, cost;
+};
 int main()
 {
+  ll n, m, q;
+  cin >> n >> m >> q;
+  dsu uf(n);
+  vector<vector<edge>> t(n);
+  rep(i, m)
+  {
+    ll a, b, c;
+    cin >> a >> b >> c;
+    a--;
+    b--;
+    t[a].pb({b, c});
+    t[b].pb({a, -c});
+    uf.merge(a, b);
+  }
+  vll used(n, -1);
+  vll is_inf(n, 0);
+  vll dist(n, INF);
+  rep(i, q)
+  {
+    ll x, y;
+    cin >> x >> y;
+    x--;
+    y--;
+    if (uf.same(x, y))
+    {
+      ll root = uf.leader(x);
+      if (used[root] == -1)
+      {
+        used[root] = 1;
+        queue<ll> que;
+        dist[root] = 0;
+        que.push(root);
+        while (que.size())
+        {
+          ll now = que.front();
+          que.pop();
+          for (auto [to, cost] : t[now])
+          {
+            if (dist[to] == INF)
+            {
+              dist[to] = dist[now] + cost;
+              que.push(to);
+            }
+            else
+            {
+              if (dist[to] != dist[now] + cost)
+              {
+                is_inf[root] = 1;
+                break;
+              }
+            }
+          }
+          if (is_inf[root])
+          {
+            break;
+          }
+        }
+        if (is_inf[root])
+        {
+          cout << "inf" << endl;
+        }
+        else
+        {
+          cout << dist[y] - dist[x] << endl;
+        }
+      }
+      else
+      {
+        if (is_inf[root])
+        {
+          cout << "inf" << endl;
+        }
+        else
+        {
+          cout << dist[y] - dist[x] << endl;
+        }
+      }
+    }
+    else
+    {
+      cout << "nan" << endl;
+    }
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

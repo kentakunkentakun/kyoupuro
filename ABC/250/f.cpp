@@ -23,7 +23,7 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
 const ll MOD = 1000000007LL;
-const ll INF = 1LL << 60;
+const ll INF = 1LL << 62;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
@@ -64,6 +64,38 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n;
+  cin >> n;
+  vll x(2 * n), y(2 * n);
+  rep(i, n)
+  {
+    cin >> x[i] >> y[i];
+  }
+  rep(i, n)
+  {
+    x[i + n] = x[i];
+    y[i + n] = y[i];
+  }
+  ll sum = 0;
+  rep(i, n)
+  {
+    sum += (x[i] * y[i + 1] - x[i + 1] * y[i]);
+  }
+  ll it = 1;
+  ll ans = INF;
+  ll t = 0;
+  rep(i, n)
+  {
+    while (sum >= t * 4)
+    {
+      t += (x[it] - x[i]) * (y[it + 1] - y[i]) - (x[it + 1] - x[i]) * (y[it] - y[i]);
+      chmin(ans, abs(sum - t * 4));
+      it++;
+    }
+    t -= (x[i] - x[it]) * (y[i + 1] - y[it]) - (x[i + 1] - x[it]) * (y[i] - y[it]);
+    chmin(ans, abs(sum - t * 4));
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

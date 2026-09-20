@@ -3,6 +3,7 @@
 using namespace std;
 #define ll long long
 #define ld long double
+#define ul unsigned long long
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define FOR(i, a, b) for (ll i = (a); i < (ll)(b); i++)
 #define FORR(i, a, b) for (ll i = (a); i <= (ll)(b); i++)
@@ -85,6 +86,8 @@ bool isIn(ll nx, ll ny, ll h, ll w)
 }
 int main()
 {
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

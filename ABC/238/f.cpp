@@ -22,12 +22,14 @@ using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef tuple<ll, ll, ll> tll;
-const ll MOD = 1000000007LL;
+// const ll MOD = 1000000007LL;
+const ll MOD = 998244353;
 const ll INF = 1LL << 60;
 using vll = vector<ll>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvll = vector<vll>;
+using vvvll = vector<vvll>;
 using vstr = vector<string>;
 using vc = vector<char>;
 using vvc = vector<vc>;
@@ -64,6 +66,50 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
+  ll n, k;
+  cin >> n >> k;
+  vector<pll> p(n);
+  rep(i, n)
+  {
+    cin >> p[i].F;
+    p[i].F--;
+  }
+  rep(i, n)
+  {
+    cin >> p[i].S;
+    p[i].S--;
+  }
+  sort(all(p));
+  vvvll dp(n + 1, vvll(n + 1, vll(k + 1, 0)));
+  dp[0][n][0] = 1;
+  rep(i, n)
+  {
+    auto [x, y] = p[i];
+    rep(j, n + 1)
+    {
+      rep(z, k + 1)
+      {
+        // 選ばない場合
+        {
+          dp[i + 1][min(j, y)][z] += dp[i][j][z];
+          dp[i + 1][min(j, y)][z] %= MOD;
+        }
+        // 選ぶ
+        if (z < k && y < j)
+        {
+          dp[i + 1][j][z + 1] += dp[i][j][z];
+          dp[i + 1][j][z + 1] %= MOD;
+        }
+      }
+    }
+  }
+  ll ans = 0;
+  rep(i, n + 1)
+  {
+    ans += dp[n][i][k];
+    ans %= MOD;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

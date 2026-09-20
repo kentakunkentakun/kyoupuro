@@ -64,9 +64,78 @@ ll dx[4] = {0, 1, 0, -1};
 ll dy[4] = {1, 0, -1, 0};
 int main()
 {
-  ll x, y, r;
-  cin >> x >> y >> r;
-  
+  double X, Y, R;
+  cin >> X >> Y >> R;
+  ll x = llround(1e4 * X);
+  ll y = llround(1e4 * Y);
+  ll r = llround(1e4 * R);
+  ll ans = 0;
+  ll s = x - r;
+  ll e = x + r;
+  if (s > 0)
+  {
+    if (s % 10000)
+    {
+      s -= (s % 10000);
+      s += 10000;
+    }
+  }
+  else
+  {
+    s -= (s % 10000);
+  }
+  if (e < 0)
+  {
+    if (e % 10000)
+    {
+      e -= e % 10000;
+      e -= 10000;
+    }
+  }
+  else
+  {
+    e -= e % 10000;
+  }
+
+  for (ll i = s; i <= e; i += 10000)
+  {
+    __int128 rem =
+        (__int128)r * r - (__int128)(x - i) * (x - i);
+
+    ll h = sqrtl((long double)rem);
+    while ((__int128)h * h > rem)
+      h--;
+    while ((__int128)(h + 1) * (h + 1) <= rem)
+      h++;
+    ll u = h + y;
+    ll d = y - h;
+    if (u < 0)
+    {
+      if (u % 10000)
+      {
+        u -= u % 10000;
+        u -= 10000;
+      }
+    }
+    else
+    {
+      u -= u % 10000;
+    }
+    if (d > 0)
+    {
+      if (d % 10000)
+      {
+        d -= d % 10000;
+        d += 10000;
+      }
+    }
+    else
+    {
+      d -= d % 10000;
+    }
+    ans += (u - d) / 10000 + 1;
+  }
+  cout << ans << endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);

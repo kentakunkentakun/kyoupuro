@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-
+#include <atcoder/segtree>
 using namespace std;
+using namespace atcoder;
 #define ll long long
 #define ld long double
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
@@ -83,8 +84,44 @@ bool isIn(ll nx, ll ny, ll h, ll w)
   }
   return false;
 }
+struct S
+{
+  ll a, b;
+};
+S op(S x, S y)
+{
+  S nx;
+  nx.b = max(x.b, x.a + y.b);
+  nx.a = x.a + y.a;
+  return nx;
+}
+S e()
+{
+  return {0, 0};
+}
 int main()
 {
+  ll n, q;
+  cin >> n >> q;
+  vll a(n), b(n);
+  rep(i, n) cin >> a[i];
+  rep(i, n) cin >> b[i];
+  vector<tuple<ll, ll, ll>> tb(n);
+  rep(i, n)
+  {
+    tb[i] = {b[i], i, 0};
+  }
+  vll bt = b;
+  vector<tuple<ll, ll, ll>> que(q);
+
+  rep(i, q)
+  {
+    ll op, it, x;
+    cin >> op >> it >> x;
+    que[i] = {op, it, x};
+    if (op == 2)
+      tb.pb({x,})
+  }
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
