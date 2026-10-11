@@ -80,30 +80,43 @@ int main()
 {
   ll m, a, b;
   cin >> m >> a >> b;
-  vll kx(m), ky(m);
-  kx[0] = 1;
-  ky[0] = 0;
-  kx[1] = 0;
-  ky[1] = 1;
-  set<pll> s;
-  rep(i, m)
-  {
-    rep(j, m)
-    {
-      s.insert({i, j});
+  vvll used(m,vll(m,0));
+  vvll dp(m,vll(m,1));
+  queue<pll> que;
+  ll ans = 0;
+  rep(i,m){
+    rep(j,m){
+      if(used[i][j]==0){
+        que.push({i,j});
+        bool ok = true;
+        ll c = i, d = j;
+        used[c][d] = 1;
+        vector<pll> p(0);
+        while(que.size()){
+          auto [x,y] = que.front();
+          que.pop();
+          p.pb({x,y});
+          ll k = x*a+y*b;
+          k %= m;
+          if(k==0)ok = false;
+          if(used[k][x]){
+            ok = dp[k][x];
+            break;
+          }
+          used[k][x] = 1;
+          que.push({k,x});
+        }
+        if(!ok){
+          rep(z,p.size()){
+            auto [x,y] = p[z];
+            dp[x][y] = 0;
+          }
+        }
+        if(ok)ans+=p.size();
+      }
     }
   }
-  rep(i, m - 2)
-  {
-    kx[i + 2] = kx[i] * a + kx[i + 1] * b;
-    kx[i + 2] %= m;
-    ky[i + 2] = ky[i] * 2 + ky[i + 1] * b;
-    ky[i + 2] %= m;
-    rep(i, m)
-    {
-      
-    }
-  }
+  cout<<ans<<endl;
 }
 /*cin.tie(0);
 ios::sync_with_studio(false);
